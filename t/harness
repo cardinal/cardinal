@@ -1,8 +1,8 @@
-#!/usr/bin/perl
+#! perl
 
 # $Id$
 
 use FindBin;
-use lib qw( . lib ../lib ../../lib ../../lib );
-use Parrot::Test::Harness language => 'Cardinal';
+use lib qw( . lib ../lib ../../lib );
+use Parrot::Test::Harness language => 'cardinal', compiler => 'cardinal.pbc';
 
