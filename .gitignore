@@ -1,0 +1,14 @@
+Makefile
+
+*.pbc
+*.c
+*.o
+*.obj
+*.exe
+*.iss
+cardinal
+installable_cardinal
+
+test.pir
+gen_*.pir
+
