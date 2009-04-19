@@ -77,6 +77,8 @@ BUILTINS_PIR = \
 cardinal$(EXE): cardinal.pbc
 	$(PBC_TO_EXE) cardinal.pbc
 
+installable: installable_cardinal$(EXE)
+
 installable_cardinal$(EXE): cardinal.pbc
 	$(PBC_TO_EXE) cardinal.pbc --install
 
