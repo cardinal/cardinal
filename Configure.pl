@@ -92,7 +92,7 @@ sub read_parrot_config {
             while (<$PARROT_CONFIG>) {
                 if (/(\w+) => '(.*)'/) { $config{$1} = $2 }
             }
-            close $PARROT_CONFIG or die $!;
+            close $PARROT_CONFIG;
             last if %config;
         }
     }
