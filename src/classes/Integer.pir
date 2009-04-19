@@ -124,7 +124,8 @@ Return the greatest common divisor of C<self> and num
 .sub 'gcd' :method
    .param num other
    $N0 = self
-   gcd $I0, $N0, other
+   #gcd $I0, $N0, other
+   die "opcode 'gcd' was removed"
    .return($I0)
 .end
 
