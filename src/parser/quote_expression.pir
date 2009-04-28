@@ -101,20 +101,6 @@
 
     ##  handle word parsing
   word_start:
-    ##  set up escapes based on flags
-    .local string escapes
-    escapes = ''
-    $I0 = options['s']
-    unless $I0 goto escape_s_done
-    escapes = '$'
-  escape_s_done:
-    $I0 = options['c']
-    unless $I0 goto escape_c_done
-    escapes .= '{'
-  escape_c_done:
-  have_escapes:
-    options['escapes'] = escapes
-
     .local int optww
     optww = options['ww']
     unless optww goto have_wwopts
@@ -218,9 +204,6 @@
     lastpos = length target
     lastpos -= stoplen
 
-    .local string escapes
-    escapes = options['escapes']
-
     .local pmc quote_term
     quote_term = new 'ResizablePMCArray'
 
@@ -266,13 +249,14 @@
     .local string target
     (mob, pos, target) = self.'new'(self)
 
-    .local string leadchar, escapes
-    escapes = options['escapes']
-    leadchar = substr target, pos, 1
-    $I0 = index escapes, leadchar
-    if $I0 < 0 goto term_literal
-    if leadchar == '$' goto term_scalar
-    if leadchar == '{' goto term_closure
+    .local int optc
+    optc = options['c']
+    unless optc goto term_literal
+
+    .local string nexttwochars
+    nexttwochars = substr target, pos, 2
+    if nexttwochars == '#{' goto term_closure
+
   term_literal:
     mob.'to'(pos)
     $P0 = mob.'quote_literal'(options)
@@ -283,21 +267,14 @@
     key = 'literal'
     goto succeed
 
-  term_scalar:
-    mob.'to'(pos)
-    $P0 = mob.'variable'('action'=>action)
-    unless $P0 goto err_scalar
-    pos = $P0.'to'()
-    key = 'variable'
-    mob[key] = $P0
-    goto succeed
-
   term_closure:
-    mob.'to'(pos)
-    $P0 = mob.'circumfix'('action'=>action)
+    .local int nextpos
+    nextpos = pos + 1
+    mob.'to'(nextpos)
+    $P0 = mob.'do_block'('action'=>action)
     unless $P0 goto fail
     pos = $P0.'to'()
-    key = 'circumfix'
+    key = 'do_block'
     mob[key] = $P0
     goto succeed
 
@@ -312,11 +289,6 @@
 
   fail:
     mob.'to'(-1)
-    .return (mob)
-
-  err_scalar:
-    mob.'to'(pos)
-    mob.'panic'("Can't use $ as non-variable in interpolated string")
     .return (mob)
 .end
 
@@ -339,10 +311,10 @@
     lastpos -= stoplen
 
     .local string escapes
-    .local int optq, optb
-    escapes = options['escapes']
+    .local int optq, optb, optc
     optq = options['q']
     optb = options['b']
+    optc = options['c']
 
     .local string literal
     literal = ''
@@ -358,11 +330,12 @@
     if pos >= lastpos goto fail
 
   scan_char:
+    .local string nexttwochars
+    nexttwochars = substr target, pos, 2
+    if nexttwochars == '#{' goto succeed
+    ##  if we've reached an interpolation marker, we're done
     .local string litchar
     litchar = substr target, pos, 1
-    ##  if we've reached an escape char, we're done
-    $I0 = index escapes, litchar
-    if $I0 >= 0 goto succeed
     ##  if this isn't an interpolation, add the char
     unless optq goto add_litchar
     if litchar != "\\" goto add_litchar
@@ -436,7 +409,7 @@
     goto scan_loop
 
   succeed:
-    mob.'result_object'(literal)
+    mob.'!make'(literal)
     mob.'to'(pos)
     .return (mob)
   fail_backchar_digit:

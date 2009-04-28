@@ -437,7 +437,10 @@ token integer {
 }
 
 token string {
-    [ \' <string_literal: "'"> \' | \" <string_literal: '"'> \" ]
+    [
+    | <.before \'>     <quote_expression: :q>
+    | <.before '"' >   <quote_expression: :qq>
+    ]
     {*}
 }
 
