@@ -32,7 +32,7 @@ object.
     .local pmc parrotns, cardinalns, exports
     parrotns = get_root_namespace ['parrot']
     cardinalns = get_hll_namespace
-    exports = split ' ', 'PAST PCT PGE P6metaclass'
+    exports = split ' ', 'PAST PCT PGE'
     parrotns.'export_to'(cardinalns, exports)
 .end
 

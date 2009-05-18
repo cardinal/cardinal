@@ -121,10 +121,44 @@ such as C<eval>, C<require>, and C<use>.
     $P0 = 'require'(file, 'file'=>1)
 .end
 
+.sub 'foreign_load'
+    .param string lang
+    .param string module
+    .local pmc compiler, request, library, imports, callerns
+    $P0 = getinterp
+    callerns = $P0['namespace';1]
+    'load-language'(lang)
+    compiler = compreg lang
+    request = new 'Hash'
+    $P0 = split '/', module
+    request['name'] = $P0
+    library = compiler.'fetch-library'(request)
+    imports = library['symbols']
+    imports = imports['DEFAULT']
+    .local pmc iter, item
+    iter = new 'Iterator', imports
+  import_loop:
+    unless iter goto import_loop_end
+    $S0 = shift iter
+    $P0 = imports[$S0]
+    callerns[$S0] = $P0
+    goto import_loop
+  import_loop_end:
+    .return (library)
+.end
+
 =back
 
 =cut
 
+
+.HLL 'parrot' # work around a stupid parrot bug... argh!!!!!
+
+.sub 'load-language'
+    .param string lang
+    load_language lang
+.end
+.HLL 'cardinal'
 # Local Variables:
 #   mode: pir
 #   fill-column: 100
