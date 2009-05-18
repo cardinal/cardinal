@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 11
 
 Kernel.printf("%s %d %s\n", 'ok', 1, '- .printf() on Kernel')

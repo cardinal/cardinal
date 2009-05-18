@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 8
 
 proc = Proc.new{ |n| 

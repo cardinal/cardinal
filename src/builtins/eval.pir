@@ -112,6 +112,21 @@ such as C<eval>, C<require>, and C<use>.
     .return (result)
 .end
 
+.sub 'include'
+    .param pmc module
+    .local pmc it, item, callerns
+    $P0 = getinterp
+    callerns = $P0['namespace';1]
+    it = new 'Iterator', module
+  it_loop:
+    unless it goto it_loop_end
+    $S0 = shift it
+    item = module[$S0]
+    callerns[$S0] = item
+    goto it_loop
+  it_loop_end:
+.end
+
 
 .sub 'load'
     .param string file

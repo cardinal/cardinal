@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 5
 
 a = { "a" => "ok", "b" => 1}

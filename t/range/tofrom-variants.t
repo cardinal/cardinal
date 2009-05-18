@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 6
 
 r = Range.new(1,10)

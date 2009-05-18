@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 3
 
 r = 1..3

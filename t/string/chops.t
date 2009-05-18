@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 7
 
 dynamic_languages = "If it walks like a parrot\nand if it squaaks like a parrot\nit probably is the elite vm!\n"

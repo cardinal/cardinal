@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 15
 # 1.8 syntax does not test more elaborate 1.9 splat syntax
 
