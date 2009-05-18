@@ -45,20 +45,19 @@ object.
 #.loadlib 'cardinal_group'
 
 .sub 'onload' :anon :load :init
-    .local pmc cardinalmeta
+    .local pmc cardinalmeta, compilerclass, compiler
     cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta.'new_class'('cardinal::Compiler', 'parent'=>'PCT::HLLCompiler')
+    compilerclass = cardinalmeta.'new_class'('cardinal::Compiler', 'parent'=>'PCT::HLLCompiler')
 
-    $P0 = get_hll_global ['PCT'], 'HLLCompiler'
-    $P1 = $P0.'new'()
-    $P1.'language'('cardinal')
+    compiler = compilerclass.'new'()
+    compiler.'language'('cardinal')
     $P0 = get_hll_namespace ['cardinal';'Grammar']
-    $P1.'parsegrammar'($P0)
+    compiler.'parsegrammar'($P0)
     $P0 = get_hll_namespace ['cardinal';'Grammar';'Actions']
-    $P1.'parseactions'($P0)
+    compiler.'parseactions'($P0)
 
-    $P1.'commandline_banner'("Cardinal - Ruby for the Parrot VM\n\n")
-    $P1.'commandline_prompt'('crb(main):001:0>')
+    compiler.'commandline_banner'("Cardinal - Ruby for the Parrot VM\n\n")
+    compiler.'commandline_prompt'('crb(main):001:0>')
 
      ##  create a list of END blocks to be run
     $P0 = new 'CardinalArray'
@@ -108,6 +107,29 @@ to the cardinal compiler.
     goto iter_loop
   iter_end:
 .end
+
+.sub 'fetch-library' :method
+    .param pmc request
+    .local pmc name, retval, library, inc_hash
+    name = request['name']
+    $S0 = join '/', name
+    retval = 'require'($S0, 'module'=>1)
+    if null retval goto fail
+    library = new 'Hash'
+    library['name'] = name
+    inc_hash = get_hll_global '%INC'
+    $S0 = inc_hash[$S0]
+    library['filename'] = $S0
+    $P1 = new 'Hash'
+    $P0 = get_hll_namespace name
+    $P1['ALL'] = $P0
+    $P1['DEFAULT'] = $P0
+    library['symbols'] = $P1
+    .return (library)
+  fail:
+    .return (retval)
+.end
+
 
 =back
 
