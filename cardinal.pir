@@ -122,6 +122,7 @@ to the cardinal compiler.
     library['filename'] = $S0
     $P1 = new 'Hash'
     $P0 = get_hll_namespace name
+    library['namespace'] = $P0
     $P1['ALL'] = $P0
     $P1['DEFAULT'] = $P0
     library['symbols'] = $P1
