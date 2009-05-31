@@ -108,10 +108,10 @@ to the cardinal compiler.
   iter_end:
 .end
 
-.sub 'fetch-library' :method
-    .param pmc request
+.sub 'load_library' :method
+    .param pmc name
+    .param pmc request :named :slurpy
     .local pmc name, retval, library, inc_hash
-    name = request['name']
     $S0 = join '/', name
     retval = 'require'($S0, 'module'=>1)
     if null retval goto fail

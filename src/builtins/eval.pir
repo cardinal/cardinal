@@ -139,15 +139,13 @@ such as C<eval>, C<require>, and C<use>.
 .sub 'foreign_load'
     .param string lang
     .param string module
-    .local pmc compiler, request, library, imports, callerns
+    .local pmc compiler, library, imports, callerns
     $P0 = getinterp
     callerns = $P0['namespace';1]
     'load-language'(lang)
     compiler = compreg lang
-    request = new 'Hash'
     $P0 = split '/', module
-    request['name'] = $P0
-    library = compiler.'fetch-library'(request)
+    library = compiler.'load_library'($P0)
     imports = library['symbols']
     imports = imports['DEFAULT']
     .local pmc iter, item
