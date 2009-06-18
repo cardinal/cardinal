@@ -115,17 +115,16 @@ Returns 1
 .end
 
 
-=item gcd(num)
+=item gcd(int)
 
 Return the greatest common divisor of C<self> and num
 
 =cut
 
 .sub 'gcd' :method
-   .param num other
-   $N0 = self
-   #gcd $I0, $N0, other
-   die "opcode 'gcd' was removed"
+   .param int other
+   $I1 = self
+   gcd $I0, $I1, other
    .return($I0)
 .end
 
