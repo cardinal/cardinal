@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 51
 
 # add a test against the expected class type when we get .class worked out better

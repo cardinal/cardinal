@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 2
 
 str1 = "this is string\none"

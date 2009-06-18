@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 2
 
 s1 = %q[Quoted string]

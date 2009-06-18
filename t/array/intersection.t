@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 6
 
 a = [  0,  1, 2, 3, 4, 5, 6 ]

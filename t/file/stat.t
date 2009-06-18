@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 20
 
 # need a better test for these things. this shows that we at least can parse and execute these commands

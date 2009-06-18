@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 6
 #test against 1.9
 

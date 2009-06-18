@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 2
 
 str = "a long long time ago..."

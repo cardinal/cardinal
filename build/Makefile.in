@@ -15,11 +15,11 @@ LN_S          = @lns@
 PERL          = @perl@
 RM_RF         = @rm_rf@
 CP            = @cp@
-PARROT        = @bindir@/parrot@exe@
 CAT           = @cat@
 BUILD_DYNPMC  = $(PERL) $(BUILD_DIR)/tools/build/dynpmc.pl
 RECONFIGURE   = $(PERL) $(BUILD_DIR)/tools/dev/reconfigure.pl
-PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
+PARROT        = $(BUILD_DIR)/parrot$(EXE)
+PBC_TO_EXE    = $(BUILD_DIR)/pbc_to_exe$(EXE)
 
 ## places to look for things
 PARROT_DYNEXT = $(BUILD_DIR)/runtime/parrot/dynext
@@ -30,7 +30,7 @@ PCT           = $(BUILD_DIR)/runtime/parrot/library/PCT.pbc
 
 PMC_DIR       = src/pmc
 
-all: cardinal.pbc test.pir cardinal$(EXE)
+all: cardinal.pbc Test.pir cardinal$(EXE)
 
 CARDINAL_GROUP = $(PMC_DIR)/cardinal_group$(LOAD_EXT)
 
@@ -86,8 +86,8 @@ installable_cardinal$(EXE): cardinal.pbc
 cardinal.pbc: $(PARROT) $(SOURCES)
 	$(PARROT) $(PARROT_ARGS) -o cardinal.pbc cardinal.pir
 
-test.pir: $(PARROT) test.rb cardinal.pbc
-	$(PARROT) $(PARROT_ARGS) cardinal.pbc --target=pir --output=test.pir test.rb
+Test.pir: $(PARROT) Test.rb cardinal.pbc
+	$(PARROT) $(PARROT_ARGS) cardinal.pbc --target=pir --output=Test.pir Test.rb
 
 src/gen_grammar.pir: $(PERL6GRAMMAR) src/parser/grammar.pg
 	$(PARROT) $(PARROT_ARGS) $(PERL6GRAMMAR) \

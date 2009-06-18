@@ -11,7 +11,7 @@ puts "ok 3" ; puts "ok 4"
 
 print "ok "; print 1 + 4; print "\n"
 
-print "ok "; puts 2 * 3
+print "ok #{ 2 * 3 }\n"
 
 
 

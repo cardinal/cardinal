@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 3
 
 ok "foo" =~ /oo/, 'basic regex matching'

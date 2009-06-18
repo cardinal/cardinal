@@ -455,7 +455,7 @@ method module($/) {
     my $name := $( $<module_identifier> );
     $past.namespace( $name.name() );
     $past.blocktype('declaration');
-    $past.pirflags(':load :init');
+    #$past.pirflags(':load :init');
     make $past;
 }
 
@@ -773,7 +773,7 @@ method integer($/) {
 }
 
 method string($/) {
-    make PAST::Val.new( :value( ~$<string_literal> ), :returns('CardinalString'), :node($/) );
+    make $($<quote_expression>);
 }
 
 method regex($/) {
@@ -832,15 +832,15 @@ method quote_term($/, $key) {
     my $past;
     if ($key eq 'literal') {
         $past := PAST::Val.new(
-            :value( ~$<quote_literal> ),
+            :value( ~$<quote_literal>.ast ),
             :returns('CardinalString'), :node($/)
         );
     }
     elsif ($key eq 'variable') {
         $past := $( $<variable> );
     }
-    elsif ($key eq 'circumfix') {
-        $past := $( $<circumfix> );
+    elsif ($key eq 'do_block') {
+        $past := $( $<do_block> );
         if $past.WHAT() eq 'Block' {
             $past.blocktype('immediate');
         }

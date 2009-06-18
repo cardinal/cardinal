@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 4
 
 1.upto(2) { |x| is x, x, 'curly brace block' }

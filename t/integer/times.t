@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 5
 j = 0
 5.times do |i|

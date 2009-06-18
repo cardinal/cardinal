@@ -37,7 +37,7 @@ such as C<eval>, C<require>, and C<use>.
   lang_compile:
     .local pmc compiler
     compiler = compreg lang
-    .tailcall compiler.'evalfiles'(filename)
+    .tailcall compiler.'evalfiles'(filename, 'encoding'=>'utf8', 'transcode'=>'ascii iso8859-1')
 
   lang_parrot:
     load_bytecode filename
@@ -112,6 +112,21 @@ such as C<eval>, C<require>, and C<use>.
     .return (result)
 .end
 
+.sub 'include'
+    .param pmc module
+    .local pmc it, item, callerns
+    $P0 = getinterp
+    callerns = $P0['namespace';1]
+    it = new 'Iterator', module
+  it_loop:
+    unless it goto it_loop_end
+    $S0 = shift it
+    item = module[$S0]
+    callerns[$S0] = item
+    goto it_loop
+  it_loop_end:
+.end
+
 
 .sub 'load'
     .param string file
@@ -121,10 +136,42 @@ such as C<eval>, C<require>, and C<use>.
     $P0 = 'require'(file, 'file'=>1)
 .end
 
+.sub 'foreign_load'
+    .param string lang
+    .param string module
+    .local pmc compiler, library, imports, callerns
+    $P0 = getinterp
+    callerns = $P0['namespace';1]
+    'load-language'(lang)
+    compiler = compreg lang
+    $P0 = split '/', module
+    library = compiler.'load_library'($P0)
+    imports = library['symbols']
+    imports = imports['DEFAULT']
+    .local pmc iter, item
+    iter = new 'Iterator', imports
+  import_loop:
+    unless iter goto import_loop_end
+    $S0 = shift iter
+    $P0 = imports[$S0]
+    callerns[$S0] = $P0
+    goto import_loop
+  import_loop_end:
+    .return (library)
+.end
+
 =back
 
 =cut
 
+
+.HLL 'parrot' # work around a stupid parrot bug... argh!!!!!
+
+.sub 'load-language'
+    .param string lang
+    load_language lang
+.end
+.HLL 'cardinal'
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

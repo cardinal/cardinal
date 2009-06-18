@@ -1,4 +1,5 @@
-require 'test'
+require 'Test'
+include Test
 plan 2
 
 is RUBY_PLATFORM, 'parrot', 'RUBY_PLATORM'
