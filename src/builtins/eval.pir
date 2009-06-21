@@ -139,13 +139,13 @@ such as C<eval>, C<require>, and C<use>.
 .sub 'foreign_load'
     .param string lang
     .param string module
-    .local pmc compiler, library, imports, callerns
+    .local pmc compiler, name, library, imports, callerns, foreignlibns
     $P0 = getinterp
     callerns = $P0['namespace';1]
     'load-language'(lang)
     compiler = compreg lang
-    $P0 = split '/', module
-    library = compiler.'load_library'($P0)
+    name = split '/', module
+    library = compiler.'load_library'(name)
     imports = library['symbols']
     imports = imports['DEFAULT']
     .local pmc iter, item
@@ -157,6 +157,11 @@ such as C<eval>, C<require>, and C<use>.
     callerns[$S0] = $P0
     goto import_loop
   import_loop_end:
+    foreignlibns = library['namespace']
+    if null foreignlibns goto no_foreign_ns
+    $S0 = pop name
+    set_hll_global name, $S0, foreignlibns
+  no_foreign_ns:
     .return (library)
 .end
 
