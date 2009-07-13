@@ -231,49 +231,30 @@ Return a sorted copy of the list
 =item uniq(...)
 
 =cut
-
-# TODO Rewrite it. It's too naive.
+# TODO: Accept a block.
 
 .sub uniq :method
-    .local pmc ulist
-    .local pmc key
-    .local pmc val
-    .local pmc uval
-    .local int len
-    .local int i
-    .local int ulen
-    .local int ui
+    .local pmc uarray, hash, val
+    .local int i, len 
 
-    ulist = new 'CardinalArray'
-    len = self.'elems'()
+    uarray = new 'CardinalArray'
+    hash = new 'CardinalHash'
+
     i = 0
+    len = self.'elems'()
 
   loop:
     if i == len goto done
-
     val = self[i]
+    hash[val] = 0
 
-    ui = 0
-    ulen = ulist.'elems'()
-    inner_loop:
-        if ui == ulen goto inner_loop_done
-
-        uval = ulist[ui]
-        if uval == val goto found
-
-        inc ui
-        goto inner_loop
-    inner_loop_done:
-
-    ulist.'push'(val)
-
-    found:
-
-    inc i
+    inc i 
     goto loop
 
   done:
-    .return(ulist)
+    uarray = hash.'keys'()
+    
+    .return (uarray)
 .end
 
 .sub 'uniq!' :method
