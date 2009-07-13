@@ -231,9 +231,10 @@ Return a sorted copy of the list
 =item uniq(...)
 
 =cut
-# TODO: Accept a block.
 
 .sub uniq :method
+    .param pmc block :optional :named("!BLOCK")
+    .param int block_flag :opt_flag
     .local pmc uarray, hash, val
     .local int i, len 
 
@@ -246,6 +247,12 @@ Return a sorted copy of the list
   loop:
     if i == len goto done
     val = self[i]
+
+    unless block_flag, finish 
+    
+    val = block(val)
+
+  finish:
     hash[val] = 0
 
     inc i 
