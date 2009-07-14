@@ -1148,6 +1148,16 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($S0)
 .end
 
+.sub 'infix:+' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+
+    $P0 = this.'concat'(that)
+
+    .return ($P0)
+.end
+
+
 =item C<infix:,(...)>
 
 Operator form for building a list from its arguments.
