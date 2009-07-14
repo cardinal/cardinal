@@ -940,6 +940,30 @@ Retrieve the number of elements in C<self>
      .return($I0)
 .end
 
+=item concat
+
+Concatenate the passed array onto C<self>
+
+=cut
+.sub 'concat' :method
+    .param pmc other
+    .local int i, len
+
+    i = 0
+    len = other.'size'()
+
+  loop:
+    if i == len goto done
+    $P0 = other[i]
+    self.'push'($P0)
+
+    i = i + 1
+    goto loop
+  
+  done:
+    .return (self)
+.end
+
 =item length
 
 Retrieve the number of elements in C<self>
