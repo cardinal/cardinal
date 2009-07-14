@@ -196,6 +196,54 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .return(v)
 .end
 
+.sub 'has_key?' :method
+    .param pmc key
+    $I0 = exists self[key]
+    if $I0 goto true
+    $P0 = get_hll_global ['Bool'], 'False'
+    goto done
+  true:
+    $P0 = get_hll_global ['Bool'], 'True'
+  done:
+    .return ($P0)
+.end
+
+.sub 'include?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'key?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'member?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'has_value?' :method
+    .param pmc key
+    $I0 = defined self[key]
+    if $I0 goto true
+    $P0 = get_hll_global ['Bool'], 'False'
+    goto done
+  true:
+    $P0 = get_hll_global ['Bool'], 'True'
+  done:
+    .return ($P0)
+.end
+
+.sub 'value?' :method
+    .param pmc key
+    $P0 = self.'has_value?'(key)
+    .return ($P0)
+.end
+
 =back
 
 =head1 Functions
