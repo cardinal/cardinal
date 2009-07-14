@@ -1169,8 +1169,48 @@ Operator form for either repetition (when argument is an Integer), or as a short
 
     .return (array)
 .end
-    
 
+.sub 'infix:-' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+    .local pmc array, hash, key, includes
+    .local int i, len
+
+    array = new 'CardinalArray'
+    hash = new 'CardinalHash'
+    len = that.'size'()
+    i = 0
+
+  hash_loop:
+    if i == len goto hash_done
+
+    key = that[i]
+    hash[key] = 1
+
+    i = i + 1
+    goto hash_loop
+
+  hash_done:
+    len = this.'size'()
+    i = 0
+
+  diff_loop:
+    if i == len goto diff_done
+        
+    key = this[i]
+    includes = hash.'includes?'(key)
+    
+    i = i + 1
+    unless includes goto diff_loop
+
+    array.'push'(key)
+
+    goto diff_loop
+  
+  diff_done:
+    .return (array)
+.end
+    
 =item C<infix:,(...)>
 
 Operator form for building a list from its arguments.
