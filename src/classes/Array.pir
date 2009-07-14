@@ -225,7 +225,7 @@ Return a sorted copy of the list
   have_by:
     $P0 = self.'sort'()
     self = 0
-    self.'append'($P0)
+    self.'concat'($P0)
 .end
 
 =item uniq(...)
@@ -267,7 +267,7 @@ Return a sorted copy of the list
 .sub 'uniq!' :method
     $P0 = self.'uniq'()
     self = 0
-    self.'append'($P0)
+    self.'concat'($P0)
 .end
 
 .sub 'max' :method
