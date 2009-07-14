@@ -1159,6 +1159,17 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($P0)
 .end
 
+.sub 'infix:&' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+    .local pmc array
+
+    array = this + that
+    array.'uniq!'()
+
+    .return (array)
+.end
+    
 
 =item C<infix:,(...)>
 
