@@ -1151,8 +1151,10 @@ Operator form for either repetition (when argument is an Integer), or as a short
 .sub 'infix:+' :multi('CardinalArray','CardinalArray')
     .param pmc this
     .param pmc that
+    .local pmc array
 
-    $P0 = this.'concat'(that)
+    $P0 = this.'clone'()
+    $P0 = $P0.'concat'(that)
 
     .return ($P0)
 .end
