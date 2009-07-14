@@ -1100,6 +1100,53 @@ Build a CardinalArray from its arguments.
     .return (list)
 .end
 
+=item C<infix:*(...)>
+
+Operator form for either repetition (when argument is an Integer), or as a shortform for join (when argument is a String.)
+
+=cut
+
+.sub 'infix:*' :multi('CardinalArray','CardinalInteger')
+    .param pmc this
+    .param pmc count
+    .local pmc array
+    .local int i
+
+    say "Entered *i"
+    i = count
+    if i > 0 goto sane
+
+    $P0 = undef()
+    .return ($P0)
+
+  sane:
+    say "Verified sanity"
+    array = new 'CardinalArray'
+
+  loop:
+    say "Beginning loop."
+    array.'concat'(this)
+
+    say "Appended array."
+    dec i
+    say "dec i"
+    say i
+
+    if i > 0 goto loop
+
+    say "about to return"
+    .return (array)
+.end
+
+.sub 'infix:*' :multi('CardinalArray','CardinalString')
+    .param pmc this
+    .param pmc s
+    
+    $S0 = s
+    $S0 = join $S0, this
+
+    .return ($S0)
+.end
 
 =item C<infix:,(...)>
 
