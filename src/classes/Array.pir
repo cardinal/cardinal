@@ -1112,7 +1112,6 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .local pmc array
     .local int i
 
-    say "Entered *i"
     i = count
     if i > 0 goto sane
 
@@ -1120,21 +1119,16 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($P0)
 
   sane:
-    say "Verified sanity"
     array = new 'CardinalArray'
 
   loop:
-    say "Beginning loop."
     array.'concat'(this)
 
-    say "Appended array."
     dec i
-    say "dec i"
     say i
 
     if i > 0 goto loop
 
-    say "about to return"
     .return (array)
 .end
 
