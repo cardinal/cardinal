@@ -15,7 +15,7 @@ def test(file, name="")
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
     puts "Adding test #{name} for #{file}" if DEBUG
-    task name do
+    task name => ["cardinal", "Test.pir"] do
         run_test file
     end
 end
@@ -52,7 +52,8 @@ def run_test(file)
             result += "#{ok} ok "
             result += "#{nok} not ok"
             result += " #{unknown} unknown" if unknown > 0
-            result += " MISSING TESTS" if test != tests
+            result += " MISSING TESTS" if test < tests
+            result += " TOO MANY TESTS" if test > tests
         else
             result = "Complete failure... no plan given"
         end
@@ -114,7 +115,8 @@ end
 
 builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Any.pir", "src/classes/Range.pir", "src/classes/Bool.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
 
-file "src/gen_builtins.pir" do
+file "src/gen_builtins.pir" => builtins do
+    puts "Generating src/gen_builtins.pir"
     File.open('src/gen_builtins.pir','w') do |f|
         builtins.each do |b|
             f.write(".include \"#{b}\"\n")
@@ -122,7 +124,11 @@ file "src/gen_builtins.pir" do
     end  
 end
 
-task :default => "cardinal"
+file "Test.pir" => ["cardinal.pbc", "Test.rb"] do
+    parrot("Test.rb", "Test.pir", "cardinal.pbc", "pir")
+end
+
+task :default => ["cardinal", "Test.pir"]
 
 namespace :test do |ns|
     test "00-sanity.t"
