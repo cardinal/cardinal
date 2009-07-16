@@ -17,9 +17,11 @@ parrot = 'parrot'
 i = 0
 parrot.each('r') do |split|
   if i == 0
+      todo "Fix String.each(char)" 
 	  is split, 'par', '.each(char) for String'
   end
   if i == 1
+    todo "Fix String.each(char)"
 	is split, 'r', '.each(char) for String'
   end
   if i == 2

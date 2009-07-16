@@ -277,7 +277,7 @@ Return true if the parameter is located with this CardinalRange
   .return ($P3)
   out_of_bounds:
       $P3 = get_hll_global ['Bool'], 'False'
-      say 'out of bounds'
+      #say 'out of bounds'
       #throw 'out of bounds!'
       .return ($P3)
 .end
