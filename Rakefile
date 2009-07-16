@@ -295,7 +295,7 @@ namespace :test do |ns|
         puts "Test statistics:"
         puts " The test suite took #{dur_minutes} minutes and #{dur_seconds} seconds."
         puts " #{$tests} tests were run, from #{$test_files} files."
-        puts " #{$ok} tests passed. #{$unexpected_passes} of which were unexpected." 
+        puts " #{$ok} tests passed, #{$unexpected_passes} of which were unexpected." 
         unless $u_p_files.empty?
             $u_p_files.uniq!
             puts " Unexpected passes were found in the following files:"
