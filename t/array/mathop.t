@@ -1,6 +1,6 @@
 require 'Test'
 include Test
-plan 10
+plan 13
 
 a = [ 1, 2 ]
 b = [ 3, 4]
@@ -31,3 +31,12 @@ minus = [ "java", "perl", "erlang" ]
 langs = langs - minus
 is langs, ["parrot"], 'Array subtraction'
 
+d = b * 4
+is d, [25,50,25,50,25,50,25,50], "Array multiplication with Integer"
+d = b * ' '
+is d, "25 50", "Array multiplication with String"
+
+a = [1,3,5,7,8]
+b = [1,5,8,9]
+c = a & b
+is c, [1,5,8], "Array & (union)"

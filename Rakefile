@@ -174,6 +174,7 @@ namespace :test do |ns|
         test "array/at.t"
         test "array/clear.t"
         test "array/collect.t"
+        test "array/concat.t"
         test "array/delete.t"
         test "array/empty.t"
         test "array/equals.t"
@@ -194,7 +195,7 @@ namespace :test do |ns|
         test "array/uniq.t"
         test "array/warray.t"
 
-        task :all => [:array, :at, :clear, :collect, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :intersection, :join, :mathop, :pop, :reverse, :shift, :slice, :sort, :to_s, :uniq, :warray]
+        task :all => [:array, :at, :clear, :collect, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :intersection, :join, :mathop, :pop, :reverse, :shift, :slice, :sort, :to_s, :uniq, :warray]
     end
     
     namespace :file do 
@@ -206,16 +207,18 @@ namespace :test do |ns|
     end
 
     namespace :hash do
-        test "hash/hash.t" # crashes spectacularly
+        test "hash/hash.t"
+        test "hash/exists.t"
         
-        task :all => [:hash]
+        task :all => [:hash, :exists]
     end
     
     namespace :integer do
         test "integer/integer.t"
         test "integer/times.t"
+        test "integer/cmp.t"
 
-        task :all => [:integer, :times]
+        task :all => [:integer, :times, :cmp]
     end
 
     namespace :kernel do
@@ -265,7 +268,7 @@ namespace :test do |ns|
     end
 
     task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
-    task :all => [:basic, "array:all", "file:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
+    task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
         puts "Test statistics: #{$tests} planned, #{$ok} ok, #{$nok} not ok, #{$unknown} unknown, #{$failures} complete failures."
     end
 end
