@@ -235,7 +235,7 @@ Return a sorted copy of the list
 .sub uniq :method
     .param pmc block :optional :named("!BLOCK")
     .param int block_flag :opt_flag
-    .local pmc uarray, hash, val
+    .local pmc uarray, hash, val, key
     .local int i, len 
 
     uarray = new 'CardinalArray'
@@ -247,20 +247,24 @@ Return a sorted copy of the list
   loop:
     if i == len goto done
     val = self[i]
+    key = self[i]
 
     unless block_flag, finish 
     
-    val = block(val)
+    key = block(key)
 
   finish:
-    hash[val] = 0
+    $P0 = hash.'value?'(key)
 
+    if $P0 goto skip
+    hash[key] = val
+
+  skip:
     inc i 
     goto loop
 
   done:
-    uarray = hash.'keys'()
-    
+    uarray = hash.'values'()
     .return (uarray)
 .end
 
