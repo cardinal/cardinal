@@ -1,10 +1,16 @@
 DEBUG = false
 CONFIG = {} 
 $tests = 0
+$test_files = 0
 $ok = 0
 $nok = 0
 $unknown = 0
 $failures = 0
+$expected_failures = 0
+$unexpected_failures = []
+$unexpected_passes = 0
+$u_p_files = []
+$start = Time.now
 
 def parrot(input, output, grammar="", target="")
     target = "--target=#{target}" if target != ""
@@ -28,6 +34,7 @@ end
 
 def run_test(file)
     puts file if DEBUG
+    $test_files += 1
     IO.popen("./cardinal t/#{file}", "r") do |t|
         begin 
             plan = t.readline
@@ -48,9 +55,18 @@ def run_test(file)
                 puts line if DEBUG
                 if line =~ /^ok #{test}/
                     ok += 1
+                    if line =~ /TODO/
+                        $unexpected_passes += 1
+                        $u_p_files += [file]
+                    end
                 else 
                     if line =~ /^not ok #{test}/
                         nok += 1
+                        if line =~ /(TODO|SKIP)/
+                            $expected_failures += 1
+                        else
+                            $unexpected_failures += [file]
+                        end
                     else
                         unknown += 1
                     end
@@ -202,9 +218,9 @@ namespace :test do |ns|
     namespace :file do 
         test "file/dir.t"
         test "file/file.t"
-        test "file/stat.t" # crashes spectacularly
+        test "file/stat.t" 
         
-        task :all => [:dir, :file]
+        task :all => [:dir, :file, :stat]
     end
 
     namespace :hash do
@@ -270,6 +286,32 @@ namespace :test do |ns|
 
     task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
     task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
-        puts "Test statistics: #{$tests} planned, #{$ok} ok, #{$nok} not ok, #{$unknown} unknown, #{$failures} complete failures."
+        dur_seconds = Time.now.to_i - $start.to_i
+        dur_minutes = 0
+        while dur_seconds > 60
+            dur_seconds -= 60
+            dur_minutes += 1
+        end
+        puts "Test statistics:"
+        puts " The test suite took #{dur_minutes} minutes and #{dur_seconds} seconds."
+        puts " #{$tests} tests were run, from #{$test_files} files."
+        puts " #{$ok} tests passed. #{$unexpected_passes} of which were unexpected." 
+        unless $u_p_files.empty?
+            $u_p_files.uniq!
+            puts " Unexpected passes were found in the following files:"
+            $u_p_files.each do |pass|
+                puts "  #{pass}"
+            end
+        end
+        puts " #{$nok} tests failed, #{$expected_failures} of which were expected."
+        unless $unexpected_failures.empty?
+            $unexpected_failures.uniq!
+            puts " Unexpected failures were found in the following files:"
+            $unexpected_failures.each do |fail|
+                puts "  #{fail}"
+            end
+        end
+        puts " There were #{$unknown} unknown or confusing results."
+        puts " There were #{$failures} complete failures."
     end
 end
