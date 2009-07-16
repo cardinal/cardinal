@@ -252,11 +252,10 @@ Return a sorted copy of the list
     unless block_flag, finish 
     
     key = block(key)
+    $P0 = hash.'value?'(key)
+    if $P0 goto skip
 
   finish:
-    $P0 = hash.'value?'(key)
-
-    if $P0 goto skip
     hash[key] = val
 
   skip:
