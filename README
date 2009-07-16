@@ -4,4 +4,4 @@ The parser is fairly complete.  The standard library exists, but still needs fil
 
 Cardinal's parser is very *very* slow.  It should be possible to precompile a script so that you don't need to wait for it to parse each time, but that's currently broken.
 
-Cardinal is not currently in development, but if you have any questions or comments, contact tene@allalone.org
+Cardinal is back in active development, under the stewardship of Ted Reed <ted.reed@gmail.com>.
