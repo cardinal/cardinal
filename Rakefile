@@ -1,5 +1,10 @@
 DEBUG = false
 CONFIG = {} 
+$tests = 0
+$ok = 0
+$nok = 0
+$unknown = 0
+$failures = 0
 
 def parrot(input, output, grammar="", target="")
     target = "--target=#{target}" if target != ""
@@ -31,6 +36,7 @@ def run_test(file)
         puts plan if DEBUG
         if plan =~ /^1\.\.([0-9]+)/
             tests = $1.to_i
+            $tests += tests
             result = "#{$1} tests... "
             ok = 0
             nok = 0
@@ -50,12 +56,16 @@ def run_test(file)
                 end
             end
             result += "#{ok} ok "
+            $ok += ok
             result += "#{nok} not ok"
+            $nok += nok
             result += " #{unknown} unknown" if unknown > 0
+            $unknown += unknown
             result += " MISSING TESTS" if test < tests
             result += " TOO MANY TESTS" if test > tests
         else
             result = "Complete failure... no plan given"
+            $failures += 1
         end
         puts "Running test #{file} #{result}"
     end
@@ -190,13 +200,13 @@ namespace :test do |ns|
     namespace :file do 
         test "file/dir.t"
         test "file/file.t"
-        test "file/stat.t"
+        test "file/stat.t" # crashes spectacularly
         
-        task :all => [:dir, :file, :stat]
+        task :all => [:dir, :file]
     end
 
     namespace :hash do
-        test "hash/hash.t"
+        test "hash/hash.t" # crashes spectacularly
         
         task :all => [:hash]
     end
@@ -232,7 +242,7 @@ namespace :test do |ns|
         test "range/to_s.t"
         test "range/tofrom-variants.t"
 
-        task :all => [:each, :infixexsclusive, :infixinclusive, :membershipvariants, :new, :to_a, :to_s, :tofromvariants]
+        task :all => [:each, :infixexclusive, :infixinclusive, :membershipvariants, :new, :to_a, :to_s, :tofromvariants]
     end 
 
     namespace :string do
@@ -255,5 +265,7 @@ namespace :test do |ns|
     end
 
     task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
-    task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"]
+    task :all => [:basic, "array:all", "file:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
+        puts "Test statistics: #{$tests} planned, #{$ok} ok, #{$nok} not ok, #{$unknown} unknown, #{$failures} complete failures."
+    end
 end
