@@ -16,10 +16,11 @@ def make_exe(pbc)
 end
 
 def test(file, name="")
+    print "Adding #{file} as a test " if DEBUG
     if name == ""
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
-    puts "Adding test #{name} for #{file}" if DEBUG
+    puts "named #{name}" if DEBUG
     task name => ["cardinal", "Test.pir"] do
         run_test file
     end
