@@ -349,7 +349,14 @@ property instead.
 
 .namespace ['Hash']
 
-.sub 'new' :method
+.sub 'new' :method :multi(_,P)
+    .param pmc default
+    $P0 = new 'CardinalHash'
+    setattribute $P0, 'default', default
+    .return ($P0)
+.end
+
+.sub 'new' :method :multi(_,'Sub')
     .param pmc a :optional :named('!BLOCK')
     $P0 = new 'CardinalHash'
     setattribute $P0, 'default', a
