@@ -10,6 +10,8 @@ module Test
         print '1..',num,"\n"
         $started = 1
         $testnum = 1
+        $todo_upto = 0
+        $failed = 0
         $planned = num
     end
 
@@ -55,22 +57,22 @@ module Test
     end
 
     def skip(reason='',count=1)
-        1.upto(count) { proclaim(1,'# SKIP ' + reason) }
+        1.upto(count) { flunk('# SKIP ' + reason) }
     end
 
     def skip_rest(reason='')
-        skip(reason,$planned - $testnum)
+        skip(reason,$planned - $testnum + 1)
     end
 
     def proclaim(cond,desc)
         if cond then
         else
-            print "n"
+            print "not "
             $failed += 1 if $todo_upto < $testnum
         end
         print 'ok ', $testnum, ' - ', desc
         $testnum += 1
-        if $todo_reason and $todo_upto < $testnum then
+        if $todo_reason and $todo_upto >= $testnum then
             print $todo_reason
         end
         puts
