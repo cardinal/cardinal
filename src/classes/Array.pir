@@ -1128,7 +1128,6 @@ Operator form for either repetition (when argument is an Integer), or as a short
     array.'concat'(this)
 
     dec i
-    say i
 
     if i > 0 goto loop
 
