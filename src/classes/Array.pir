@@ -1206,6 +1206,22 @@ Operator form for either repetition (when argument is an Integer), or as a short
   diff_done:
     .return (array)
 .end
+
+.sub 'infix:<<' :multi('CardinalArray',_)
+    .param pmc this
+    .param pmc that
+    this.'push'(that)
+    .return (this)
+.end
+
+.sub 'infix:<<' :multi(_,_)
+    .param pmc this
+    .param pmc that
+    $P0 = new 'CardinalArray'
+    $P0.'push'(this)
+    $P0.'push'(that)
+    .return ($P0)
+.end
     
 =item C<infix:,(...)>
 
