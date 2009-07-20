@@ -1067,6 +1067,46 @@ The zip operator.
     .return (zipped)
 .end
 
+.sub '_cmp' :vtable('cmp') :method
+    .param pmc other
+    .local int i, len, result
+    result = 0
+    i = 0
+
+    # Get the length, first
+    $I0 = self
+    $I1 = other
+
+    if $I0 > $I1 goto self_bigger
+    len = $I0
+    goto loop_check
+
+  self_bigger:
+    len = $I1
+    
+  loop_check:
+    # Now, start comparing the items
+    if i == len goto loop_done
+    $P0 = self[i]
+    $P1 = other[i]
+
+    $I2 = cmp $P0, $P1
+    if $I2 goto not_equal
+    inc i
+    goto loop_check
+  
+  not_equal:
+    result = $I2
+    goto done
+
+  loop_done:
+    $I2 = cmp $I0, $I1
+    if $I1 goto not_equal
+
+  done:
+    .return (result)
+.end
+
 =back
 
 =head1 Functions

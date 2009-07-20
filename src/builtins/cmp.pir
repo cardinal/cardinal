@@ -153,10 +153,10 @@ Swiped from Rakudo.
 .end
 
 
-.sub 'infix:<=>'
+.sub 'infix:<=>' :multi(_,_)
     .param pmc a
     .param pmc b
-    $I0 = cmp_num a, b
+    $I0 = cmp a, b
     .return ($I0)
 .end
 

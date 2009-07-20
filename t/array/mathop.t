@@ -1,6 +1,6 @@
 require 'Test'
 include Test
-plan 14
+plan 15
 
 a = [ 1, 2 ]
 b = [ 3, 4]
@@ -43,3 +43,6 @@ is c, [1,5,8], "Array & (union)"
 
 a = [1,2] << "a" << 3 << [4,5]
 is a, [1,2,"a",3,[4,5]], "Array <<"
+
+a = [1,2,3] <=> [1,2,3]
+is a, 0, "<=> with numbers, equal"
