@@ -18,7 +18,7 @@ value of the comment is passed as the second argument to the method.
 class cardinal::Grammar::Actions;
 
 method TOP($/) {
-    my $past := $( $<comp_stmt> );
+    my $past := $<comp_stmt>.ast();
     $past.blocktype('declaration');
     $past.pirflags(':load');
     $past.hll('cardinal');
@@ -61,7 +61,7 @@ method comp_stmt($/,$key) {
     if $key eq 'close' {
         my $past := @?BLOCK.shift();
         $?BLOCK := @?BLOCK[0];
-        $past.push( $( $<stmts> ) );
+        $past.push( $<stmts>.ast() );
         make $past;
     }
 }
@@ -69,19 +69,19 @@ method comp_stmt($/,$key) {
 method stmts($/) {
     my $past := PAST::Stmts.new( :node($/) );
     for $<stmt> {
-        $past.push($($_));
+        $past.push($_.ast());
     }
     make $past;
 }
 
 method basic_stmt($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast();
 }
 
 method stmt($/) {
-    my $past := $( $<basic_stmt> );
+    my $past := $<basic_stmt>.ast();
     for $<stmt_mod> {
-        my $modifier := $( $_ );
+        my $modifier := $_.ast();
         $modifier.push($past);
         $past := $modifier;
     }
@@ -98,12 +98,12 @@ method stmt_mod($/) {
         ## if, while and unless are valid :pasttypes.
         $op := ~$<sym>;
     }
-    make PAST::Op.new( $( $<expr> ), :pasttype($op), :node($/) );
+    make PAST::Op.new( $<expr>.ast(), :pasttype($op), :node($/) );
 
 }
 
 method expr($/) {
-    my $past := $( $<arg> );
+    my $past := $<arg>.ast();
     if +$<not> {
         $past := PAST::Op.new( $past, :pirop('not'), :node($/) );
     }
@@ -111,13 +111,13 @@ method expr($/) {
         my $op;
         if ~$<op>[0] eq 'and' { $op := 'if'; }
         else { $op := 'unless'; }
-        $past := PAST::Op.new( $past, $( $<expr>[0] ), :pasttype($op), :node($/) );
+        $past := PAST::Op.new( $past, $<expr>[0].ast(), :pasttype($op), :node($/) );
     }
     make $past;
 }
 
 method return_stmt($/) {
-    my $past := $($<call_args>);
+    my $past := $<call_args>.ast();
     $past.pasttype('inline');
     $past.inline('    .return(%0)');
     make $past;
@@ -131,7 +131,7 @@ method alias($/) {
 }
 
 method begin($/) {
-    my $past := $( $<comp_stmt> );
+    my $past := $<comp_stmt>.ast();
     my $sub := PAST::Compiler.compile( $past );
     $sub();
     ## XXX what to do here? empty block? stolen from rakudo.
@@ -139,7 +139,7 @@ method begin($/) {
 }
 
 method end($/) {
-    my $past := PAST::Block.new( $( $<comp_stmt> ), :node($/) );
+    my $past := PAST::Block.new( $<comp_stmt>.ast(), :node($/) );
     $past.blocktype('declaration');
     my $sub := PAST::Compiler.compile( $past );
     PIR q<  $P0 = get_hll_global ['cardinal'], '@?END_BLOCKS' >;
@@ -149,9 +149,9 @@ method end($/) {
 }
 
 method indexed_assignment($/) {
-    my $key := $( $<key> );
-    my $rhs := $( $<rhs> );
-    my $primary := $( $<basic_primary> );
+    my $key := $<key>.ast();
+    my $rhs := $<rhs>.ast();
+    my $primary := $<basic_primary>.ast();
 
     my $past := PAST::Op.new( :name('[]='), :pasttype('callmethod'), :node($/) );
 
@@ -162,8 +162,8 @@ method indexed_assignment($/) {
     make $past;
 }
 method member_assignment($/) {
-    my $rhs := $( $<rhs> );
-    my $primary := $( $<basic_primary> );
+    my $rhs := $<rhs>.ast();
+    my $primary := $<basic_primary>.ast();
 
     my $past := PAST::Op.new( :name(~$<key><ident> ~ '='), :pasttype('callmethod'), :node($/) );
 
@@ -173,7 +173,7 @@ method member_assignment($/) {
     make $past;
 }
 method assignment($/) {
-    my $lhs := $( $<mlhs> );
+    my $lhs := $<mlhs>.ast();
     our $?BLOCK;
     my $name := $lhs.name();
     unless $?BLOCK.symbol(~$name) {
@@ -206,27 +206,27 @@ method assignment($/) {
         $lhs.scope($scope);
     }
 
-    my $rhs := $( $<mrhs> );
+    my $rhs := $<mrhs>.ast();
     make PAST::Op.new( $lhs, $rhs, :pasttype('bind'), :lvalue(1), :node($/) );
 }
 
 method mlhs($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast();
 }
 
 method lhs($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast();
 }
 
 method member_variable($/) {
-    make $( $<primary> );
+    make $<primary>.ast();
     # XXX fix field.
 }
 
 method indexed($/) {
     my $args;
     if $<args> {
-        $args := $( $<args>[0] );
+        $args := $<args>[0].ast();
     }
 
     my $past := PAST::Op.new( :name('[]'), :pasttype('callmethod'), :node($/) );
@@ -240,7 +240,7 @@ method indexed($/) {
 method variable($/, $key) {
     my $past;
     if $key eq 'varname' {
-        $past := $( $/<varname> );
+        $past := $/<varname>.ast();
     }
     elsif $key eq 'self' {
         $past := PAST::Op.new(:inline('%r = self'));
@@ -252,7 +252,7 @@ method variable($/, $key) {
 }
 
 method varname($/, $key) {
-    my $past := $( $/{$key} );
+    my $past := $/{$key}.ast();
     if is_a_sub(~$/) { # unary sub
         $past := PAST::Op.new( :pasttype('call'), :node($/), $past );
     }
@@ -342,7 +342,7 @@ method local_variable($/) {
 }
 
 method funcall($/) {
-    my $past := $( $<local_variable> );
+    my $past := $<local_variable>.ast();
     make $past;
 }
 
@@ -362,23 +362,23 @@ method constant_variable($/) {
 
 method if_stmt($/) {
     my $cond := +$<expr> - 1;
-    my $comp := $( $<comp_stmt>[$cond] );
+    my $comp := $<comp_stmt>[$cond].ast();
     $comp.blocktype('immediate');
-    my $past := PAST::Op.new( $( $<expr>[$cond] ),
+    my $past := PAST::Op.new( $<expr>[$cond].ast() ,
                               $comp,
                               :pasttype('if'),
                               :node( $/ )
                             );
     if ( $<else> ) {
-        my $else := $( $<else>[0] ) ;
+        my $else := $<else>[0].ast() ;
         $else.blocktype('immediate');
         $past.push( $else );
     }
     while ($cond != 0) {
         $cond := $cond - 1;
-        $comp := $( $<comp_stmt>[$cond] );
+        $comp := $<comp_stmt>[$cond].ast();
         $comp.blocktype('immediate');
-        $past := PAST::Op.new( $( $<expr>[$cond] ),
+        $past := PAST::Op.new( $<expr>[$cond].ast(),
                                $comp,
                                $past,
                                :pasttype('if'),
@@ -389,35 +389,35 @@ method if_stmt($/) {
 }
 
 method unless_stmt($/) {
-    my $cond := $( $<expr> );
-    my $body := $( $<comp_stmt> );
+    my $cond := $<expr>.ast();
+    my $body := $<comp_stmt>.ast();
     $body.blocktype('immediate');
     my $past := PAST::Op.new( $cond, $body, :pasttype('unless'), :node($/) );
     if $<else> {
-        $past.push( $( $<else>[0] ) );
+        $past.push( $<else>[0].ast() );
     }
     make $past;
 }
 
 method else($/) {
-    make $( $<comp_stmt> );
+    make $<comp_stmt>.ast();
 }
 
 method ensure($/) {
-    make $( $<comp_stmt> );
+    make $<comp_stmt>.ast();
 }
 
 method while_stmt($/) {
-    my $cond := $( $<expr> );
-    my $body := $( $<comp_stmt> );
+    my $cond := $<expr>.ast();
+    my $body := $<comp_stmt>.ast();
     $body.blocktype('immediate');
     make PAST::Op.new( $cond, $body, :pasttype(~$<sym>), :node($/) );
 }
 
 method for_stmt($/) {
-    my $list := $( $<expr> );
-    my $body := $( $<comp_stmt> );
-    my $var := $( $<variable> );
+    my $list := $<expr>.ast();
+    my $body := $<comp_stmt>.ast();
+    my $var := $<variable>.ast();
     $body.blocktype('declaration');
     $var.scope('parameter');
     $var.isdecl(0);
@@ -444,15 +444,15 @@ method yield($/) {
             $blockname := '!BLOCK';
         }
     }
-    my $call := $( $<call_args> );
+    my $call := $<call_args>.ast();
     $call.unshift( PAST::Var.new(:scope('lexical'), :name(~$blockname)));
     $call.node($/);
     make $call;
 }
 
 method module($/) {
-    my $past := $( $<comp_stmt> );
-    my $name := $( $<module_identifier> );
+    my $past := $<comp_stmt>.ast();
+    my $name := $<module_identifier>.ast();
     $past.namespace( $name.name() );
     $past.blocktype('declaration');
     #$past.pirflags(':load :init');
@@ -460,7 +460,7 @@ method module($/) {
 }
 
 method begin_end($/) {
-    my $past := $( $<comp_stmt> );
+    my $past := $<comp_stmt>.ast();
     # XXX handle resque and ensure clauses
     make $past;
 }
@@ -492,7 +492,7 @@ method classdef($/,$key) {
         $?CLASS.unshift( PAST::Block.new() );
     }
     else {
-        my $block := $( $<comp_stmt> );
+        my $block := $<comp_stmt>.ast();
         $block.namespace($name);
         $block.blocktype('declaration');
         $block.pirflags(':init :load');
@@ -543,10 +543,10 @@ method classdef($/,$key) {
 }
 
 method functiondef($/) {
-    my $past := $( $<comp_stmt> );
+    my $past := $<comp_stmt>.ast();
     my $name := $<fname>;
     my $arity := +$past[0]<arity>;
-    #my $args := $( $<argdecl> );
+    #my $args := $<argdecl>.ast();
     #$past.push($args);
     $past.name(~$name);
     our $?BLOCK;
@@ -559,9 +559,9 @@ method functiondef($/) {
 }
 
 method sig_identifier($/) {
-    my $past := $($<identifier>);
+    my $past := $<identifier>.ast();
     if +$<default> == 1 {
-        $past.viviself( $( $<default>[0] ) );
+        $past.viviself( $<default>[0].ast() );
     }
     make $past;
 }
@@ -570,19 +570,19 @@ method block_signature($/) {
     my $params := PAST::Stmts.new( :node($/) );
     my $past := PAST::Block.new($params, :blocktype('declaration'));
     for $<sig_identifier> {
-        my $parameter := $( $_ );
+        my $parameter := $_.ast();
         $past.symbol($parameter.name(), :scope('lexical'));
         $parameter.scope('parameter');
         $params.push($parameter);
     }
     if $<slurpy_param> {
-        my $slurp := $( $<slurpy_param>[0] || $<slurpy_param> );
+        my $slurp := ($<slurpy_param>[0] || $<slurpy_param>).ast();
         $past.symbol($slurp.name(), :scope('lexical'));
         $params.push( $slurp );
     }
 
     if $<block_param> {
-        my $block := $( $<block_param>[0] );
+        my $block := $<block_param>[0].ast();
         $block.named('!BLOCK');
         $past.symbol($block.name(), :scope('lexical'));
         $past.symbol('!BLOCK', :name(~$block.name()));
@@ -599,14 +599,14 @@ method block_signature($/) {
 }
 
 method slurpy_param($/) {
-    my $past := $( $<identifier> );
+    my $past := $<identifier>.ast();
     $past.slurpy(1);
     $past.scope('parameter');
     make $past;
 }
 
 method block_param($/) {
-    my $past := $( $<identifier> );
+    my $past := $<identifier>.ast();
     $past.scope('parameter');
     make $past;
 }
@@ -620,14 +620,14 @@ method module_identifier($/) {
 }
 
 method mrhs($/) {
-    make $( $<args> );
+    make $<args>.ast();
 }
 
 method methodcall($/) {
     my $op := $<operation>;
     my $past;
     if $<call_args> {
-        $past := $( $<call_args>[0] );
+        $past := $<call_args>[0].ast();
     }
     else {
         $past := PAST::Op.new();
@@ -636,7 +636,7 @@ method methodcall($/) {
     $past.pasttype('callmethod');
 
     if $<do_block> {
-        $past.push( $( $<do_block>[0] ) );
+        $past.push( $<do_block>[0].ast() );
     }
 
     $past.name(~$op);
@@ -644,30 +644,30 @@ method methodcall($/) {
 }
 
 method do_block($/) {
-    my $past := $( $<comp_stmt> );
+    my $past := $<comp_stmt>.ast();
     make $past;
 }
 
 method super_call($/) {
-    my $past := $( $<call_args> );
+    my $past := $<call_args>.ast();
     ## how to invoke super.xxx ?
     make $past;
 }
 
 method operation($/) {
-    make $( $<identifier> );
+    make $<identifier>.ast();
 }
 
 method call_args($/) {
     my $past;
     if $<args> {
-        $past := $( $<args> );
+        $past := $<args>.ast();
     }
     else {
         $past := PAST::Op.new( :pasttype('call'), :node($/) );
     }
     if $<do_block> {
-        my $do := $( $<do_block>[0] );
+        my $do := $<do_block>[0].ast();
         $do.named(PAST::Val.new(:value('!BLOCK')));
         $past.push($do);
     }
@@ -677,21 +677,21 @@ method call_args($/) {
 method args($/) {
     my $past := PAST::Op.new( :pasttype('call'), :node($/) );
     for $<arg> {
-        $past.push( $($_) );
+        $past.push( $_.ast() );
     }
     make $past;
 }
 
 method basic_primary($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast();
 }
 
 method primary($/) {
-    my $past := $( $<basic_primary> );
+    my $past := $<basic_primary>.ast();
 
     # XXX check this out:
     for $<post_primary_expr> {
-        my $postexpr := $( $_ );
+        my $postexpr := $_.ast();
         $postexpr.unshift($past);
         $past := $postexpr;
     }
@@ -699,35 +699,35 @@ method primary($/) {
 }
 
 method post_primary_expr($/, $key) {
-    make $( $/{$key} );
+    make $/{$key}.ast();
 }
 
 method scope_identifier($/) {
-    make $( $<identifier> );
+    make $<identifier>.ast();
     # XXX handle :: operator.
 }
 
 method literal($/, $key) {
-    my $past := $( $/{$key} );
+    my $past := $/{$key}.ast();
     make $past;
 }
 
 method pcomp_stmt($/) {
-    make $( $<comp_stmt> );
+    make $<comp_stmt>.ast();
 }
 
 method quote_string($/) {
-    make $( $<quote_expression> );
+    make $<quote_expression>.ast();
 }
 
 method warray($/) {
-    make $( $<quote_expression> );
+    make $<quote_expression>.ast();
 }
 
 method array($/) {
     my $list;
     if $<args> {
-        $list := $( $<args>[0] );
+        $list := $<args>[0].ast();
         $list.name('list');
     }
     else {
@@ -740,7 +740,7 @@ method array($/) {
 method ahash($/) {
     my $hash := PAST::Op.new( :name('hash'), :node($/) );
     if $<assocs> {
-        my $items := $( $<assocs>[0] );
+        my $items := $<assocs>[0].ast();
         for @($items) {
             $hash.push( $_ );
         }
@@ -751,7 +751,7 @@ method ahash($/) {
 method assocs($/) {
     my $assoc := PAST::Stmts.new(:node($/));
     for $<assoc> {
-        my $item := $( $_ );
+        my $item := $_.ast();
         $assoc.push($item);
     }
     make $assoc;
@@ -759,8 +759,8 @@ method assocs($/) {
 
 method assoc($/) {
     my $past := PAST::Op.new(:name('list'), :node($/));
-    $past.push( $( $<arg>[0] ) );
-    $past.push( $( $<arg>[1] ) );
+    $past.push( $<arg>[0].ast() );
+    $past.push( $<arg>[1].ast() );
     make $past;
 }
 
@@ -773,11 +773,11 @@ method integer($/) {
 }
 
 method string($/) {
-    make $($<quote_expression>);
+    make $<quote_expression>.ast();
 }
 
 method regex($/) {
-    make $($<quote_expression>);
+    make $<quote_expression>.ast();
 }
 
 method quote_expression($/, $key) {
@@ -794,7 +794,7 @@ method quote_expression($/, $key) {
     }
     elsif $key eq 'quote_concat' {
         if +$<quote_concat> == 1 {
-            $past := $( $<quote_concat>[0] );
+            $past := $<quote_concat>[0].ast();
         }
         else {
             $past := PAST::Op.new(
@@ -803,7 +803,7 @@ method quote_expression($/, $key) {
                 :node( $/ )
             );
             for $<quote_concat> {
-                $past.push( $($_) );
+                $past.push( $_.ast() );
             }
         }
     }
@@ -814,11 +814,11 @@ method quote_expression($/, $key) {
 method quote_concat($/) {
     my $terms := +$<quote_term>;
     my $count := 1;
-    my $past := $( $<quote_term>[0] );
+    my $past := $<quote_term>[0].ast();
     while ($count != $terms) {
         $past := PAST::Op.new(
             $past,
-            $( $<quote_term>[$count] ),
+            $<quote_term>[$count].ast(),
             :pirop('concat'),
             :pasttype('pirop')
         );
@@ -837,10 +837,10 @@ method quote_term($/, $key) {
         );
     }
     elsif ($key eq 'variable') {
-        $past := $( $<variable> );
+        $past := $<variable>.ast();
     }
     elsif ($key eq 'do_block') {
-        $past := $( $<do_block> );
+        $past := $<do_block>.ast();
         if $past.WHAT() eq 'Block' {
             $past.blocktype('immediate');
         }
@@ -852,7 +852,7 @@ method arg($/, $key) {
     ## Handle the operator table
     ##
     if ($key eq 'end') {
-        make $($<expr>);
+        make $<expr>.ast();
     }
     else {
         my $past := PAST::Op.new( :name($<type>),
@@ -862,7 +862,7 @@ method arg($/, $key) {
                                   :node($/)
                                 );
         for @($/) {
-            $past.push( $($_) );
+            $past.push( $_.ast() );
         }
         make $past;
     }
