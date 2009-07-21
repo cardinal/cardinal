@@ -210,10 +210,6 @@ method assignment($/) {
     make PAST::Op.new( $lhs, $rhs, :pasttype('bind'), :lvalue(1), :node($/) );
 }
 
-method mlhs($/, $key) {
-    make $/{$key}.ast();
-}
-
 method lhs($/, $key) {
     make $/{$key}.ast();
 }
@@ -617,10 +613,6 @@ method identifier($/) {
 
 method module_identifier($/) {
     make PAST::Var.new( :name(~$/), :scope('package'), :node($/) );
-}
-
-method mrhs($/) {
-    make $<args>.ast();
 }
 
 method methodcall($/) {
