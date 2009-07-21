@@ -240,7 +240,11 @@ method indexed($/) {
 method variable($/, $key) {
     my $past;
     if $key eq 'varname' {
-        $past := $/<varname>.ast();
+        my $varname := $/<varname>;
+        $past := $varname.ast();
+        if is_a_sub(~$varname) { # unary sub
+            $past := PAST::Op.new(:pasttype('call'), :node($varname), $past);
+        }
     }
     elsif $key eq 'self' {
         $past := PAST::Op.new(:inline('%r = self'));
@@ -252,11 +256,7 @@ method variable($/, $key) {
 }
 
 method varname($/, $key) {
-    my $past := $/{$key}.ast();
-    if is_a_sub(~$/) { # unary sub
-        $past := PAST::Op.new( :pasttype('call'), :node($/), $past );
-    }
-    make $past;
+    make $/{$key}.ast();
 }
 
 method global($/) {

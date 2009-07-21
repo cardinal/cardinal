@@ -106,7 +106,7 @@ rule mlhs {
 }
 
 token lhs {
-    | <basic_primary> {*}            #= basic_primary
+    | <varname> {*} #= varname
 }
 
 token indexed {
