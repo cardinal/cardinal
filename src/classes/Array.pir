@@ -902,6 +902,24 @@ Creates a new Array containing the results and returns it.
     .return (result)
 .end
 
+.sub 'collect!' :method
+    .param pmc block :named('!BLOCK')
+    .local int i, len
+    len = self
+    i = 0
+  loop:
+    if i == len goto done
+
+    $P0 = self[i]
+    $P1 = block($P0)
+    self[i] = $P1
+
+    inc i
+    goto loop
+
+  done:
+.end
+
 =item flatten
 
  recursively flatten any inner arrays into a single outer array
