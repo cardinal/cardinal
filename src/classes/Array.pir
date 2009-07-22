@@ -621,6 +621,46 @@ if passed, otherwise returns nil.
     .return($P0)
 .end
 
+.sub delete_at :method
+    .param pmc index
+    .local pmc nil, result
+    nil = new 'NilClass'
+
+    result = nil
+
+    $I0 = exists self[index]
+    unless $I0 goto done
+
+    result = self[index]
+    delete self[index]
+  done:
+    .return (result)
+.end
+
+.sub delete_if :method
+    .param pmc block :named("!BLOCK")
+    .local int i, len
+    
+    len = self
+    i = 0
+
+  loop:
+    if len == i goto done
+
+    $P0 = self[i]
+    $I0 = block($P0)
+
+    unless $I0 goto finish_loop
+
+    delete self[i]
+
+  finish_loop:
+    inc i
+    goto loop
+
+  done:
+.end
+
 =item exists(INDEX)
 
 Checks to see if the specified index or indices have been assigned to.  Returns a Bool value.
