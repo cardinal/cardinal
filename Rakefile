@@ -313,5 +313,6 @@ namespace :test do |ns|
         end
         puts " There were #{$unknown} unknown or confusing results."
         puts " There were #{$failures} complete failures."
+        puts " -- CLEAN FOR COMMIT --" if $nok - $expected_failures == 0 and $unknown == 0 and $failures == 0
     end
 end
