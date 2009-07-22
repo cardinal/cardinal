@@ -101,7 +101,7 @@ Perform initializations and create the GC class
     addr_space[$I0] = test
     #$P0 = addr_space.'methods'()
     #say $P0
-    itr = new 'Iterator', addr_space
+    itr = iter addr_space
     print "created iterator: "
     say itr
     $S0 = typeof itr

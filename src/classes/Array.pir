@@ -292,11 +292,11 @@ Return true if self contains ELEMENT
 =cut
 .sub 'include?' :method
     .param pmc args
-    .local pmc iter
-    iter = new 'Iterator', self
+    .local pmc it
+    it = iter self
   iter_loop:
-    unless iter goto done_f
-    $P0 = shift iter
+    unless it goto done_f
+    $P0 = shift it
     eq $P0, args, done_t
     goto iter_loop
    done_f:
@@ -899,7 +899,7 @@ Run C<block> once for each item in C<self>, with the item passed as an arg.
 
 .sub 'each' :method
     .param pmc block :named('!BLOCK')
-    $P0 = new 'Iterator', self
+    $P0 = iter self
   each_loop:
     unless $P0 goto each_loop_end
     $P1 = shift $P0
@@ -933,7 +933,7 @@ Creates a new Array containing the results and returns it.
     .param pmc block :named('!BLOCK')
     .local pmc result
     result = new 'CardinalArray'
-    $P0 = new 'Iterator', self
+    $P0 = iter self
   each_loop:
     unless $P0 goto each_loop_end
     $P1 = shift $P0
@@ -971,7 +971,7 @@ Creates a new Array containing the results and returns it.
     .local pmc returnMe
     .local pmc iterator
     returnMe = new 'CardinalArray'
-    iterator = new 'Iterator', self
+    iterator = iter self
   each_loop:
     unless iterator goto each_loop_end
     $P1 = shift iterator
@@ -982,7 +982,7 @@ Creates a new Array containing the results and returns it.
     goto each_loop
   inner_flatten:
     $P2 = $P1.'flatten'()
-    $P3 = new 'Iterator', $P2
+    $P3 = iter $P2
     inner_loop:
         unless $P3 goto each_loop
         $P4 = shift $P3
@@ -1100,12 +1100,12 @@ The zip operator.
     # Get minimum element count - what we'll zip to.
     .local pmc iterator, args_iter, arg, item
     .local int i
-    iterator = new 'Iterator', self
+    iterator = iter self
     i = 0
 
   setup_loop:
     unless iterator, setup_loop_done
-    args_iter = new 'Iterator', args
+    args_iter = iter args
     item = new 'CardinalArray'
     $P0 = shift iterator
     item.'push'($P0)

@@ -103,7 +103,7 @@ Returns a new CardinalString with the characters of C<self> in reverse order.
     res = new 'CardinalString'
 
     .local pmc iterator, item
-    iterator = new 'Iterator', self
+    iterator = iter self
   each_loop:
     unless iterator goto each_loop_done
     item = shift iterator
@@ -471,7 +471,7 @@ Warning: Partial implementation. Look for TODO
 .sub 'each_byte' :method
     .param pmc block :named('!BLOCK')
     .local pmc iterator, item
-    iterator = new 'Iterator', self
+    iterator = iter self
   each_loop:
     unless iterator goto each_loop_done
     item = shift iterator

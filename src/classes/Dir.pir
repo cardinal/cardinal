@@ -138,7 +138,7 @@ Perform initializations and create the Dir class
         os = new 'OS'
         list = new 'CardinalArray'
         $P0 =  os.'readdir'(path)
-        $P1 = new 'Iterator', $P0
+        $P1 = iter $P0
         loop:
             unless $P1 goto loop_end
             $P2 = shift $P1
@@ -154,7 +154,7 @@ Perform initializations and create the Dir class
         .param pmc block :named('!BLOCK')
         .local pmc names
         names = self.'entries'(path)
-        $P0 = new 'Iterator', names
+        $P0 = iter names
         loop:
             unless $P0 goto loop_end
             $P1 = shift $P0

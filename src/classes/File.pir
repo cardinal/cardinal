@@ -200,7 +200,7 @@ Perform initializations and create the File class
 .sub 'unlink' :method
         .param pmc file_names :slurpy
         .local pmc os
-        $P0 = new 'Iterator', file_names
+        $P0 = iter file_names
         os = new 'OS'
         loop:
             unless $P0 goto done

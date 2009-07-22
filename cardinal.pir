@@ -81,13 +81,13 @@ to the cardinal compiler.
     .param pmc args_str
 
     ##  create ARGS global.
-    .local pmc args, iter
+    .local pmc args, it
     args = new 'CardinalArray'
-    iter = new 'Iterator', args_str
-    $P0 = shift iter
+    it = iter args_str
+    $P0 = shift it
   args_loop:
-    unless iter goto args_end
-    $P0 = shift iter
+    unless it goto args_end
+    $P0 = shift it
     push args, $P0
     goto args_loop
   args_end:
@@ -98,11 +98,11 @@ to the cardinal compiler.
 
     .include 'iterator.pasm'
     $P0 = get_hll_global ['cardinal'], '@?END_BLOCKS'
-    iter = new 'Iterator', $P0
-    iter = .ITERATE_FROM_END
+    it = iter $P0
+    it = .ITERATE_FROM_END
   iter_loop:
-    unless iter goto iter_end
-    $P0 = pop iter
+    unless it goto iter_end
+    $P0 = pop it
     $P0()
     goto iter_loop
   iter_end:
