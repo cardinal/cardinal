@@ -246,24 +246,26 @@ Return a sorted copy of the list
 
   loop:
     if i == len goto done
-    val = self[i]
+
     key = self[i]
 
     unless block_flag, finish 
     
     key = block(key)
-    $P0 = hash.'value?'(key)
-    if $P0 goto skip
 
   finish:
-    hash[key] = val
+    $I0 = exists hash[key]
+    if $I0 goto skip
+    
+    $P0 = self[i]
+    uarray.'push'($P0)
+    hash[key] = $P0
 
   skip:
     inc i 
     goto loop
 
   done:
-    uarray = hash.'values'()
     .return (uarray)
 .end
 
