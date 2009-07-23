@@ -243,11 +243,6 @@ This is the same a to_s by default unless overriden
     $P0 = self.'to_s'()
 .end
 
-.sub 'puts' :method
-    $P0 = get_hll_global 'puts'
-    .tailcall $P0(self)
-.end
-
 =item !cloneattr(attrlist)
 
 Create a clone of self, also cloning the attributes given by attrlist.
