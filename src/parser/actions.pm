@@ -832,10 +832,12 @@ method quote_term($/, $key) {
         $past := $<variable>.ast();
     }
     elsif ($key eq 'do_block') {
-        $past := $<do_block>.ast();
-        if $past.WHAT() eq 'Block' {
-            $past.blocktype('immediate');
+        my $block := $<do_block>.ast();
+        if $block.WHAT() eq 'Block' {
+            $block.blocktype('immediate');
         }
+        $past := PAST::Op.new(:pasttype('call'));
+        $past.push($block);
     }
     make $past;
 }

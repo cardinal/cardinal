@@ -11,8 +11,7 @@ puts "ok 2" ; puts "ok 3"
 
 print "ok "; print 1 + 3; print "\n"
 
-puts "not ok 5 # SKIP - Block interpretation is broken in strings." # skip
-#print "ok #{ 2 * 2 + 1 }\n"
+print "ok #{ 2 * 2 + 1 }\n"
 
 
 
