@@ -570,6 +570,36 @@ Returns self.
     .return(self)
 .end
 
+.sub 'compact' :method
+    .local pmc array
+    .local int i, len
+    array = new 'CardinalArray'
+
+    len = self
+    i = 0
+
+  loop:
+    if i == len goto done
+
+    $P0 = self[i]
+    
+    $I0 = isa $P0, "NilClass"
+    if $I0 goto end_loop
+
+    array.'push'($P0)
+  end_loop:
+    inc i
+    goto loop
+  done:
+    .return (array)
+.end
+
+.sub 'compact!' :method
+    $P0 = self.'compact'()
+    self = 0
+    self.'concat'($P0)
+.end
+
 =item delete()
 
 Deletes the given element from the CardinalArray, replacing them with Undef.
