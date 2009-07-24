@@ -275,6 +275,40 @@ Return a sorted copy of the list
     self.'concat'($P0)
 .end
 
+.sub reject :method
+    .param pmc block :named("!BLOCK")
+    .local pmc uarray, val
+    .local int i, len
+    
+    uarray = new 'CardinalArray'
+    
+    i = 0
+    len = self.'elems'()
+
+  loop:
+    if i == len goto done
+    
+    val = self[i]
+    
+    $P0 = block(val)
+    if $P0 goto skip
+
+    uarray.'push'(val)
+  skip:
+    inc i
+    goto loop
+    
+  done:
+    .return (uarray)
+.end
+
+.sub 'reject!' :method
+    .param pmc block :named("!BLOCK")
+    $P0 = self.'reject'(block)
+    self = 0
+    self.'concat'($P0)
+.end
+
 .sub 'max' :method
   $P0 = 'infix:max'(self)
   .return($P0)
