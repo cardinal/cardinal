@@ -938,6 +938,19 @@ Run C<block> once for each item in C<self>, with the item passed as an arg.
   each_loop_end:
 .end
 
+.sub 'each_index' :method
+    .param pmc block :named('!BLOCK')
+    .local int len
+    len = elements self
+    $I0 = 0
+  each_loop:
+    if $I0 == len goto each_loop_end
+    block($I0)
+    inc $I0
+    goto each_loop
+  each_loop_end:
+.end
+
 .sub 'each_with_index' :method
     .param pmc block :named('!BLOCK')
     .local int len

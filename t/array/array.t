@@ -1,6 +1,6 @@
 require 'Test'
 include Test
-plan 10
+plan 18
 
 a = [ 1, 2, 3, 4 ]
 
@@ -26,3 +26,19 @@ b.each() do |x|
         n += 1
     end
 end
+
+n = 0
+
+a = [ 7, 8, 9, 10]
+
+a.each_index() do |i|
+  is i, n
+  n+=1
+end
+
+a = [ 0, 1, 2, 3]
+
+a.each_with_index() do |x, i|
+  is x, i
+end
+
