@@ -5,3 +5,5 @@ The parser is fairly complete.  The standard library exists, but still needs fil
 Cardinal's parser is very *very* slow.  It should be possible to precompile a script so that you don't need to wait for it to parse each time, but that's currently broken.
 
 Cardinal is back in active development, under the stewardship of Ted Reed <ted.reed@gmail.com>.
+
+We also have an IRC channel: #cardinal on irc.perl.org
