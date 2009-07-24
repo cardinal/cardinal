@@ -10,7 +10,20 @@ $expected_failures = 0
 $unexpected_failures = []
 $unexpected_passes = 0
 $u_p_files = []
+$missing = 0
+$missing_files = []
+$toomany = 0
+$toomany_files = []
 $start = Time.now
+
+def clean?
+    return false if $nok > $expected_failures
+    return false if $failures > 0
+    return false if $unknown > 0
+    return false if $missing > 0
+    return false if $toomany > 0
+    return true 
+end
 
 def parrot(input, output, grammar="", target="")
     target = "--target=#{target}" if target != ""
@@ -78,8 +91,16 @@ def run_test(file)
             $nok += nok
             result += " #{unknown} unknown" if unknown > 0
             $unknown += unknown
-            result += " MISSING TESTS" if test < tests
-            result += " TOO MANY TESTS" if test > tests
+            if test < tests 
+                result += " MISSING TESTS"
+                $missing += 1
+                $missing_files += [file]
+            end
+            if test > tests
+                result += " TOO MANY TESTS"
+                $toomany += 1
+                $toomany_files += [file]
+            end
         else
             result = "Complete failure... no plan given"
             $failures += 1
@@ -312,8 +333,22 @@ namespace :test do |ns|
                 puts "  #{fail}"
             end
         end
+        unless $missing_files.empty?
+            puts " There were #{$missing} test files that reported fewer results than were planned:"
+            $missing_files.uniq!
+            $missing_files.each do |missing|
+                puts "  #{missing}"
+            end
+        end
+        unless $toomany_files.empty?
+            puts " There were #{$toomany} test files that reported more results than were planned:"
+            $toomany_files.uniq!
+            $toomany_files.each do |toomany|
+                puts "  #{toomany}"
+            end
+        end
         puts " There were #{$unknown} unknown or confusing results."
         puts " There were #{$failures} complete failures."
-        puts " -- CLEAN FOR COMMIT --" if $nok - $expected_failures == 0 and $unknown == 0 and $failures == 0
+        puts " -- CLEAN FOR COMMIT --" if clean?
     end
 end
