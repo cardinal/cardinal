@@ -45,6 +45,6 @@ end
 
 skip("Splat syntax doesn't parse.", "16", 2)
 #returned = splat(*dec_three_ary(15))
-todo "Splat syntax is broken?"
+todo "Splat syntax is broken?", "16"
 is returned, 15, 'splat'
 
