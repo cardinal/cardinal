@@ -14,6 +14,9 @@ $missing = 0
 $missing_files = []
 $toomany = 0
 $toomany_files = []
+$issue_counts = Hash.new(0)
+$issue_lacks = 0
+$i_l_files = []
 $pl = false
 $start = Time.now
 
@@ -23,6 +26,7 @@ def clean?
     return false if $unknown > 0
     return false if $missing > 0
     return false if $toomany > 0
+    return false if $issue_lacks > 0
     return true 
 end
 
@@ -94,6 +98,13 @@ def run_test(file)
                         nok += 1
                         if line =~ /(TODO|SKIP)/
                             $expected_failures += 1
+                            if line =~ /See issue #([0-9]+)/
+                                $issue_counts[$1] += 1
+                            else
+                                puts "Lacks issue." if DEBUG
+                                $issue_lacks += 1
+                                $i_l_files += [file]
+                            end
                         else
                             $unexpected_failures += [file]
                         end
@@ -373,6 +384,22 @@ namespace :test do |ns|
         puts " There #{were} #{$unknown} unknown or confusing #{pl "result"}." if $unknown > 0
         $pl = $failures > 1
         puts " There #{were} #{$failures} complete #{pl "failure"}." if $failures > 0
+        $pl = $issue_counts.size > 1
+        unless $issue_counts.empty?
+            puts " The following #{are} the #{pl "issue"} currently known to affect the tests, and a count of the fails associated with #{them}:"
+            $issue_counts.each do |issue, count|
+                $pl = count > 1
+                puts "  Issue ##{issue}: #{count} #{pl "fail"}"
+            end
+        end
+        $pl = $issue_lacks.size > 1
+        unless $i_l_files.empty?
+            puts " There #{were} #{$issue_lacks} #{pl "test"} that used todo or skip without noting an issue number, found in:"
+            $i_l_files.uniq!
+            $i_l_files.each do |file|
+                puts "  #{file}"
+            end
+        end
         puts " -- CLEAN FOR COMMIT --" if clean?
     end
 end
