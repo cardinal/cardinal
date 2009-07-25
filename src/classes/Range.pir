@@ -17,7 +17,7 @@ src/classes/CardinalRange.pir - methods for the CardinalRange class
 .sub 'onload' :anon :load :init
     .local pmc meta, proto
     meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    proto = meta.'new_class'('CardinalRange', 'parent'=>'CardinalAny CardinalObject', 'attr'=>'$!from $!to $!from_exclusive $!to_exclusive')
+    proto = meta.'new_class'('CardinalRange', 'parent'=>'CardinalObject', 'attr'=>'$!from $!to $!from_exclusive $!to_exclusive')
     #meta.'register'('CardinalRange', 'CardinalObject', 'protoobject'=>proto)
 .end
 
