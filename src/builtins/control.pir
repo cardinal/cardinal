@@ -31,7 +31,7 @@ src/builtins/control.pir - Cardinal Control functions
 .end
 
 .sub gather
-    .param pmc block
+    .param pmc block :named('!BLOCK')
     .local pmc list
     .local pmc eh
     list = 'list'()
