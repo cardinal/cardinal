@@ -384,14 +384,6 @@ namespace :test do |ns|
         puts " There #{were} #{$unknown} unknown or confusing #{pl "result"}." if $unknown > 0
         $pl = $failures > 1
         puts " There #{were} #{$failures} complete #{pl "failure"}." if $failures > 0
-        $pl = $issue_counts.size > 1
-        unless $issue_counts.empty?
-            puts " The following #{are} the #{pl "issue"} currently known to affect the tests, and a count of the fails associated with #{them}:"
-            $issue_counts.each do |issue, count|
-                $pl = count > 1
-                puts "  Issue ##{issue}: #{count} #{pl "fail"}"
-            end
-        end
         $pl = $issue_lacks.size > 1
         unless $i_l_files.empty?
             puts " There #{were} #{$issue_lacks} #{pl "test"} that used todo or skip without noting an issue number, found in:"
@@ -401,5 +393,18 @@ namespace :test do |ns|
             end
         end
         puts " -- CLEAN FOR COMMIT --" if clean?
+    end
+
+    task :stats => [:all] do
+        $pl = $issue_counts.size > 1
+        unless $issue_counts.empty?
+            puts " The following #{are} the #{pl "issue"} currently known to affect the tests, and a count of the fails associated with #{them}:"
+            $issue_counts.each do |issue, count|
+                $pl = count > 1
+                puts "  Issue ##{issue}: #{count} #{pl "fail"}"
+            end
+        else
+            puts " There are no issues currently known to affect the tests."
+        end
     end
 end
