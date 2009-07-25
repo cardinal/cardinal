@@ -105,18 +105,18 @@ Internal helper method to create a class.
 
 .sub '!keyword_class'
     .param string name
-    .local pmc class, resolve_list, methods, iter
+    .local pmc class, resolve_list, methods, it
 
     # Create class.
     class = newclass name
 
     # Set resolve list to include all methods of the class.
     methods = inspect class, 'methods'
-    iter = new 'Iterator', methods
+    it = iter methods
     resolve_list = new 'ResizableStringArray'
   resolve_loop:
-    unless iter goto resolve_loop_end
-    $P0 = shift iter
+    unless it goto resolve_loop_end
+    $P0 = shift it
     push resolve_list, $P0
     goto resolve_loop
   resolve_loop_end:
@@ -231,14 +231,14 @@ Adds an attribute with the given name to the class.
 
 .sub 'die'
     .param pmc list :slurpy
-    .local pmc iter
+    .local pmc it
     .local string message
 
     message = ''
-    iter = new 'Iterator', list
+    it = iter list
   iter_loop:
-    unless iter goto iter_end
-    $P0 = shift iter
+    unless it goto iter_end
+    $P0 = shift it
     $S0 = $P0
     message .= $S0
     goto iter_loop

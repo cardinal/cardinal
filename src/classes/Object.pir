@@ -44,18 +44,18 @@ Internal helper method to create a class.
 
 .sub '!keyword_class' :method
     .param string name
-    .local pmc class, resolve_list, methods, iter
+    .local pmc class, resolve_list, methods, it
 
     # Create class.
     class = newclass name
 
     # Set resolve list to include all methods of the class.
     methods = inspect class, 'methods'
-    iter = new 'Iterator', methods
+    it = iter methods
     resolve_list = new 'ResizableStringCardinalArray'
 resolve_loop:
-    unless iter goto resolve_loop_end
-    $P0 = shift iter
+    unless it goto resolve_loop_end
+    $P0 = shift it
     push resolve_list, $P0
     goto resolve_loop
 resolve_loop_end:
@@ -243,11 +243,6 @@ This is the same a to_s by default unless overriden
     $P0 = self.'to_s'()
 .end
 
-.sub 'puts' :method
-    $P0 = get_hll_global 'puts'
-    .tailcall $P0(self)
-.end
-
 =item !cloneattr(attrlist)
 
 Create a clone of self, also cloning the attributes given by attrlist.
@@ -292,7 +287,7 @@ Get a list of all methods in the object.
     $P0 = class self
     $P1 = $P0.'methods'()
     .local pmc meth_iter
-    meth_iter = new 'Iterator', $P1
+    meth_iter = iter $P1
     .local pmc method_list
     method_list = new 'CardinalArray'
   methods_loop:

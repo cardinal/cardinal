@@ -215,6 +215,17 @@ Return C<self> plus 1
 
 =cut
 
+.namespace []
+
+.sub 'infix:<' :multi('CardinalInteger', 'CardinalInteger')
+    .param pmc this
+    .param pmc that
+    $I0 = this
+    $I1 = that
+    $I2 = islt $I0, $I1
+    .return ($I2)
+.end
+
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

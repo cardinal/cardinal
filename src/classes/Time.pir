@@ -158,7 +158,7 @@ Returns true if he object is defined, false otherwise
        .return (return_value)
 
   #print out all values in the time array
-  #$P2 = new 'Iterator', $P0
+  #$P2 = iter $P0
   #each_loop:
   #  unless $P2 goto done
   #  $P3 = shift $P2

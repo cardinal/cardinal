@@ -24,15 +24,15 @@ src/classes/CardinalHash.pir - Cardinal hash class and related functions
 
 .sub 'get_string' :vtable :method
     $S0 = '{'
-    .local pmc iter
-    iter = new 'Iterator', self
+    .local pmc it
+    it = iter self
     goto loop_start
   loop:
-    unless iter goto end
+    unless it goto end
     $S0 = concat $S0, ','
   loop_start:
-    $S1 = shift iter
-    $S2 = iter[$S1]
+    $S1 = shift it
+    $S2 = it[$S1]
     $S0 = concat $S0, $S1
     $S0 = concat $S0, '=>'
     concat $S0, $S2
@@ -49,15 +49,15 @@ Returns a string of keys and values appended together.
 =cut
 
 .sub 'to_s' :method
-    .local pmc iter
+    .local pmc it
     .local pmc rv
-    iter = new 'Iterator', self
+    it = iter self
     rv   = new 'CardinalString'
   loop:
-    unless iter goto end
-    $S1 = shift iter
+    unless it goto end
+    $S1 = shift it
     concat rv, $S1
-    $S1 = iter[$S1]
+    $S1 = it[$S1]
     concat rv, $S1
     goto loop
   end:
@@ -73,15 +73,15 @@ Returns elements of hash as array of C<Pair(key, value)>
 =cut
 
 .sub 'kv' :method
-    .local pmc iter
+    .local pmc it
     .local pmc rv
-    iter = new 'Iterator', self
+    it = iter self
     rv   = new 'CardinalArray'
   loop:
-    unless iter goto end
-    $S1 = shift iter
+    unless it goto end
+    $S1 = shift it
     push rv, $S1
-    $S1 = iter[$S1]
+    $S1 = it[$S1]
     push rv, $S1
     goto loop
   end:
@@ -91,13 +91,13 @@ Returns elements of hash as array of C<Pair(key, value)>
 
 
 .sub 'keys' :method
-    .local pmc iter
+    .local pmc it
     .local pmc rv
-    iter = new 'Iterator', self
+    it = iter self
     rv   = new 'CardinalArray'
   loop:
-    unless iter goto end
-    $S1 = shift iter
+    unless it goto end
+    $S1 = shift it
     push rv, $S1
     goto loop
   end:
@@ -106,14 +106,14 @@ Returns elements of hash as array of C<Pair(key, value)>
 
 
 .sub 'values' :method
-    .local pmc iter
+    .local pmc it
     .local pmc rv
-    iter = new 'Iterator', self
+    it = iter self
     rv   = new 'CardinalArray'
   loop:
-    unless iter goto end
-    $S1 = shift iter
-    $S1 = iter[$S1]
+    unless it goto end
+    $S1 = shift it
+    $S1 = it[$S1]
     push rv, $S1
     goto loop
   end:
@@ -128,12 +128,12 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
 
 .sub 'each' :method
     .param pmc block
-    .local pmc iter
-    iter = new 'Iterator', self
+    .local pmc it
+    it = iter self
   each_loop:
-    unless iter goto each_loop_end
-    $P1 = shift iter
-    $P2 = iter[$P1]
+    unless it goto each_loop_end
+    $P1 = shift it
+    $P2 = it[$P1]
     block($P1,$P2)
     goto each_loop
   each_loop_end:
@@ -142,13 +142,13 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
 .sub 'to_a' :method
     .local pmc newlist
     .local pmc item
-    .local pmc iter
+    .local pmc it
     newlist = new 'CardinalArray'
-    iter = new 'Iterator', self
+    it = iter self
   each_loop:
-    unless iter goto each_loop_end
-    $P1 = shift iter
-    $P2 = iter[$P1]
+    unless it goto each_loop_end
+    $P1 = shift it
+    $P2 = it[$P1]
     item = new 'CardinalArray'
     push item, $P1
     push item, $P2
@@ -162,12 +162,12 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
 ## FIXME:  Parrot currently requires us to write our own "clone" method.
 .sub 'clone' :vtable :method
     $P0 = new 'CardinalHash'
-    .local pmc iter
-    iter = new 'Iterator', self
+    .local pmc it
+    it = iter self
   loop:
-    unless iter goto end
-    $P1 = shift iter
-    $P2 = iter[$P1]
+    unless it goto end
+    $P1 = shift it
+    $P2 = it[$P1]
     $P0[$P1] = $P2
     goto loop
   end:
@@ -194,6 +194,54 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .param pmc v
     self[k] = v
     .return(v)
+.end
+
+.sub 'has_key?' :method
+    .param pmc key
+    $I0 = exists self[key]
+    if $I0 goto true
+    $P0 = get_hll_global ['Bool'], 'False'
+    goto done
+  true:
+    $P0 = get_hll_global ['Bool'], 'True'
+  done:
+    .return ($P0)
+.end
+
+.sub 'include?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'key?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'member?' :method
+    .param pmc key
+    $P0 = self.'has_key?'(key)
+    .return ($P0)
+.end
+
+.sub 'has_value?' :method
+    .param pmc key
+    $I0 = defined self[key]
+    if $I0 goto true
+    $P0 = get_hll_global ['Bool'], 'False'
+    goto done
+  true:
+    $P0 = get_hll_global ['Bool'], 'True'
+  done:
+    .return ($P0)
+.end
+
+.sub 'value?' :method
+    .param pmc key
+    $P0 = self.'has_value?'(key)
+    .return ($P0)
 .end
 
 =back
@@ -301,7 +349,14 @@ property instead.
 
 .namespace ['Hash']
 
-.sub 'new' :method
+.sub 'new' :method :multi(_,P)
+    .param pmc default
+    $P0 = new 'CardinalHash'
+    setattribute $P0, 'default', default
+    .return ($P0)
+.end
+
+.sub 'new' :method :multi(_,'Sub')
     .param pmc a :optional :named('!BLOCK')
     $P0 = new 'CardinalHash'
     setattribute $P0, 'default', a

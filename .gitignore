@@ -6,9 +6,11 @@ Makefile
 *.obj
 *.exe
 *.iss
+*.swp
+.DS_Store
 cardinal
 installable_cardinal
 
-test.pir
+Test.pir
 gen_*.pir
-
+build.yaml

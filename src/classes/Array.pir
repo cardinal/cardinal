@@ -225,61 +225,88 @@ Return a sorted copy of the list
   have_by:
     $P0 = self.'sort'()
     self = 0
-    self.'append'($P0)
+    self.'concat'($P0)
 .end
 
 =item uniq(...)
 
 =cut
 
-# TODO Rewrite it. It's too naive.
-
 .sub uniq :method
-    .local pmc ulist
-    .local pmc key
-    .local pmc val
-    .local pmc uval
-    .local int len
-    .local int i
-    .local int ulen
-    .local int ui
+    .param pmc block :optional :named("!BLOCK")
+    .param int block_flag :opt_flag
+    .local pmc uarray, hash, val, key
+    .local int i, len 
 
-    ulist = new 'CardinalArray'
-    len = self.'elems'()
+    uarray = new 'CardinalArray'
+    hash = new 'CardinalHash'
+
     i = 0
+    len = self.'elems'()
 
   loop:
     if i == len goto done
 
-    val = self[i]
+    key = self[i]
 
-    ui = 0
-    ulen = ulist.'elems'()
-    inner_loop:
-        if ui == ulen goto inner_loop_done
+    unless block_flag, finish 
+    
+    key = block(key)
 
-        uval = ulist[ui]
-        if uval == val goto found
+  finish:
+    $I0 = exists hash[key]
+    if $I0 goto skip
+    
+    $P0 = self[i]
+    uarray.'push'($P0)
+    hash[key] = $P0
 
-        inc ui
-        goto inner_loop
-    inner_loop_done:
-
-    ulist.'push'(val)
-
-    found:
-
-    inc i
+  skip:
+    inc i 
     goto loop
 
   done:
-    .return(ulist)
+    .return (uarray)
 .end
 
 .sub 'uniq!' :method
     $P0 = self.'uniq'()
     self = 0
-    self.'append'($P0)
+    self.'concat'($P0)
+.end
+
+.sub reject :method
+    .param pmc block :named("!BLOCK")
+    .local pmc uarray, val
+    .local int i, len
+    
+    uarray = new 'CardinalArray'
+    
+    i = 0
+    len = self.'elems'()
+
+  loop:
+    if i == len goto done
+    
+    val = self[i]
+    
+    $P0 = block(val)
+    if $P0 goto skip
+
+    uarray.'push'(val)
+  skip:
+    inc i
+    goto loop
+    
+  done:
+    .return (uarray)
+.end
+
+.sub 'reject!' :method
+    .param pmc block :named("!BLOCK")
+    $P0 = self.'reject'(block)
+    self = 0
+    self.'concat'($P0)
 .end
 
 .sub 'max' :method
@@ -299,11 +326,11 @@ Return true if self contains ELEMENT
 =cut
 .sub 'include?' :method
     .param pmc args
-    .local pmc iter
-    iter = new 'Iterator', self
+    .local pmc it
+    it = iter self
   iter_loop:
-    unless iter goto done_f
-    $P0 = shift iter
+    unless it goto done_f
+    $P0 = shift it
     eq $P0, args, done_t
     goto iter_loop
    done_f:
@@ -577,6 +604,36 @@ Returns self.
     .return(self)
 .end
 
+.sub 'compact' :method
+    .local pmc array
+    .local int i, len
+    array = new 'CardinalArray'
+
+    len = self
+    i = 0
+
+  loop:
+    if i == len goto done
+
+    $P0 = self[i]
+    
+    $I0 = isa $P0, "NilClass"
+    if $I0 goto end_loop
+
+    array.'push'($P0)
+  end_loop:
+    inc i
+    goto loop
+  done:
+    .return (array)
+.end
+
+.sub 'compact!' :method
+    $P0 = self.'compact'()
+    self = 0
+    self.'concat'($P0)
+.end
+
 =item delete()
 
 Deletes the given element from the CardinalArray, replacing them with Undef.
@@ -628,6 +685,46 @@ if passed, otherwise returns nil.
   have_block:
     $P0 = block()
     .return($P0)
+.end
+
+.sub delete_at :method
+    .param pmc index
+    .local pmc nil, result
+    nil = new 'NilClass'
+
+    result = nil
+
+    $I0 = exists self[index]
+    unless $I0 goto done
+
+    result = self[index]
+    delete self[index]
+  done:
+    .return (result)
+.end
+
+.sub delete_if :method
+    .param pmc block :named("!BLOCK")
+    .local int i, len
+    
+    len = self
+    i = 0
+
+  loop:
+    if len == i goto done
+
+    $P0 = self[i]
+    $I0 = block($P0)
+
+    unless $I0 goto finish_loop
+
+    delete self[i]
+
+  finish_loop:
+    inc i
+    goto loop
+
+  done:
 .end
 
 =item exists(INDEX)
@@ -866,11 +963,24 @@ Run C<block> once for each item in C<self>, with the item passed as an arg.
 
 .sub 'each' :method
     .param pmc block :named('!BLOCK')
-    $P0 = new 'Iterator', self
+    $P0 = iter self
   each_loop:
     unless $P0 goto each_loop_end
     $P1 = shift $P0
     block($P1)
+    goto each_loop
+  each_loop_end:
+.end
+
+.sub 'each_index' :method
+    .param pmc block :named('!BLOCK')
+    .local int len
+    len = elements self
+    $I0 = 0
+  each_loop:
+    if $I0 == len goto each_loop_end
+    block($I0)
+    inc $I0
     goto each_loop
   each_loop_end:
 .end
@@ -900,7 +1010,7 @@ Creates a new Array containing the results and returns it.
     .param pmc block :named('!BLOCK')
     .local pmc result
     result = new 'CardinalArray'
-    $P0 = new 'Iterator', self
+    $P0 = iter self
   each_loop:
     unless $P0 goto each_loop_end
     $P1 = shift $P0
@@ -909,6 +1019,24 @@ Creates a new Array containing the results and returns it.
     goto each_loop
   each_loop_end:
     .return (result)
+.end
+
+.sub 'collect!' :method
+    .param pmc block :named('!BLOCK')
+    .local int i, len
+    len = self
+    i = 0
+  loop:
+    if i == len goto done
+
+    $P0 = self[i]
+    $P1 = block($P0)
+    self[i] = $P1
+
+    inc i
+    goto loop
+
+  done:
 .end
 
 =item flatten
@@ -920,7 +1048,7 @@ Creates a new Array containing the results and returns it.
     .local pmc returnMe
     .local pmc iterator
     returnMe = new 'CardinalArray'
-    iterator = new 'Iterator', self
+    iterator = iter self
   each_loop:
     unless iterator goto each_loop_end
     $P1 = shift iterator
@@ -931,7 +1059,7 @@ Creates a new Array containing the results and returns it.
     goto each_loop
   inner_flatten:
     $P2 = $P1.'flatten'()
-    $P3 = new 'Iterator', $P2
+    $P3 = iter $P2
     inner_loop:
         unless $P3 goto each_loop
         $P4 = shift $P3
@@ -950,6 +1078,30 @@ Retrieve the number of elements in C<self>
 .sub 'size' :method
      $I0 = self
      .return($I0)
+.end
+
+=item concat
+
+Concatenate the passed array onto C<self>
+
+=cut
+.sub 'concat' :method
+    .param pmc other
+    .local int i, len
+
+    i = 0
+    len = other.'size'()
+
+  loop:
+    if i == len goto done
+    $P0 = other[i]
+    self.'push'($P0)
+
+    i = i + 1
+    goto loop
+  
+  done:
+    .return (self)
 .end
 
 =item length
@@ -1025,12 +1177,12 @@ The zip operator.
     # Get minimum element count - what we'll zip to.
     .local pmc iterator, args_iter, arg, item
     .local int i
-    iterator = new 'Iterator', self
+    iterator = iter self
     i = 0
 
   setup_loop:
     unless iterator, setup_loop_done
-    args_iter = new 'Iterator', args
+    args_iter = iter args
     item = new 'CardinalArray'
     $P0 = shift iterator
     item.'push'($P0)
@@ -1050,6 +1202,46 @@ The zip operator.
   setup_loop_done:
 
     .return (zipped)
+.end
+
+.sub '_cmp' :vtable('cmp') :method
+    .param pmc other
+    .local int i, len, result
+    result = 0
+    i = 0
+
+    # Get the length, first
+    $I0 = self
+    $I1 = other
+
+    if $I0 > $I1 goto self_bigger
+    len = $I0
+    goto loop_check
+
+  self_bigger:
+    len = $I1
+    
+  loop_check:
+    # Now, start comparing the items
+    if i == len goto loop_done
+    $P0 = self[i]
+    $P1 = other[i]
+
+    $I2 = cmp $P0, $P1
+    if $I2 goto not_equal
+    inc i
+    goto loop_check
+  
+  not_equal:
+    result = $I2
+    goto done
+
+  loop_done:
+    $I2 = cmp $I0, $I1
+    if $I1 goto not_equal
+
+  done:
+    .return (result)
 .end
 
 =back
@@ -1088,7 +1280,126 @@ Build a CardinalArray from its arguments.
     .return (list)
 .end
 
+=item C<infix:*(...)>
 
+Operator form for either repetition (when argument is an Integer), or as a shortform for join (when argument is a String.)
+
+=cut
+
+.sub 'infix:*' :multi('CardinalArray','CardinalInteger')
+    .param pmc this
+    .param pmc count
+    .local pmc array
+    .local int i
+
+    i = count
+    if i > 0 goto sane
+
+    $P0 = undef()
+    .return ($P0)
+
+  sane:
+    array = new 'CardinalArray'
+
+  loop:
+    array.'concat'(this)
+
+    dec i
+
+    if i > 0 goto loop
+
+    .return (array)
+.end
+
+.sub 'infix:*' :multi('CardinalArray','CardinalString')
+    .param pmc this
+    .param pmc s
+    
+    $S0 = s
+    $S0 = join $S0, this
+
+    .return ($S0)
+.end
+
+.sub 'infix:+' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+    .local pmc array
+
+    $P0 = this.'clone'()
+    $P0 = $P0.'concat'(that)
+
+    .return ($P0)
+.end
+
+.sub 'infix:&' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+    .local pmc array
+
+    array = this + that
+    array.'uniq!'()
+
+    .return (array)
+.end
+
+.sub 'infix:-' :multi('CardinalArray','CardinalArray')
+    .param pmc this
+    .param pmc that
+    .local pmc array, hash, key, includes
+    .local int i, len
+
+    array = new 'CardinalArray'
+    hash = new 'CardinalHash'
+    len = that.'size'()
+    i = 0
+
+  hash_loop:
+    if i == len goto hash_done
+
+    key = that[i]
+    hash[key] = 1
+
+    i = i + 1
+    goto hash_loop
+
+  hash_done:
+    len = this.'size'()
+    i = 0
+
+  diff_loop:
+    if i == len goto diff_done
+        
+    key = this[i]
+    includes = hash.'includes?'(key)
+    
+    i = i + 1
+    unless includes goto diff_loop
+
+    array.'push'(key)
+
+    goto diff_loop
+  
+  diff_done:
+    .return (array)
+.end
+
+.sub 'infix:<<' :multi('CardinalArray',_)
+    .param pmc this
+    .param pmc that
+    this.'push'(that)
+    .return (this)
+.end
+
+.sub 'infix:<<' :multi(_,_)
+    .param pmc this
+    .param pmc that
+    $P0 = new 'CardinalArray'
+    $P0.'push'(this)
+    $P0.'push'(that)
+    .return ($P0)
+.end
+    
 =item C<infix:,(...)>
 
 Operator form for building a list from its arguments.

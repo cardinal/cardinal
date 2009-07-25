@@ -34,12 +34,12 @@ src/builtins/op.pir - Cardinal ops
     .param pmc a
     .param pmc b
     $P0 = new 'CardinalArray'
-    .local pmc iter
-    iter = new 'Iterator', a
+    .local pmc it
+    it = iter a
     $P3 = get_hll_global['Bool'], 'False'
     iter_loop:
-        unless iter goto done
-        $P1 = shift iter
+        unless it goto done
+        $P1 = shift it
         $P2 = b.'include?'($P1)
         $I0 = 'infix:=='($P2, $P3)
         eq $I0, 1, appendit

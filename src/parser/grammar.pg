@@ -100,13 +100,8 @@ rule assignment {
     {*}
 }
 
-rule mlhs {
-    | <lhs> {*}               #= lhs
-    | '(' <mlhs> ')' {*}      #= mlhs
-}
-
 token lhs {
-    | <basic_primary> {*}            #= basic_primary
+    | <varname> {*} #= varname
 }
 
 token indexed {
@@ -187,10 +182,6 @@ token varname {
 
 token funcall {
     <!reserved_word> <local_variable> <.before \s|'('> <.before <call_args>> {*}
-}
-
-token mrhs {
-    <args> {*}
 }
 
 rule args {

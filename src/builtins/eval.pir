@@ -117,7 +117,7 @@ such as C<eval>, C<require>, and C<use>.
     .local pmc it, item, callerns
     $P0 = getinterp
     callerns = $P0['namespace';1]
-    it = new 'Iterator', module
+    it = iter module
   it_loop:
     unless it goto it_loop_end
     $S0 = shift it
@@ -139,24 +139,29 @@ such as C<eval>, C<require>, and C<use>.
 .sub 'foreign_load'
     .param string lang
     .param string module
-    .local pmc compiler, library, imports, callerns
+    .local pmc compiler, name, library, imports, callerns, foreignlibns
     $P0 = getinterp
     callerns = $P0['namespace';1]
     'load-language'(lang)
     compiler = compreg lang
-    $P0 = split '/', module
-    library = compiler.'load_library'($P0)
+    name = split '/', module
+    library = compiler.'load_library'(name)
     imports = library['symbols']
     imports = imports['DEFAULT']
-    .local pmc iter, item
-    iter = new 'Iterator', imports
+    .local pmc it, item
+    it = iter imports
   import_loop:
-    unless iter goto import_loop_end
-    $S0 = shift iter
+    unless it goto import_loop_end
+    $S0 = shift it
     $P0 = imports[$S0]
     callerns[$S0] = $P0
     goto import_loop
   import_loop_end:
+    foreignlibns = library['namespace']
+    if null foreignlibns goto no_foreign_ns
+    $S0 = pop name
+    set_hll_global name, $S0, foreignlibns
+  no_foreign_ns:
     .return (library)
 .end
 
