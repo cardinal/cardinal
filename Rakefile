@@ -262,9 +262,10 @@ namespace :test do |ns|
         test "array/sort.t"
         test "array/to_s.t"
         test "array/uniq.t"
+        test "array/values_at.t"
         test "array/warray.t"
 
-        task :all => [:array, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :index, :intersection, :join, :mathop, :pop, :reject, :reverse, :shift, :slice, :sort, :to_s, :uniq, :warray]
+        task :all => [:array, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :index, :intersection, :join, :mathop, :pop, :reject, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
     namespace :file do 

@@ -1250,6 +1250,102 @@ The zip operator.
     .return (zipped)
 .end
 
+=item values_at(INDEX, ...)
+
+    Retrieve elements from positions.
+
+=cut
+
+.sub 'values_at' :method
+    .param pmc args :slurpy
+    .local pmc values
+    .local pmc val
+    .local pmc item
+    .local int length
+
+    length = elements self
+
+    values = new 'CardinalArray'
+
+  loop_check:
+    unless args goto done
+
+    item = shift args
+
+    $I0 = isa item, 'CardinalRange'
+    if $I0 goto do_range
+
+    $I0=item
+
+    if $I0 < 0 goto negative
+
+    if $I0 >=  length goto nil_item
+
+  valid:
+    val = self[$I0]
+  push_val:
+    values.'push'(val)
+    goto loop_check
+
+  nil_item:
+    val = get_hll_global 'nil'
+    goto push_val
+
+  negative:
+    $I0=$I0+length
+    if $I0 < 0 goto nil_item
+    if $I0 >= length goto nil_item
+    goto valid
+
+  do_range:
+    .local int beg, end, count
+
+    beg = item.'from'()
+    end = item.'to'()
+
+    if beg >= 0 goto skip_beg_neg
+    beg = beg + length
+    if beg < 0 goto range_outofrange
+
+  skip_beg_neg:
+
+    if end <= length goto skip_set_end
+    end = length
+
+  skip_set_end:
+
+    if end >= 0 goto skip_end_neg
+    end = end + length
+
+  skip_end_neg:
+    $P0 = getattribute item, '$!to_exclusive'
+    if $P0 goto skip_inc_end
+    inc end
+  skip_inc_end:
+    count = end - beg
+    if count >= 0 goto skip_neg_count
+    count = 0
+  skip_neg_count:
+
+    $I0 = 0 
+  range_loop:
+    if $I0 >= count goto loop_check
+    $I1 = $I0 + beg
+    if $I1 == length goto range_outofrange
+    val = self[$I1]
+    values.'push'(val)
+    inc $I0
+    goto range_loop
+    
+   range_outofrange:
+     val = get_hll_global 'nil'
+     values.'push'(val)
+     goto loop_check
+
+  done:
+   .return (values)
+.end
+
 .sub '_cmp' :vtable('cmp') :method
     .param pmc other
     .local int i, len, result
