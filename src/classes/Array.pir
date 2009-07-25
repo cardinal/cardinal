@@ -190,7 +190,7 @@ Return a sorted copy of the list
 =cut
 
 .sub 'sort' :method
-    .param pmc by              :optional
+    .param pmc by              :optional :named('!BLOCK')
     .param int has_by          :opt_flag
     if has_by goto have_by
     by = get_hll_global 'infix:cmp'

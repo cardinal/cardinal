@@ -17,7 +17,7 @@ end
 foo[1].upto(7) { |i| is i, a, "method on array access of the result of calling a function"
                      a += 1}
 
-a = do |a,&f|
+a = lambda do |a,&f|
     f(a)
 end
 

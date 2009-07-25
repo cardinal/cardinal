@@ -15,6 +15,15 @@ src/builtins/control.pir - Cardinal Control functions
 .include 'except_types.pasm'
 .include 'except_severity.pasm'
 
+=item lambda
+
+=cut
+
+.sub 'lambda'
+    .param pmc block :named('!BLOCK')
+    .return (block)
+.end
+
 =item take
 
 =cut

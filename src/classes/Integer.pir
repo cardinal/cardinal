@@ -175,7 +175,7 @@ Runs C<block> for integer from 0 to value of C<self>
 
 .include "hllmacros.pir"
 .sub 'times' :method
-   .param pmc block
+   .param pmc block :named('!BLOCK')
    $I0 = 0
    $I1 = self
    .While($I0 < $I1, {
