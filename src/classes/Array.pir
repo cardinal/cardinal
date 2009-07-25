@@ -341,6 +341,52 @@ Return true if self contains ELEMENT
         .return($P0)
 .end
 
+=item index(ELEMENT)
+
+Return index (or nil) of ELEMENT
+
+=cut
+.sub 'index' :method
+    .param pmc args
+    .local int len
+
+    len = elements self
+    $I0 = 0
+  loop:
+    if $I0 >= len goto done_notfound
+    $P0 = self[$I0]
+    eq $P0, args, done_found
+    inc $I0
+    goto loop
+  done_notfound:
+    $P0 = get_hll_global 'nil'
+    .return($P0)
+  done_found:
+    .return($I0)
+.end
+
+=item rindex(ELEMENT)
+
+Return index (or nil) of ELEMENT, starting from the end
+
+=cut
+.sub 'rindex' :method
+    .param pmc args
+
+    $I0 = elements self
+  loop:
+    dec $I0
+    if $I0 < 0 goto done_notfound
+    $P0 = self[$I0]
+    eq $P0, args, done_found
+    goto loop
+  done_notfound:
+    $P0 = get_hll_global 'nil'
+    .return($P0)
+  done_found:
+    .return($I0)
+.end
+
 =item
 Return true is C<self> is of size 0
 =cut
