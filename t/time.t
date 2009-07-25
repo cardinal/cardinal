@@ -21,7 +21,7 @@ if !t.gmt?
    epoch1 = t.to_i
    t.gmtime
    epoch2 = t.to_i
-   todo "Fix gmtime"
+   todo "Fix gmtime", "18"
    isnt epoch1, epoch2, '.gmtime on Time when not gmt'
 else
    pass '.gmt? on Time when gmt'
@@ -43,6 +43,6 @@ proclaim sec < sec2, 'sleep'
 t2_epoch = Time.new.to_i
 isgt t2_epoch, t1_epoch, '.to_i on Time'
 
-todo 'fix Floats in Cardinal'
+todo 'fix Floats in Cardinal', "19"
 class_name = sprintf("%s", t.to_f.class)
 is class_name, 'Float', '.to_f on Time'

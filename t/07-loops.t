@@ -10,7 +10,7 @@ end
 
 a = [ 5, 6, 7, 8 ]
 
-skip("for x in y doesn't work", 8)
+skip "for x in y doesn't work", "2", 8
 #for i in a
 #    ok(i < 9, 'for loop')
 #end

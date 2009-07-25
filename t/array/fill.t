@@ -6,7 +6,7 @@ a = Array.new(2)
 
 is a, [ nil, nil ], '.new on Array'
 
-todo "Array.fill", 3
+todo "Array.fill", "5", 3
 #a = a.fill('-')
 is a, [ '-', '-' ], '.fill on Array'
 

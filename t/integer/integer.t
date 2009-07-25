@@ -23,42 +23,42 @@ end
 
 int1 = 300
 int2 = -300
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int int1, int2, 'assignment of an Integer'
 
 str1 = int1.to_s
 str2 = int2.to_s
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_str str1, str2, '.to_s on Integer'
 
 test1 = int1.to_i
 test2 = int2.to_i
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.to_i on Integer'
 
 test1 = int1.to_int
 test2 = int2.to_int
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.to_int on Integer'
 
 test1 = int1.floor
 test2 = int2.floor
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.floor on Integer'
 
 test1 = int1.ceil
 test2 = int2.ceil
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.ceil on Integer'
 
 test1 = int1.round
 test2 = int2.round
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.round on Integer'
 
 test1 = int1.truncate
 test2 = int2.truncate
-todo "Integers being autoconverted to string for comparison?", 2
+todo "Integers being autoconverted to string for comparison?", "9", 2
 test_by_int test1, test2, '.truncate on Integer'
 
 test1 = int1.succ

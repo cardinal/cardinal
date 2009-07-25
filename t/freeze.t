@@ -19,5 +19,5 @@ end
 obj = NumberHolder.new(0)
 obj.inc
 obj.freeze
-todo "Fix .freeze method"
+todo "Fix .freeze method", "7"
 isnt obj.inc, 2, '.freeze method'

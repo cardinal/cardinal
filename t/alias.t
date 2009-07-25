@@ -19,5 +19,5 @@ end
 
 obj = NumberHolder.new(0)
 is obj.inc, 1, '.alias method'
-skip("aliased methods don't seem to work")
+skip "aliased methods don't seem to work", "4"
 #is obj.increment, 2, '.alias method'

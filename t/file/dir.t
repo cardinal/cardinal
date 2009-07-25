@@ -7,7 +7,7 @@ d = Dir.new('.')
 files = Dir.entries('.')
 if files.include?('tmp')
 	pass '.entries on Dir'
-	skip ".mkdir on Dir, tmp dir already exists"
+	nok ".mkdir on Dir, tmp dir already exists"
 else
 	Dir.mkdir('./tmp')
 	pass '.mkdir on Dir'
