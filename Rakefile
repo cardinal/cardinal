@@ -14,6 +14,7 @@ $missing = 0
 $missing_files = []
 $toomany = 0
 $toomany_files = []
+$pl = false
 $start = Time.now
 
 def clean?
@@ -23,6 +24,22 @@ def clean?
     return false if $missing > 0
     return false if $toomany > 0
     return true 
+end
+
+def pl(word)
+    $pl ? word + "s" : word
+end
+
+def were
+    $pl ? "were" : "was"
+end
+
+def are
+    $pl ? "are" : "is"
+end
+
+def them
+    $pl ? "them" : "it"
 end
 
 def parrot(input, output, grammar="", target="")
@@ -315,40 +332,47 @@ namespace :test do |ns|
             dur_minutes += 1
         end
         puts "Test statistics:"
-        puts " The test suite took #{dur_minutes} minutes and #{dur_seconds} seconds."
+        puts " The test suite took #{dur_minutes}:#{dur_seconds}."
         puts " #{$tests} tests were run, from #{$test_files} files."
         puts " #{$ok} tests passed, #{$unexpected_passes} of which were unexpected." 
         unless $u_p_files.empty?
             $u_p_files.uniq!
-            puts " Unexpected passes were found in the following files:"
+            $pl = $u_p_files > 1
+            puts " Unexpected passes were found in the following #{pl "file"}:"
             $u_p_files.each do |pass|
                 puts "  #{pass}"
             end
         end
-        puts " #{$nok} tests failed, #{$expected_failures} of which were expected."
+        $pl = $nok > 1
+        puts " #{$nok} #{pl "test"} failed, #{$expected_failures} of which were expected."
         unless $unexpected_failures.empty?
             $unexpected_failures.uniq!
-            puts " Unexpected failures were found in the following files:"
+            $pl = $unexpected_failures.size > 1
+            puts " Unexpected #{pl "failure"} #{were} found in the following #{pl "file"}:"
             $unexpected_failures.each do |fail|
                 puts "  #{fail}"
             end
         end
+        $pl = $missing_files.size > 1
         unless $missing_files.empty?
-            puts " There were #{$missing} test files that reported fewer results than were planned:"
+            puts " There #{were} #{$missing} test #{pl "file"} that reported fewer results than were planned:"
             $missing_files.uniq!
             $missing_files.each do |missing|
                 puts "  #{missing}"
             end
         end
+        $pl = $toomany_files.size > 1
         unless $toomany_files.empty?
-            puts " There were #{$toomany} test files that reported more results than were planned:"
+            puts " There #{were} #{$toomany} test #{pl "file"} that reported more results than were planned:"
             $toomany_files.uniq!
             $toomany_files.each do |toomany|
                 puts "  #{toomany}"
             end
         end
-        puts " There were #{$unknown} unknown or confusing results."
-        puts " There were #{$failures} complete failures."
+        $pl = $unknown > 1
+        puts " There #{were} #{$unknown} unknown or confusing #{pl "result"}." if $unknown > 0
+        $pl = $failures > 1
+        puts " There #{were} #{$failures} complete #{pl "failure"}." if $failures > 0
         puts " -- CLEAN FOR COMMIT --" if clean?
     end
 end
