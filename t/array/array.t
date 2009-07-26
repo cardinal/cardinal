@@ -7,7 +7,7 @@ a = [ 1, 2, 3, 4 ]
 is a.first, 1
 is a.first(2).last, 2
 is a.last(2).first, 3
-is a.elems, 4
+is a.length, 4
 
 a = [ 5, 6 ]
 

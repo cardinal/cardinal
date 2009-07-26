@@ -8,7 +8,7 @@ items = gather do
     take 2
 end
 
-is items.elems, 3, "basic gather"
+is items.length, 3, "basic gather"
 
 items.each do |i|
     ok i < 3, "basic gather"
