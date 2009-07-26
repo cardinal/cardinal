@@ -1121,7 +1121,7 @@ Creates a new Array containing the results and returns it.
 Retrieve the number of elements in C<self>
 
 =cut
-.sub 'size' :method
+.sub 'size' :method :vtable('elements')
      $I0 = self
      .return($I0)
 .end
