@@ -6,12 +6,11 @@ a = Array.new(2)
 
 is a, [ nil, nil ], '.new on Array'
 
-todo "Array.fill", 3
-#a = a.fill('-')
+a = a.fill('-')
 is a, [ '-', '-' ], '.fill on Array'
 
-#a = a.fill(':-)', 1)
+a = a.fill(':-)', 1)
 is a, ['-', ':-)'], '.fill with start index'
 
-#a = a.fill(':-o', 0, 1)
-is a, [':-o', ':-)'],  '.fill with start and end index'
+a = a.fill(':-o', 0, 1)
+is a, [':-o', ':-)'],  '.fill with start and length'

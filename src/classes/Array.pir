@@ -100,23 +100,31 @@ Doesnt work, but it should be close...
 .sub 'fill' :method
     .param pmc value
     .param int offset :optional
-    .param int end_index :optional
+    .param int length :optional
+    .local int i, end_index
 
-    unless end_index goto set_index
     unless offset goto set_offset
+    unless length goto set_length
     goto do_fill
 
-    set_index:
-        end_index = self.'length'()
-        unless offset goto set_offset
-        goto do_fill
     set_offset:
         offset = 0
+        unless length goto set_length
         goto do_fill
+    set_length:
+        length = self.'length'()
+        length = length - offset
     do_fill:
-        $P0 = new 'CardinalString'
-        $P0 = value
-        splice self, value, offset, end_index
+        i = offset
+        end_index = offset + length
+        
+    loop:
+        if i == end_index goto done
+        self[i] = value
+        
+        inc i
+        goto loop
+    done:    
         .return (self)
 .end
 
