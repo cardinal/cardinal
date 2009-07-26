@@ -11,7 +11,7 @@ a << 1
 a = a.reverse
 unless a[0] != 1
 	a.each() do |i|
-	    puts 'ok ' + i
+	    puts "ok #{i}"
 	end
 end
 
@@ -20,6 +20,6 @@ unless a[0] != 6
 	a.reverse!
 	a.each() do |i|
         i += 6
-	    puts 'ok ' + i
+	    puts "ok #{i}"
 	end
 end

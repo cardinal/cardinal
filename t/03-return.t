@@ -4,10 +4,10 @@ def noargs
     return 1
 end
 
-puts "ok " + noargs()
+puts "ok #{noargs()}"
 
 def onearg(a)
     return a
 end
 
-puts onearg("ok ") + onearg(2)
+puts onearg("ok #{onearg(2)}")
