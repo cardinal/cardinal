@@ -30,6 +30,7 @@ d = [3,13,2,25,5,9]
 is d, [3,2,25,9], "uniq! with block"
 
 # uniq! returns nil when nothing is changed
+todo "Array#uniq! where nothing is changed should return nil"
 e = [4, 5, 6]
 e = e.uniq!
 is e, nil, "uniq! removing nothing"
