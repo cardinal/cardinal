@@ -27,9 +27,9 @@ returned = splat(8)
 is returned , 8, 'splat'
 
 b = [11, 10, 9]
-skip("Splat syntax doesn't parse.",2)
+skip "Splat syntax doesn't parse.", "16", 2
 #returned = splat(*b)
-todo "Splat syntax is broken?"
+todo "Splat syntax is broken?", "16"
 is returned, 11, 'splat'
 
 returned = splat(b)
@@ -43,8 +43,8 @@ def dec_three_ary(start)
 	a
 end
 
-skip("Splat syntax doesn't parse.", 2)
+skip("Splat syntax doesn't parse.", "16", 2)
 #returned = splat(*dec_three_ary(15))
-todo "Splat syntax is broken?"
+todo "Splat syntax is broken?", "16"
 is returned, 15, 'splat'
 

@@ -1,7 +1,7 @@
 require 'Test'
 include Test
 plan 20
-skip_rest "Fails because File can't be found OSLT."
+skip_rest "Fails because File can't be found OSLT.", "24"
 # need a better test for these things. this shows that we at least can parse and execute these commands
 #name = "file-stat-tmp.txt"
 #f = File.new(name, "w")

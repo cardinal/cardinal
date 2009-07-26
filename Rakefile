@@ -10,7 +10,41 @@ $expected_failures = 0
 $unexpected_failures = []
 $unexpected_passes = 0
 $u_p_files = []
+$missing = 0
+$missing_files = []
+$toomany = 0
+$toomany_files = []
+$issue_counts = Hash.new(0)
+$issue_lacks = 0
+$i_l_files = []
+$pl = false
 $start = Time.now
+
+def clean?
+    return false if $nok > $expected_failures
+    return false if $failures > 0
+    return false if $unknown > 0
+    return false if $missing > 0
+    return false if $toomany > 0
+    return false if $issue_lacks > 0
+    return true 
+end
+
+def pl(word)
+    $pl ? word + "s" : word
+end
+
+def were
+    $pl ? "were" : "was"
+end
+
+def are
+    $pl ? "are" : "is"
+end
+
+def them
+    $pl ? "them" : "it"
+end
 
 def parrot(input, output, grammar="", target="")
     target = "--target=#{target}" if target != ""
@@ -64,6 +98,13 @@ def run_test(file)
                         nok += 1
                         if line =~ /(TODO|SKIP)/
                             $expected_failures += 1
+                            if line =~ /See issue #([0-9]+)/
+                                $issue_counts[$1] += 1
+                            else
+                                puts "Lacks issue." if DEBUG
+                                $issue_lacks += 1
+                                $i_l_files += [file]
+                            end
                         else
                             $unexpected_failures += [file]
                         end
@@ -78,8 +119,16 @@ def run_test(file)
             $nok += nok
             result += " #{unknown} unknown" if unknown > 0
             $unknown += unknown
-            result += " MISSING TESTS" if test < tests
-            result += " TOO MANY TESTS" if test > tests
+            if test < tests 
+                result += " MISSING TESTS"
+                $missing += 1
+                $missing_files += [file]
+            end
+            if test > tests
+                result += " TOO MANY TESTS"
+                $toomany += 1
+                $toomany_files += [file]
+            end
         else
             result = "Complete failure... no plan given"
             $failures += 1
@@ -140,7 +189,7 @@ file "src/gen_actions.pir" => [:config, "src/parser/actions.pm"] do
     parrot("src/parser/actions.pm","src/gen_actions.pir",CONFIG[:nqp],'pir')
 end
 
-builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Any.pir", "src/classes/Range.pir", "src/classes/Bool.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
+builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/Bool.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
 
 file "src/gen_builtins.pir" => builtins do
     puts "Generating src/gen_builtins.pir"
@@ -201,6 +250,7 @@ namespace :test do |ns|
         test "array/flatten.t"
         test "array/grep.t"
         test "array/include.t"
+        test "array/index.t"
         test "array/intersection.t"
         test "array/join.t"
         test "array/mathop.t"
@@ -212,9 +262,10 @@ namespace :test do |ns|
         test "array/sort.t"
         test "array/to_s.t"
         test "array/uniq.t"
+        test "array/values_at.t"
         test "array/warray.t"
 
-        task :all => [:array, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :intersection, :join, :mathop, :pop, :reject, :reverse, :shift, :slice, :sort, :to_s, :uniq, :warray]
+        task :all => [:array, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :index, :intersection, :join, :mathop, :pop, :reject, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
     namespace :file do 
@@ -295,26 +346,68 @@ namespace :test do |ns|
             dur_minutes += 1
         end
         puts "Test statistics:"
-        puts " The test suite took #{dur_minutes} minutes and #{dur_seconds} seconds."
+        puts " The test suite took #{dur_minutes}:#{dur_seconds}."
         puts " #{$tests} tests were run, from #{$test_files} files."
         puts " #{$ok} tests passed, #{$unexpected_passes} of which were unexpected." 
         unless $u_p_files.empty?
             $u_p_files.uniq!
-            puts " Unexpected passes were found in the following files:"
+            $pl = $u_p_files > 1
+            puts " Unexpected passes were found in the following #{pl "file"}:"
             $u_p_files.each do |pass|
                 puts "  #{pass}"
             end
         end
-        puts " #{$nok} tests failed, #{$expected_failures} of which were expected."
+        $pl = $nok > 1
+        puts " #{$nok} #{pl "test"} failed, #{$expected_failures} of which were expected."
         unless $unexpected_failures.empty?
             $unexpected_failures.uniq!
-            puts " Unexpected failures were found in the following files:"
+            $pl = $unexpected_failures.size > 1
+            puts " Unexpected #{pl "failure"} #{were} found in the following #{pl "file"}:"
             $unexpected_failures.each do |fail|
                 puts "  #{fail}"
             end
         end
-        puts " There were #{$unknown} unknown or confusing results."
-        puts " There were #{$failures} complete failures."
-        puts " -- CLEAN FOR COMMIT --" if $nok - $expected_failures == 0 and $unknown == 0 and $failures == 0
+        $pl = $missing_files.size > 1
+        unless $missing_files.empty?
+            puts " There #{were} #{$missing} test #{pl "file"} that reported fewer results than were planned:"
+            $missing_files.uniq!
+            $missing_files.each do |missing|
+                puts "  #{missing}"
+            end
+        end
+        $pl = $toomany_files.size > 1
+        unless $toomany_files.empty?
+            puts " There #{were} #{$toomany} test #{pl "file"} that reported more results than were planned:"
+            $toomany_files.uniq!
+            $toomany_files.each do |toomany|
+                puts "  #{toomany}"
+            end
+        end
+        $pl = $unknown > 1
+        puts " There #{were} #{$unknown} unknown or confusing #{pl "result"}." if $unknown > 0
+        $pl = $failures > 1
+        puts " There #{were} #{$failures} complete #{pl "failure"}." if $failures > 0
+        $pl = $issue_lacks.size > 1
+        unless $i_l_files.empty?
+            puts " There #{were} #{$issue_lacks} #{pl "test"} that used todo or skip without noting an issue number, found in:"
+            $i_l_files.uniq!
+            $i_l_files.each do |file|
+                puts "  #{file}"
+            end
+        end
+        puts " -- CLEAN FOR COMMIT --" if clean?
+    end
+
+    task :stats => [:all] do
+        $pl = $issue_counts.size > 1
+        unless $issue_counts.empty?
+            puts " The following #{are} the #{pl "issue"} currently known to affect the tests, and a count of the fails associated with #{them}:"
+            $issue_counts.each do |issue, count|
+                $pl = count > 1
+                puts "  Issue ##{issue}: #{count} #{pl "fail"}"
+            end
+        else
+            puts " There are no issues currently known to affect the tests."
+        end
     end
 end

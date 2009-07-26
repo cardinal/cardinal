@@ -2,7 +2,7 @@ require 'Test'
 include Test
 plan 12 
 
-skip_rest "Class methods of File fail because File can't be found OSLT"
+skip_rest "Class methods of File fail because File can't be found OSLT", "24"
 
 #def cleanup(name)
 #	if File.exist?(name)

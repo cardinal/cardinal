@@ -7,7 +7,7 @@ is a, 1, 'single assignment per line'
 a = 2
 is a, 2, 'single assignment per line'
 
-todo("Multiple assignment is broken", 6)
+todo("Multiple assignment is broken", "6", 6)
 #x, y, z = 3, 4, 5
 is x, 3, 'multiple assignment per line'
 is y, 4, 'multiple assignment per line'

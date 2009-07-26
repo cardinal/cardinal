@@ -198,7 +198,7 @@ Return a sorted copy of the list
 =cut
 
 .sub 'sort' :method
-    .param pmc by              :optional
+    .param pmc by              :optional :named('!BLOCK')
     .param int has_by          :opt_flag
     if has_by goto have_by
     by = get_hll_global 'infix:cmp'
@@ -347,6 +347,52 @@ Return true if self contains ELEMENT
    done_t:
         $P0 = get_hll_global ['Bool'], 'True'
         .return($P0)
+.end
+
+=item index(ELEMENT)
+
+Return index (or nil) of ELEMENT
+
+=cut
+.sub 'index' :method
+    .param pmc args
+    .local int len
+
+    len = elements self
+    $I0 = 0
+  loop:
+    if $I0 >= len goto done_notfound
+    $P0 = self[$I0]
+    eq $P0, args, done_found
+    inc $I0
+    goto loop
+  done_notfound:
+    $P0 = get_hll_global 'nil'
+    .return($P0)
+  done_found:
+    .return($I0)
+.end
+
+=item rindex(ELEMENT)
+
+Return index (or nil) of ELEMENT, starting from the end
+
+=cut
+.sub 'rindex' :method
+    .param pmc args
+
+    $I0 = elements self
+  loop:
+    dec $I0
+    if $I0 < 0 goto done_notfound
+    $P0 = self[$I0]
+    eq $P0, args, done_found
+    goto loop
+  done_notfound:
+    $P0 = get_hll_global 'nil'
+    .return($P0)
+  done_found:
+    .return($I0)
 .end
 
 =item
@@ -1083,7 +1129,7 @@ Creates a new Array containing the results and returns it.
 Retrieve the number of elements in C<self>
 
 =cut
-.sub 'size' :method
+.sub 'size' :method :vtable('elements')
      $I0 = self
      .return($I0)
 .end
@@ -1210,6 +1256,102 @@ The zip operator.
   setup_loop_done:
 
     .return (zipped)
+.end
+
+=item values_at(INDEX, ...)
+
+    Retrieve elements from positions.
+
+=cut
+
+.sub 'values_at' :method
+    .param pmc args :slurpy
+    .local pmc values
+    .local pmc val
+    .local pmc item
+    .local int length
+
+    length = elements self
+
+    values = new 'CardinalArray'
+
+  loop_check:
+    unless args goto done
+
+    item = shift args
+
+    $I0 = isa item, 'CardinalRange'
+    if $I0 goto do_range
+
+    $I0=item
+
+    if $I0 < 0 goto negative
+
+    if $I0 >=  length goto nil_item
+
+  valid:
+    val = self[$I0]
+  push_val:
+    values.'push'(val)
+    goto loop_check
+
+  nil_item:
+    val = get_hll_global 'nil'
+    goto push_val
+
+  negative:
+    $I0=$I0+length
+    if $I0 < 0 goto nil_item
+    if $I0 >= length goto nil_item
+    goto valid
+
+  do_range:
+    .local int beg, end, count
+
+    beg = item.'from'()
+    end = item.'to'()
+
+    if beg >= 0 goto skip_beg_neg
+    beg = beg + length
+    if beg < 0 goto range_outofrange
+
+  skip_beg_neg:
+
+    if end <= length goto skip_set_end
+    end = length
+
+  skip_set_end:
+
+    if end >= 0 goto skip_end_neg
+    end = end + length
+
+  skip_end_neg:
+    $P0 = getattribute item, '$!to_exclusive'
+    if $P0 goto skip_inc_end
+    inc end
+  skip_inc_end:
+    count = end - beg
+    if count >= 0 goto skip_neg_count
+    count = 0
+  skip_neg_count:
+
+    $I0 = 0 
+  range_loop:
+    if $I0 >= count goto loop_check
+    $I1 = $I0 + beg
+    if $I1 == length goto range_outofrange
+    val = self[$I1]
+    values.'push'(val)
+    inc $I0
+    goto range_loop
+    
+   range_outofrange:
+     val = get_hll_global 'nil'
+     values.'push'(val)
+     goto loop_check
+
+  done:
+   .return (values)
 .end
 
 .sub '_cmp' :vtable('cmp') :method

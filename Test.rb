@@ -51,17 +51,17 @@ module Test
         proclaim(got != expected, desc)
     end
 
-    def todo(reason,count=1)
+    def todo(reason,issue="",count=1)
         $todo_upto = $testnum + count
-        $todo_reason = '# TODO ' + reason
+        $todo_reason = " # TODO #{reason} See issue ##{issue}." 
     end
 
-    def skip(reason='',count=1)
-        1.upto(count) { flunk('# SKIP ' + reason) }
+    def skip(reason='',issue="",count=1)
+        1.upto(count) { flunk("# SKIP #{reason} See issue ##{issue}.") }
     end
 
-    def skip_rest(reason='')
-        skip(reason,$planned - $testnum + 1)
+    def skip_rest(reason='',issue="")
+        skip(reason,issue,$planned - $testnum + 1)
     end
 
     def proclaim(cond,desc)
