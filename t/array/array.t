@@ -1,6 +1,6 @@
 require 'Test'
 include Test
-plan 18
+plan 22
 
 a = [ 1, 2, 3, 4 ]
 
@@ -42,3 +42,9 @@ a.each_with_index() do |x, i|
   is x, i
 end
 
+a = [ 3, 2, 1, 0]
+n = 0
+a.reverse_each() do |x|
+  is x, n
+  n+=1
+end

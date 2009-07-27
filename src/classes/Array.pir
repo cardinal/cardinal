@@ -1054,6 +1054,22 @@ Run C<block> once for each item in C<self>, with the item passed as an arg.
   each_loop_end:
 .end
 
+=item each(block)
+
+Run C<block> once for each item in C<self> starting from the end, with the item passed as an arg.
+
+=cut
+.sub 'reverse_each' :method
+    .param pmc block :named('!BLOCK')
+    .local int count
+    count = elements self
+  each_loop:
+    dec count
+    $P0 = self[count]
+    block($P0)
+    if count > 0 goto each_loop
+.end
+
 =item collect(block)
 
 Run C<block> once for each item in C<self>, with the item passed as an arg.
