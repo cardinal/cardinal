@@ -1183,10 +1183,156 @@ Retrieve the number of elements in C<self>
     .return($P0)
 .end
 
-.sub '[]' :method
+.sub '!do_slice_offset_count'
+    .param pmc a
+    .param int offset
+    .param int count
+    .local int length
+    .local pmc values
+    .local pmc val
+    .local int end
+
+    values = new 'CardinalArray'
+
+    if count < 0 goto nil
+
+    length = elements a
+
+    if offset > length goto nil
+    if offset>=0 goto skip
+    offset = offset + length
+  skip:
+    if offset < 0 goto nil
+
+    end = offset + count
+    if end < length goto loop
+    end = length
+    
+  loop:
+    if offset >= end goto done
+
+    val = a[offset]
+    values.'push'(val)
+    inc offset
+    goto loop
+     
+  done:
+    .return (values)
+  nil:
+    $P0=get_hll_global 'nil'
+    .return ($P0)
+.end
+
+.sub '!range_push_into'
+    .param pmc a
+    .param pmc range
+    .param pmc dest
+    .param int overflow_nil
+    .local pmc val
+    .local int beg, end, count
+    .local int len
+
+    beg = range.'from'()
+    end = range.'to'()
+    len = elements a
+
+    if beg >= 0 goto skip_beg_neg
+    beg = beg + len
+    if beg < 0 goto done
+
+  skip_beg_neg:
+
+    if end <= len goto skip_set_end
+    end = len
+
+  skip_set_end:
+
+    if end >= 0 goto skip_end_neg
+    end = end + len
+
+  skip_end_neg:
+    $P0 = getattribute range, '$!to_exclusive'
+    if $P0 goto skip_inc_end
+    inc end
+  skip_inc_end:
+    count = end - beg
+    if count >= 0 goto skip_neg_count
+    count = 0
+  skip_neg_count:
+
+    $I0 = 0 
+  range_loop:
+    if $I0 >= count goto done
+    $I1 = $I0 + beg
+    if $I1 == len goto range_outofrange
+    val = a[$I1]
+    dest.'push'(val)
+    inc $I0
+    goto range_loop
+    
+  range_outofrange:
+    unless overflow_nil goto done
+    val = get_hll_global 'nil'
+    dest.'push'(val)
+
+  done:
+    .return()
+.end
+
+.sub '!do_slice_range'
+    .param pmc a
+    .param pmc range
+    .local pmc values
+
+    values = new 'CardinalArray'
+
+    '!range_push_into'(a, range, values, 0)
+
+    $I0 = elements values
+    if $I0 == 0 goto nil
+  ok:
+    .return (values)
+  nil:
+    $P0=get_hll_global 'nil'
+    .return ($P0)
+.end
+
+.sub '[]' :method :multi('CardinalArray', 'CardinalInteger')
     .param pmc i
-    $P0 = self[i]
-    .return($P0)
+    .tailcall self.'at'(i)
+.end
+
+.sub '[]' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger')
+    .param pmc offset
+    .param pmc count
+    .tailcall '!do_slice_offset_count'(self, offset, count)
+.end
+
+.sub '[]' :method :multi('CardinalArray', 'CardinalRange')
+    .param pmc range
+    .tailcall '!do_slice_range'(self, range)
+.end
+
+=item slice
+
+Retrieve the number of elements in C<self>
+
+=cut
+
+.sub 'slice' :method :multi('CardinalArray', 'CardinalInteger')
+    .param pmc i
+    .tailcall self.'at'(i)
+.end
+
+.sub 'slice' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger')
+    .param pmc offset
+    .param pmc count
+    .tailcall '!do_slice_offset_count'(self, offset, count)
+.end
+
+.sub 'slice' :method :multi('CardinalArray', 'CardinalRange')
+    .param pmc range
+    .tailcall '!do_slice_range'(self, range)
 .end
 
 .sub '[]=' :method
@@ -1194,28 +1340,6 @@ Retrieve the number of elements in C<self>
     .param pmc v
     self[k] = v
     .return()
-.end
-
-
-=item slice
-
-Retrieve the number of elements in C<self>
-
-=cut
-.sub 'slice' :method
-    .param int start
-    .param int end
-    .local pmc returnMe
-    returnMe = new 'CardinalArray'
-    $I0 = start
-  each_loop:
-    unless $I0 <= end goto each_loop_end
-    $P0 = self[$I0]
-    inc $I0
-    push returnMe, $P0
-    goto each_loop
-  each_loop_end:
-  .return(returnMe)
 .end
 
 =item zip
@@ -1292,49 +1416,8 @@ The zip operator.
     goto loop_check
 
   do_range:
-    .local int beg, end, count
-
-    beg = item.'from'()
-    end = item.'to'()
-
-    if beg >= 0 goto skip_beg_neg
-    beg = beg + length
-    if beg < 0 goto range_outofrange
-
-  skip_beg_neg:
-
-    if end <= length goto skip_set_end
-    end = length
-
-  skip_set_end:
-
-    if end >= 0 goto skip_end_neg
-    end = end + length
-
-  skip_end_neg:
-    $P0 = getattribute item, '$!to_exclusive'
-    if $P0 goto skip_inc_end
-    inc end
-  skip_inc_end:
-    count = end - beg
-    if count >= 0 goto skip_neg_count
-    count = 0
-  skip_neg_count:
-
-    $I0 = 0 
-  range_loop:
-    if $I0 >= count goto loop_check
-    $I1 = $I0 + beg
-    if $I1 == length goto range_outofrange
-    val = self[$I1]
-    values.'push'(val)
-    inc $I0
-    goto range_loop
-    
-   range_outofrange:
-     val = get_hll_global 'nil'
-     values.'push'(val)
-     goto loop_check
+    '!range_push_into'(self, item, values, 1)
+    goto loop_check
 
   done:
    .return (values)
