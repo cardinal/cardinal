@@ -100,23 +100,31 @@ Doesnt work, but it should be close...
 .sub 'fill' :method
     .param pmc value
     .param int offset :optional
-    .param int end_index :optional
+    .param int length :optional
+    .local int i, end_index
 
-    unless end_index goto set_index
     unless offset goto set_offset
+    unless length goto set_length
     goto do_fill
 
-    set_index:
-        end_index = self.'length'()
-        unless offset goto set_offset
-        goto do_fill
     set_offset:
         offset = 0
+        unless length goto set_length
         goto do_fill
+    set_length:
+        length = elements self
+        length = length - offset
     do_fill:
-        $P0 = new 'CardinalString'
-        $P0 = value
-        splice self, value, offset, end_index
+        i = offset
+        end_index = offset + length
+        
+    loop:
+        if i == end_index goto done
+        self[i] = value
+        
+        inc i
+        goto loop
+    done:    
         .return (self)
 .end
 
@@ -161,18 +169,6 @@ match:
     .return($P0)
 .end
 
-
-=item elems()
-
-Return the number of elements in the list.
-
-=cut
-
-.sub 'elems' :method
-    $I0 = elements self
-    .return ($I0)
-.end
-
 =item
 
 Return the class name
@@ -196,11 +192,10 @@ Return a sorted copy of the list
     by = get_hll_global 'infix:cmp'
   have_by:
 
-    .local pmc list, fpa
+    .local pmc fpa
     .local int elems
 
-    list = self
-    elems = list.'elems'()
+    elems = elements self
     fpa = new 'FixedPMCArray'
     fpa = elems
 
@@ -208,7 +203,7 @@ Return a sorted copy of the list
     i = 0
   fpa_loop:
     unless i < elems goto fpa_end
-    $P0 = list[i]
+    $P0 = self[i]
     fpa[i] = $P0
     inc i
     goto fpa_loop
@@ -242,7 +237,7 @@ Return a sorted copy of the list
     hash = new 'CardinalHash'
 
     i = 0
-    len = self.'elems'()
+    len = elements self
 
   loop:
     if i == len goto done
@@ -297,7 +292,7 @@ Return a sorted copy of the list
     uarray = new 'CardinalArray'
     
     i = 0
-    len = self.'elems'()
+    len = elements self
 
   loop:
     if i == len goto done
@@ -406,7 +401,7 @@ Return true is C<self> is of size 0
 =cut
 .sub 'empty?' :method
     .local int len
-    len = self.'length'()
+    len = elements self
     if len == 0 goto empty
     goto not_empty
     empty:
@@ -1150,7 +1145,7 @@ Concatenate the passed array onto C<self>
     .local int i, len
 
     i = 0
-    len = other.'size'()
+    len = elements other
 
   loop:
     if i == len goto done
@@ -1584,7 +1579,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
 
     array = new 'CardinalArray'
     hash = new 'CardinalHash'
-    len = that.'size'()
+    len = elements that
     i = 0
 
   hash_loop:
@@ -1597,7 +1592,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
     goto hash_loop
 
   hash_done:
-    len = this.'size'()
+    len = elements this
     i = 0
 
   diff_loop:

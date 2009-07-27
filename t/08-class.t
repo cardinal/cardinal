@@ -2,7 +2,7 @@ puts '1..7'
 
 class OkayOnCreate
     def initialize(a)
-        puts 'ok ' + a
+        puts "ok #{a}"
     end
 end
 
@@ -10,7 +10,7 @@ a = OkayOnCreate.new(1)
 
 class OkaySayer
     def speak
-        puts 'ok ' + @num
+        puts "ok " + @num.to_s
     end
 
     def setnum(n)
@@ -42,7 +42,7 @@ b.speak
 b.inc
 b.speak
 b.num = b.num + 1
-puts "ok " + b.num
+puts "ok #{b.num}"
 
 class StaticTester
     def num()
@@ -52,7 +52,7 @@ class StaticTester
         @@num = var
     end
     def speak()
-        puts "ok " + @@num
+        puts "ok #{@@num}"
     end
 end
 

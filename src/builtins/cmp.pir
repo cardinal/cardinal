@@ -81,8 +81,8 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     .local int i
-    $I1 = a.'elems'()
-    $I2 = b.'elems'()
+    $I1 = elements a
+    $I2 = elements b
     ne $I1, $I2, fail
     i = 0
   loop:
