@@ -270,9 +270,23 @@ Return a sorted copy of the list
 .end
 
 .sub 'uniq!' :method
+    .param pmc block :optional :named("!BLOCK")
+    .param int block_flag :opt_flag
+    if block_flag goto with_block
     $P0 = self.'uniq'()
+    goto done
+  with_block:
+    $P0 = self.'uniq'(block :named("!BLOCK"))
+  done:
+    $I0 = elements $P0
+    $I1 = elements self
+    if $I0 == $I1 goto no_change
     self = 0
     self.'concat'($P0)
+    .return (self)
+  no_change:
+    $P0 = get_hll_global 'nil'
+    .return ($P0)
 .end
 
 .sub reject :method

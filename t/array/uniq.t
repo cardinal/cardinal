@@ -22,15 +22,11 @@ c = [3,13,2,25,5,9]
 c = c.uniq {|x| x % 10}
 is c, [3,2,25,9], "uniq with block"
 
-todo "Array#uniq! with block"
-# The call to uniq! with a block fails.
-# This is wrong because in Ruby every method will work when a block is passed, even when it is ignored.
-d = [3,13,2,25,5,9]
-#d = c.uniq! {|x| x % 10}
+c = [3,13,2,25,5,9]
+d = c.uniq! {|x| x % 10}
 is d, [3,2,25,9], "uniq! with block"
 
 # uniq! returns nil when nothing is changed
-todo "Array#uniq! where nothing is changed should return nil"
 e = [4, 5, 6]
 e = e.uniq!
 is e, nil, "uniq! removing nothing"
