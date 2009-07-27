@@ -1,4 +1,4 @@
-## $Id$
+# $Id$
 
 =head1 NAME
 
@@ -1446,6 +1446,43 @@ The zip operator.
 
   done:
    .return (values)
+.end
+
+.sub 'fetch' :method
+    .param int index 
+    .param pmc default_value      :optional
+    .param int has_default_value  :opt_flag
+    .param pmc default_block      :optional :named('!BLOCK')
+    .param int has_default_block  :opt_flag
+    .local int length
+
+    $I0 = has_default_block + has_default_value
+    if $I0 > 1 goto incorrect_args
+
+    length = elements self
+
+    if index >= length goto out_of_bounds
+    $I0 = index
+    if index >= 0 goto skip_negative
+    $I0 = index + length
+    if index < 0 goto out_of_bounds
+
+  skip_negative:
+    $P0=self[$I0]
+    .return ( $P0 )
+
+  out_of_bounds:
+    if has_default_block goto do_block # block supersedes default value
+    if has_default_value goto do_value
+# TODO: throw exception IndexError
+    .return ( index )
+  do_value:
+    .return ( default_value )
+  do_block:
+    $P0=default_block( index )
+    .return ( $P0 )
+  incorrect_args:
+# TODO: pass warning
 .end
 
 .sub '_cmp' :vtable('cmp') :method
