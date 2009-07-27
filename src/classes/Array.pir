@@ -1166,8 +1166,20 @@ Retrieve the number of elements in C<self>
 
 =cut
 .sub 'at' :method
-    .param pmc i
-    $P0 = self[i]
+    .param int i
+
+    if i >= 0 goto do_access
+    # if the index is negative check its no out of bounds to avoid
+    # exception from underlying pmc - alternative is to catch the exception
+    $I1 = elements self
+    $I1 = i + $I1
+    if $I1 < 0 goto is_nil
+  do_access:
+    $P0 = self[ i ]
+    unless null $P0 goto skip
+  is_nil:
+    $P0 = get_hll_global 'nil'
+  skip:
     .return($P0)
 .end
 
@@ -1275,27 +1287,9 @@ The zip operator.
     $I0 = isa item, 'CardinalRange'
     if $I0 goto do_range
 
-    $I0=item
-
-    if $I0 < 0 goto negative
-
-    if $I0 >=  length goto nil_item
-
-  valid:
-    val = self[$I0]
-  push_val:
+    val = self.'at'(item)
     values.'push'(val)
     goto loop_check
-
-  nil_item:
-    val = get_hll_global 'nil'
-    goto push_val
-
-  negative:
-    $I0=$I0+length
-    if $I0 < 0 goto nil_item
-    if $I0 >= length goto nil_item
-    goto valid
 
   do_range:
     .local int beg, end, count
