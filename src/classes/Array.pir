@@ -610,13 +610,20 @@ Returns a string comprised of all of the list, separated by the string SEPARATOR
 
 .sub 'join' :method
     .param string sep :optional
+    .param int sep_given :opt_flag
     .local string res
     .local string tmp
     .local int len
     .local int i
-
+    
     res = ""
+    
+    if sep_given goto skip_setting_sep
 
+    $P0 = get_hll_global '$,'
+    sep = $P0
+    
+  skip_setting_sep: 
     len = elements self
     if len == 0 goto done
 
