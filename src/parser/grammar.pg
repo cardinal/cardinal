@@ -166,9 +166,7 @@ rule block_signature {
 }
 
 token variable {
-    | <varname> {*}      #= varname
-    | 'nil'     {*}      #= nil
-    | 'self'    {*}      #= self
+    <varname> {*}
 }
 
 token varname {
@@ -420,6 +418,10 @@ token literal {
     | <float> {*}          #= float
     | <integer> {*}        #= integer
     | <string> {*}         #= string
+    | 'true' {*}           #= true
+    | 'false' {*}          #= false
+    | 'nil' {*}            #= nil
+    | 'self' {*}           #= self
 }
 
 token float {

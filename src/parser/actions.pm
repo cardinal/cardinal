@@ -233,20 +233,12 @@ method indexed($/) {
     make $past;
 }
 
-method variable($/, $key) {
+method variable($/) {
     my $past;
-    if $key eq 'varname' {
-        my $varname := $/<varname>;
-        $past := $varname.ast();
-        if is_a_sub(~$varname) { # unary sub
-            $past := PAST::Op.new(:pasttype('call'), :node($varname), $past);
-        }
-    }
-    elsif $key eq 'self' {
-        $past := PAST::Op.new(:inline('%r = self'));
-    }
-    elsif $key eq 'nil' {
-        $past := PAST::Var.new(:scope('package'), :name('nil'));
+    my $varname := $/<varname>;
+    $past := $varname.ast();
+    if is_a_sub(~$varname) { # unary sub
+        $past := PAST::Op.new(:pasttype('call'), :node($varname), $past);
     }
     make $past;
 }
@@ -700,7 +692,18 @@ method scope_identifier($/) {
 }
 
 method literal($/, $key) {
-    my $past := $/{$key}.ast();
+    my $past;
+    if $key eq 'true' {
+        $past := PAST::Op.new(:inline("%t = get_hll_global ['Bool'], 'True'"), :returns('Bool'));
+    } elsif $key eq 'false' {
+        $past := PAST::Op.new(:inline("%t = get_hll_global ['Bool'], 'False'"), :returns('Bool'));
+    } elsif $key eq 'nil' {
+        $past := PAST::Op.new(:inline("%t = get_hll_global 'nil'"), :returns('NilClass'));
+    } elsif $key eq 'self' {
+        $past := PAST::Op.new(:inline('%r = self'));
+    } else {
+        $past := $/{$key}.ast();
+    }
     make $past;
 }
 
