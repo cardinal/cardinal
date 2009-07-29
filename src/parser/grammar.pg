@@ -387,7 +387,7 @@ token module_identifier {
 token global {
     '$' [
         | <ident> 
-        | <[!@&`'+~=/\\,;.<>_*$?:"] >
+        | <[!@&`'+~=/\\,;.<>_*$?:"]>
         | <digit>+ 
         | '-'<[0adFiIlpvw]>
         ]
