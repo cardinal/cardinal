@@ -396,6 +396,23 @@ Return index (or nil) of ELEMENT, starting from the end
     .return($I0)
 .end
 
+=item replace(ARRAY)
+
+Replace current contents of array with ARRAY.
+
+=cut
+
+.sub 'replace' :method
+    .param pmc other_array
+    .local int len
+
+    len = elements self
+
+    splice self, other_array, 0, len
+
+    .return(self)
+.end
+
 =item
 Return true is C<self> is of size 0
 =cut
