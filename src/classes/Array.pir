@@ -1412,10 +1412,24 @@ Retrieve the number of elements in C<self>
 .end
 
 .sub '[]=' :method
-    .param pmc k
+    .param pmc i
     .param pmc v
-    self[k] = v
-    .return()
+    .local int length
+    .local pmc nil
+    
+    length = elements self
+    if i <= length goto set_value
+    
+    nil = get_hll_global 'nil'
+  loop:
+    self[length] = nil
+    
+    inc length
+    if i > length goto loop
+    
+  set_value:
+    self[i] = v
+    .return (v)
 .end
 
 =item zip
