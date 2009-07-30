@@ -396,6 +396,33 @@ Return index (or nil) of ELEMENT, starting from the end
     .return($I0)
 .end
 
+=item insert(INDEX, ELEMENT, ...)
+
+Insert ELEMENT(s) at INDEX
+
+=cut
+
+.sub 'insert' :method
+    .param int index
+    .param pmc args :slurpy
+    .local int len
+
+    len = elements self
+
+    if index >= 0 goto skip_negative
+    index = index + 1
+    index = index + len
+    if index < 0 goto throw_index_exception
+
+  skip_negative:
+    splice self, args, index, 0
+
+    .return(self)
+
+  throw_index_exception:
+    .return(self)
+.end
+
 =item replace(ARRAY)
 
 Replace current contents of array with ARRAY.
