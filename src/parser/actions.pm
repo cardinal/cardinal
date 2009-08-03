@@ -20,8 +20,19 @@ class cardinal::Grammar::Actions;
 method TOP($/) {
     my $past := $<comp_stmt>.ast();
     $past.blocktype('declaration');
-    $past.pirflags(':load');
+    $past.pirflags(':load :main');
     $past.hll('cardinal');
+
+    my $init := PAST::Block.new();
+    $init.push(
+        PAST::Op.new( :inline('$P0 = compreg "cardinal"',
+                              'unless null $P0 goto have_cardinal',
+                              'load_bytecode "cardinal.pbc"',
+                              'have_cardinal:') )
+    );
+    $init.hll('parrot');
+    $init.pirflags(":init :load");
+    $past.loadinit($init);
 
     our $?INIT;
         if defined( $?INIT ) {
