@@ -61,6 +61,11 @@ end
 def test(file, name="")
     print "Adding #{file} as a test " if DEBUG
     pir_file = file.gsub(/.t$/,'.pir')
+    if pir_file =~ /\//
+        pir_file.gsub!(/\/([^\/]+)$/) {"/gen_#$1"}
+    else
+        pir_file = "gen_#{pir_file}"
+    end
     if name == ""
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
@@ -74,13 +79,14 @@ def test(file, name="")
         end
         puts "named #{name}" if DEBUG
         task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do
-            run_test pir_file
+            run_test pir_file, name
         end
     end
 end
 
-def run_test(file)
+def run_test(file,name="")
     puts file if DEBUG
+    name = file if name == ""
     $test_files += 1
     command = "#{CONFIG[:parrot]}"
     command = "ruby" if TEST_WITH_CRUBY
@@ -148,7 +154,7 @@ def run_test(file)
             result = "Complete failure... no plan given"
             $failures += 1
         end
-        puts "Running test #{file} #{result}"
+        puts "Running test #{name} #{result}"
     end
 end
 
