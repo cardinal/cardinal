@@ -1,4 +1,5 @@
 DEBUG = false
+TEST_WITH_CRUBY = false
 CONFIG = {} 
 $tests = 0
 $test_files = 0
@@ -59,19 +60,31 @@ end
 
 def test(file, name="")
     print "Adding #{file} as a test " if DEBUG
+    pir_file = file.gsub(/.t$/,'.pir')
     if name == ""
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
-    puts "named #{name}" if DEBUG
-    task name => ["cardinal", "Test.pir"] do
-        run_test file
+    if TEST_WITH_CRUBY
+        task name do
+            run_test file
+        end
+    else
+        file "t/#{pir_file}" => [:config, "t/#{file}", "src/parser/actions.pm", "src/parser/grammar.pg"] do
+            parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+        end
+        puts "named #{name}" if DEBUG
+        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do
+            run_test pir_file
+        end
     end
 end
 
 def run_test(file)
     puts file if DEBUG
     $test_files += 1
-    IO.popen("./cardinal t/#{file}", "r") do |t|
+    command = "#{CONFIG[:parrot]}"
+    command = "ruby" if TEST_WITH_CRUBY
+    IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
             plan = t.readline
         rescue EOFError
