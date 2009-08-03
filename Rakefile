@@ -46,9 +46,11 @@ def them
     $pl ? "them" : "it"
 end
 
-def parrot(input, output, grammar="", target="")
+def parrot(input, output="", grammar="", target="")
     target = "--target=#{target}" if target != ""
-    sh "#{CONFIG[:parrot]} #{grammar} #{target} -o #{output} #{input}"
+    output = "-o #{output}" if output != ""
+    puts "Running parrot: #{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
+    sh "#{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}"
 end
 
 def make_exe(pbc)
@@ -354,7 +356,7 @@ namespace :test do |ns|
         puts " #{$ok} tests passed, #{$unexpected_passes} of which were unexpected." 
         unless $u_p_files.empty?
             $u_p_files.uniq!
-            $pl = $u_p_files > 1
+            $pl = $u_p_files.length > 1
             puts " Unexpected passes were found in the following #{pl "file"}:"
             $u_p_files.each do |pass|
                 puts "  #{pass}"
