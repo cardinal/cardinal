@@ -74,7 +74,7 @@ def test(file, name="")
             run_test file
         end
     else
-        file "t/#{pir_file}" => [:config, "t/#{file}", "src/parser/actions.pm", "src/parser/grammar.pg"] do
+        file "t/#{pir_file}" => [:config, "t/#{file}", "src/gen_actions.pir", "src/gen_grammar.pir"] do
             parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
         end
         puts "named #{name}" if DEBUG
