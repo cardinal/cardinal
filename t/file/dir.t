@@ -16,7 +16,10 @@ else
 		Dir.rmdir('./tmp')
 		files =  Dir.entries('.')
 		pass '.entries on Dir'
-		is files.include?('tmp'), 'true', '.rmdir on Dir'
+		is files.include?('tmp'), false, '.rmdir on Dir'
+	else 
+		fail '.entries on Dir (or mkdir on Dir)'
+		skip '.rmdir'
 	end
 end
 
