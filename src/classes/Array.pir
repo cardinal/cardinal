@@ -598,8 +598,7 @@ Treats the list as a stack, pushing ELEMENTS onto the end of the list.  Returns 
     inc i
     goto loop
   done:
-    len = elements self
-    .return (len)
+    .return (self)
 .end
 
 =item join(SEPARATOR)
