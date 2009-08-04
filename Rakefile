@@ -1,5 +1,5 @@
-DEBUG = false
-TEST_WITH_CRUBY = false
+DEBUG = ENV['debug'] || false
+ALTERNATIVE_RUBY = ENV['test_with'] || false
 CONFIG = {} 
 $tests = 0
 $test_files = 0
@@ -69,7 +69,7 @@ def test(file, name="")
     if name == ""
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
-    if TEST_WITH_CRUBY
+    if ALTERNATIVE_RUBY
         task name do
             run_test file
         end
@@ -88,8 +88,7 @@ def run_test(file,name="")
     puts file if DEBUG
     name = file if name == ""
     $test_files += 1
-    command = "#{CONFIG[:parrot]}"
-    command = "ruby" if TEST_WITH_CRUBY
+    command = ALTERNATIVE_RUBY || CONFIG[:parrot]
     IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
             plan = t.readline
