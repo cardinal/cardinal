@@ -156,11 +156,29 @@ Returns the characters in C<self> in reverse order. Destructive update.
 .end
 
 .sub 'each' :method :multi('CardinalString',_)
-    .param pmc delim
+    .param pmc delim :optional
+    .param int delim_flag :opt_flag
     .param pmc block :named('!BLOCK')
-    .local pmc list
-    list = self.'split'(delim)
-    list.'each'(block)
+    .local pmc str, iterator
+    if delim_flag goto have_delim
+    delim = get_hll_global '$/'
+  have_delim:
+    iterator = iter self
+    str = new 'CardinalString'
+  main_loop:
+    unless iterator goto loop_end
+    $P0 = shift iterator
+    str.'concat'($P0)
+    unless $P0 == delim goto main_loop
+    block(str)
+    str = new 'CardinalString'
+    goto main_loop
+  loop_end:
+    $P0 = str.'empty?'()
+    if $P0 goto done
+    block(str)
+  done:
+    .return (self)
 .end
 
 .sub 'empty?' :method
