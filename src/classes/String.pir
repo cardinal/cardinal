@@ -163,6 +163,18 @@ Returns the characters in C<self> in reverse order. Destructive update.
     list.'each'(block)
 .end
 
+.sub 'empty?' :method
+    .local pmc value
+    $I0 = elements self
+    if $I0 == 0 goto yes
+    value = get_hll_global ['Bool'], 'False'
+    goto done
+  yes:
+    value = get_hll_global ['Bool'], 'True'
+  done:
+    .return (value)
+.end
+
 .sub lc :method
     .local string tmps
     .local pmc retv

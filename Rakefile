@@ -350,6 +350,7 @@ namespace :test do |ns|
         test "string/cmp.t"
         test "string/concat.t"
         test "string/downcase.t"
+        test "string/empty.t"
         test "string/eq.t"
         test "string/mult.t"
         test "string/new.t"
@@ -358,7 +359,7 @@ namespace :test do |ns|
         test "string/reverse.t"
         test "string/upcase.t"
 
-        task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
+        task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :empty, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
     end
 
     task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
