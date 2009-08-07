@@ -1410,25 +1410,104 @@ Retrieve the number of elements in C<self>
     .tailcall '!do_slice_range'(self, range)
 .end
 
-.sub '[]=' :method
-    .param pmc i
+.sub '!extend_array'
+    .param pmc a
+    .param int from
+    .param int to
+    .local int c
+    .local pmc nil
+
+    nil = get_hll_global 'nil'
+    c = from
+  loop:
+    a[c] = nil
+    
+    inc c
+    if c < to goto loop
+.end
+
+.sub '[]=' :method :multi('CardinalArray', 'CardinalInteger', _)
+    .param int i
     .param pmc v
     .local int length
-    .local pmc nil
     
     length = elements self
     if i <= length goto set_value
     
-    nil = get_hll_global 'nil'
-  loop:
-    self[length] = nil
-    
-    inc length
-    if i > length goto loop
-    
+    $I0 = i + length
+    if $I0 < 0  goto throw_index_exception
+
+    '!extend_array'(self, length, i)
+
   set_value:
     self[i] = v
     .return (v)
+
+  throw_index_exception: # TODO
+    .return(v)
+.end
+
+.sub '[]=' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger', _)
+    .param int i
+    .param int c
+    .param pmc v
+    .local int length
+    .local pmc nil
+
+    length = elements self
+
+    if i >= 0 goto skip_negative
+
+    $I0 = i + length
+    if $I0 < 0  goto throw_index_exception
+
+  skip_negative:
+    if i <= length goto skip_fill
+    
+    '!extend_array'(self, length, i)
+
+  skip_fill:
+    $I0 = isa v, 'CardinalArray'
+    if $I0 goto skip_make_array
+
+    $P0 = new 'CardinalArray'
+
+    $I0 = isa v, 'NilClass'
+    if $I0 goto do_splice
+
+    $P0.'push'(v)
+
+    goto do_splice
+
+  skip_make_array:
+    $P0 = v
+
+  do_splice:
+    splice self, $P0, i, c
+
+   .return (v)
+
+  throw_index_exception: # TODO
+    .return(v)
+.end
+
+.sub '[]=' :method :multi('CardinalArray', 'CardinalRange', _)
+    .param pmc r
+    .param pmc v
+    .local pmc beg
+    .local pmc end
+    .local pmc count
+
+    beg = r.'from'()
+    end = r.'to'()
+
+    $P0 = getattribute r, '$!to_exclusive'
+    if $P0 goto skip_exclusive_to
+    inc end
+
+  skip_exclusive_to:
+    count = end - beg
+    .tailcall self.'[]='(beg, count, v)
 .end
 
 =item zip

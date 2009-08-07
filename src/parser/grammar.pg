@@ -86,7 +86,7 @@ rule end {
 }
 
 token indexed_assignment {
-    <basic_primary> '[' <key=arg> ']' <.ws> '=' <.ws> <rhs=arg>
+    <basic_primary> '[' <keys=args> ']' <.ws> '=' <.ws> <rhs=arg>
     {*}
 }
 
