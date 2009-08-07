@@ -1,6 +1,6 @@
 require 'Test'
 include Test
-plan 6
+plan 7
 
 s = String.new("ruby")
 isnt s, nil, '.new for String'

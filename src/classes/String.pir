@@ -480,6 +480,18 @@ Warning: Partial implementation. Look for TODO
   each_loop_done:
 .end
 
+.sub 'each_char' :method
+    .param pmc block :named('!BLOCK')
+    .local pmc iterator, item
+    iterator = iter self
+  each_loop:
+    unless iterator goto each_loop_done
+    item = shift iterator
+    block(item)
+    goto each_loop
+  each_loop_done:
+.end
+
 =item perl()
 
 Returns a Perl representation of the Str.
