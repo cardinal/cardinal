@@ -11,13 +11,13 @@ proclaim r.include?(5), '.include? for Range'
 nok r.include?(100), '.include? for Range'
 proclaim r.member?(6), '.member? for Range'
 
-skip("Parens around a range are for some reason unparseable.", "15")
+skip("Parens around a range are unparseable.", "15")
 #arr = (7..9).to_a
 #is arr, [7, 8, 9], 'to_a for Range'
 
-skip("Something unparseable here.","15",3)
+skip("Parens around a range are unparseable.","15",3)
 #prev = 1
-#2...4.each do |cur|
+#(2...4).each do |cur|
 #   if(cur == (prev + 1))
 #    	pass 'range .each' 
 #   end
