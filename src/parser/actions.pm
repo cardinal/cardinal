@@ -423,7 +423,7 @@ method for_stmt($/) {
     my $list := $<expr>.ast();
     my $body := $<comp_stmt>.ast();
     my $var := $<variable>.ast();
-    $body.blocktype('declaration');
+    $body.blocktype('immediate');
     $var.scope('parameter');
     $var.isdecl(0);
     $body[0].push($var);
