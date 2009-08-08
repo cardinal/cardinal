@@ -758,7 +758,7 @@ if passed, otherwise returns nil.
     .local pmc return
     .local pmc nil
 
-    nil = new 'NilClass'
+    nil = get_hll_global 'nil'
     return = nil
 
     len = elements self
@@ -795,7 +795,7 @@ if passed, otherwise returns nil.
 .sub delete_at :method
     .param pmc index
     .local pmc nil, result
-    nil = new 'NilClass'
+    nil = get_hll_global 'nil'
 
     result = nil
 

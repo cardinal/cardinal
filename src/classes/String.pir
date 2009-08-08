@@ -455,7 +455,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
         .return($S0)
     oob:
         # out of bounds, return nil
-        $P0 = new 'NilClass'
+        $P0 = get_hll_global 'nil'
         .return($P0)
     init_stop:
         stop = 1

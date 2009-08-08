@@ -162,7 +162,7 @@ Perform initializations and create the Dir class
             goto loop
         loop_end:
 
-        $P2 = new 'NilClass'
+        $P2 = get_hll_global 'nil'
         .return ($P2)
 .end
 
