@@ -97,6 +97,11 @@ to the cardinal compiler.
   args_end:
     set_hll_global 'ARGS', args
 
+    .local pmc eh
+    eh = new 'ExceptionHandler'
+    set_addr eh, handler
+    push_eh eh
+
     $P0 = compreg 'cardinal'
     $P1 = $P0.'command_line'(args_str)
 
@@ -110,6 +115,41 @@ to the cardinal compiler.
     $P0()
     goto iter_loop
   iter_end:
+    pop_eh
+    exit 0
+  handler:
+    .local pmc ex, tr, it
+    .local string type, msg
+    .get_results (ex)
+    type = typeof ex
+    msg = ex
+    tr = ex.'backtrace'()
+    it = iter tr 
+    .local string file, line, loc
+  eh_loop:
+    unless it goto eh_done
+    $P0 = shift it
+    $P1 = $P0['annotations']
+    file = $P1['file']
+    line = $P1['line']
+    loc = $P0['sub']
+    if msg == "" goto partial_line
+  full_line:
+    'printf'("%s:%s:in `%s': %s (%s)\n", file, line, loc, msg, type)
+    goto eh_clear
+  partial_line:
+    if loc == "" goto no_loc
+    loc = 'sprintf'(":in `%s'",loc)
+  no_loc:
+    'printf'("\tfrom %s:%s%s\n", file, line, loc)
+  eh_clear:
+    file = ""
+    line = ""
+    loc = ""
+    msg = ""
+    type = ""
+    goto eh_loop
+  eh_done:
 .end
 
 .sub 'load_library' :method
