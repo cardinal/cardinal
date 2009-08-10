@@ -1142,11 +1142,6 @@ Creates a new Array containing the results and returns it.
     .return (result)
 .end
 
-.sub 'map' :method
-    .param pmc block :named( "!BLOCK" )
-    .tailcall self.'collect'( "!BLOCK" => block )
-.end
-
 .sub 'collect!' :method
     .param pmc block :named('!BLOCK')
     .local int i, len
@@ -1163,14 +1158,7 @@ Creates a new Array containing the results and returns it.
     goto loop
 
   done:
-    .return (self)
 .end
-
-.sub 'map!' :method
-    .param pmc block :named( "!BLOCK" )
-    .tailcall self.'collect!'( "!BLOCK" => block )
-.end
-
 
 =item flatten
 
@@ -2185,7 +2173,7 @@ Returns the elements of LIST in the opposite order.
     .return(array)
 .end
 
-## TODO: join reduce sort zip
+## TODO: join map reduce sort zip
 
 =back
 
