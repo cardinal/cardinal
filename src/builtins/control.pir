@@ -15,6 +15,30 @@ src/builtins/control.pir - Cardinal Control functions
 .include 'except_types.pasm'
 .include 'except_severity.pasm'
 
+.sub raise :multi()
+    .local pmc name, ex
+    name = get_hll_global '$!'
+    $I0 = isnull name
+    unless $I0 goto have_name
+    name = get_hll_namespace ['RuntimeError']
+  have_name:
+    ex = new name
+    ex['severity'] = .EXCEPT_ERROR
+    say "No args"
+    throw ex
+.end
+
+.sub raise :multi(CardinalString)
+    .param pmc description
+    .local pmc ex
+    ex = new 'RuntimeError'
+    ex['severity'] = .EXCEPT_ERROR
+    $S0 = description
+    ex = $S0
+    say $S0
+    throw ex
+.end
+
 =item lambda
 
 =cut
