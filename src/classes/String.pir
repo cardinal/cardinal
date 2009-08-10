@@ -2,11 +2,11 @@
 
 =head1 TITLE
 
-CardinalString - Cardinal String class and related functions
+String - Cardinal String class and related functions
 
 =head1 DESCRIPTION
 
-This file sets up the C<CardinalString> type.
+This file sets up the C<String> type.
 
 Stolen from Rakudo
 
@@ -16,25 +16,31 @@ Stolen from Rakudo
 
 =cut
 
-.namespace ['CardinalString']
+.namespace ['String']
 
 .include 'cclass.pasm'
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, strproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    strproto = cardinalmeta.'new_class'('CardinalString', 'parent'=>'parrot;String CardinalObject')
-    cardinalmeta.'register'('String', 'parent'=>'CardinalObject', 'protoobject'=>strproto)
+    .local pmc cardinalmeta, strproto, core_type, hll_type, interp, ns
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
+    strproto = cardinalmeta.'new_class'('String', 'parent'=>'parrot;String Object')
+    cardinalmeta.'register'('String', 'parent'=>'Object', 'protoobject'=>strproto)
+
+    ns = get_root_namespace ['parrot';'String']
+    core_type = get_class ns
+    hll_type = get_class 'String'
+    interp = getinterp
+    interp.'hll_map'(core_type, hll_type)
 .end
 
 .sub 'new' :method :multi(_)
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     .return ($P0)
 .end
 
 .sub 'new' :method :multi(_,_)
     .param pmc a
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = a
     .return ($P0)
 .end
@@ -53,7 +59,7 @@ Returns the number of characters in C<self>
 .sub 'chars' :method
     .local pmc retv
 
-    retv = new 'CardinalInteger'
+    retv = new 'Integer'
     $S0  = self
     $I0  = length $S0
     retv = $I0
@@ -69,7 +75,7 @@ Returns the number of characters in C<self>
 .sub 'size' :method
     .local pmc retv
 
-    retv = new 'CardinalInteger'
+    retv = new 'Integer'
     $S0  = self
     $I0  = length $S0
     retv = $I0
@@ -92,7 +98,7 @@ Adds given object to C<self>. Returns self
 
 =item reverse()
 
-Returns a new CardinalString with the characters of C<self> in reverse order.
+Returns a new String with the characters of C<self> in reverse order.
 
 =cut
 
@@ -100,7 +106,7 @@ Returns a new CardinalString with the characters of C<self> in reverse order.
     .local pmc res
     .local int i
 
-    res = new 'CardinalString'
+    res = new 'String'
 
     .local pmc iterator, item
     iterator = iter self
@@ -125,7 +131,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
     .return(self)
 .end
 
-.sub 'split' :method :multi('CardinalString',_)
+.sub 'split' :method :multi('String',_)
     .param string delim
     .local string objst
     .local pmc pieces
@@ -134,7 +140,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
     .local int len
     .local int i
 
-    retv = new 'CardinalArray'
+    retv = new 'Array'
 
     objst = self
     split pieces, delim, objst
@@ -144,7 +150,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
   loop:
     if i == len goto done
 
-    tmps = new 'CardinalString'
+    tmps = new 'String'
     tmps = pieces[i]
 
     retv.'push'(tmps)
@@ -155,7 +161,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
     .return(retv)
 .end
 
-.sub 'each' :method :multi('CardinalString',_)
+.sub 'each' :method :multi('String',_)
     .param pmc delim :optional
     .param int delim_flag :opt_flag
     .param pmc block :named('!BLOCK')
@@ -164,14 +170,14 @@ Returns the characters in C<self> in reverse order. Destructive update.
     delim = get_hll_global '$/'
   have_delim:
     iterator = iter self
-    str = new 'CardinalString'
+    str = new 'String'
   main_loop:
     unless iterator goto loop_end
     $P0 = shift iterator
     str.'concat'($P0)
     unless $P0 == delim goto main_loop
     block(str)
-    str = new 'CardinalString'
+    str = new 'String'
     goto main_loop
   loop_end:
     $P0 = str.'empty?'()
@@ -200,7 +206,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
     tmps = self
     downcase tmps
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     retv = tmps
 
     .return(retv)
@@ -214,7 +220,7 @@ Returns a copy of C<self> with all upper case letters converted to lower case
 
 .sub downcase :method
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = self
     .tailcall s.'lc'()
 .end
@@ -227,7 +233,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
 
 .sub upcase :method
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = self
     .tailcall s.'uc'()
 .end
@@ -239,7 +245,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     tmps = self
     upcase tmps
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     retv = tmps
 
     .return(retv)
@@ -251,7 +257,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local pmc retv
     .local int len
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     tmps = self
 
     len = length tmps
@@ -274,7 +280,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local pmc retv
     .local int len
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     tmps = self
 
     len = length tmps
@@ -303,7 +309,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local pmc retv
     .local int len
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     tmps = self
 
     len = length tmps
@@ -350,7 +356,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     splitby = "\n"
   have_split:
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     $I0 = self.'chars'()
     if $I0 == 0 goto done
     $I1 = length splitby
@@ -399,7 +405,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local pmc retv
     .local int len
 
-    retv = new 'CardinalString'
+    retv = new 'String'
     tmps = self
     chopn tmps, 1
     retv = tmps
@@ -544,7 +550,7 @@ Returns self
 =cut
 
 .sub 'to_s' :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = self
     .return ($P0)
 .end
@@ -575,7 +581,7 @@ form, if uppercase.
 .sub 'lc'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'lc'()
 .end
@@ -592,7 +598,7 @@ Like C<lc>, but only affects the first character.
 .sub 'lcfirst'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'lcfirst'()
 .end
@@ -611,7 +617,7 @@ full "uppercase".
 .sub 'uc'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'uc'()
 .end
@@ -628,7 +634,7 @@ Performs a Unicode "titlecase" operation on the first character of the string.
 .sub 'ucfirst'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'ucfirst'()
 .end
@@ -646,7 +652,7 @@ C<s:g/(\w+)/{ucfirst $1}/> on it.
 .sub 'capitalize'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'capitalize'()
 .end
@@ -654,10 +660,10 @@ C<s:g/(\w+)/{ucfirst $1}/> on it.
 
 =item split
 
- our CardinalArray multi Str::split ( Str $delimiter ,  Str $input = $+_, Int $limit = inf )
- our CardinalArray multi Str::split ( Rule $delimiter = /\s+/,  Str $input = $+_, Int $limit = inf )
- our CardinalArray multi Str::split ( Str $input :  Str $delimiter          , Int $limit = inf )
- our CardinalArray multi Str::split ( Str $input : Rule $delimiter          , Int $limit = inf )
+ our Array multi Str::split ( Str $delimiter ,  Str $input = $+_, Int $limit = inf )
+ our Array multi Str::split ( Rule $delimiter = /\s+/,  Str $input = $+_, Int $limit = inf )
+ our Array multi Str::split ( Str $input :  Str $delimiter          , Int $limit = inf )
+ our Array multi Str::split ( Str $input : Rule $delimiter          , Int $limit = inf )
 
 String delimiters must not be treated as rules but as constants.  The
 default is no longer S<' '> since that would be interpreted as a constant.
@@ -674,8 +680,8 @@ B<Note:> partial implementation only
     .param string target
     .local pmc a, b
 
-    a = new 'CardinalString'
-    b = new 'CardinalString'
+    a = new 'String'
+    b = new 'String'
 
     a = target
     b = sep
@@ -694,11 +700,11 @@ B<Note:> partial implementation only
     .local pmc flatargs
     .local string sep
 
-    flatargs = new 'CardinalArray'
+    flatargs = new 'Array'
     sep = ''
     unless args goto have_flatargs
     $P0 = args[0]
-    $I0 = isa $P0, 'CardinalArray'
+    $I0 = isa $P0, 'Array'
     if $I0 goto have_sep
     $P0 = shift args
     sep = $P0
@@ -706,7 +712,7 @@ B<Note:> partial implementation only
   arg_loop:
     unless args goto have_flatargs
     $P0 = shift args
-    $I0 = isa $P0, 'CardinalArray'
+    $I0 = isa $P0, 'Array'
     if $I0 goto arg_array
     push flatargs, $P0
     goto arg_loop
@@ -738,7 +744,7 @@ B<Note:> partial implementation only
     .local pmc s
 
     if has_len goto end
-    s = new 'CardinalString'
+    s = new 'String'
     s = x
     len = s.'chars'()
 
@@ -758,7 +764,7 @@ Returns string with one Char removed from the end.
 .sub 'chop'
     .param string a
     .local pmc s
-    s = new 'CardinalString'
+    s = new 'String'
     s = a
     .tailcall s.'chop'()
 .end
@@ -822,12 +828,12 @@ Should replace vec with declared arrays of bit, uint2, uint4, etc.
 
 =item words
 
- our CardinalArray multi Str::words ( Rule $matcher = /\S+/,  Str $input = $+_, Int $limit = inf )
- our CardinalArray multi Str::words ( Str $input : Rule $matcher = /\S+/, Int $limit = inf )
+ our Array multi Str::words ( Rule $matcher = /\S+/,  Str $input = $+_, Int $limit = inf )
+ our Array multi Str::words ( Str $input : Rule $matcher = /\S+/, Int $limit = inf )
 
 =cut
 
-.sub 'infix:<<' :multi('CardinalString',_)
+.sub 'infix:<<' :multi('String',_)
     .param pmc s
     .param pmc item
     concat s, item

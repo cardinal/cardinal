@@ -97,7 +97,7 @@ Swiped from Rakudo.
     .return ($P0)
 .end
 
-.sub 'infix:==' :multi(CardinalArray,CardinalArray)
+.sub 'infix:==' :multi(Array,Array)
     .param pmc a
     .param pmc b
     .local int i

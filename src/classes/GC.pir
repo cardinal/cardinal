@@ -20,10 +20,10 @@ Perform initializations and create the GC class
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
     cardinalmeta = $P0.'new_class'('GC', 'parent'=>'', 'attr'=>'$!disabled')
     #$P2 = cardinalmeta.'HOW'()
-    #$P1 = new 'CardinalInteger'
+    #$P1 = new 'Integer'
     #$P1 = 0
     #setattribute $P2, '$!disabled', $P1
     #set_hll_global ['GC'], '!CARDINALMETA', cardinalmeta
@@ -39,8 +39,8 @@ Perform initializations and create the GC class
 #.end
 
 .sub 'init' :vtable('init')
-    $P1 = new 'CardinalInteger'
-    $P1 = 0
+    $P1 = new 'Bool'
+    $P1 = get_hll_global ['Bool'], 'false'
     setattribute self, '$!disabled', $P1
 .end
 
@@ -50,15 +50,15 @@ Perform initializations and create the GC class
    if $P0 == 1 goto already_disabled
    goto disable
    disable:
-        $P1 = new 'CardinalInteger'
+        $P1 = new 'Integer'
         $P1 = 1
         setattribute self, '$!disabled', $P1
         collectoff
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $P0 = 'false'
         .return ($P0)
    already_disabled:
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $P0 = 'true'
         .return ($P0)
 .end
@@ -68,15 +68,15 @@ Perform initializations and create the GC class
    if $P0 == 1 goto enable
    goto already_enabled
    already_enabled:
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $P0 = 'false'
         .return ($P0)
    enable:
-        $P1 = new 'CardinalInteger'
+        $P1 = new 'Integer'
         $P1 = 0
         setattribute self, '$!disabled', $P1
         collecton
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $P0 = 'true'
         .return ($P0)
 .end
@@ -92,7 +92,7 @@ Perform initializations and create the GC class
     .local pmc addr_space, itr
     .local pmc test
     .return(1)
-    test = new 'CardinalString'
+    test = new 'String'
     test = "yo"
     # Nope AddrResgistry is not what I expected, we cant use it.
     # We need to create Hash to store all the objects, Use WeakRefs to store the pmcs?

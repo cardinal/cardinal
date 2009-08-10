@@ -23,8 +23,8 @@ Perform initializations and create the IO class
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('IO', 'parent'=>'CardinalObject', 'attr'=>'!io')
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
+    cardinalmeta = $P0.'new_class'('IO', 'parent'=>'Object', 'attr'=>'!io')
 .end
 
 .sub 'ACCEPTS' :method

@@ -46,10 +46,10 @@ object.
 
 .sub 'onload' :anon :load :init
     .local pmc cardinalmeta, compilerclass, compiler
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
     compilerclass = cardinalmeta.'new_class'('cardinal::Compiler', 'parent'=>'PCT::HLLCompiler')
 
-    $P2 = new 'CardinalString'
+    $P2 = new 'String'
     $P2 = ""
     set_hll_global '$,', $P2
 
@@ -64,14 +64,14 @@ object.
     compiler.'commandline_prompt'('crb(main):001:0>')
 
      ##  create a list of END blocks to be run
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     set_hll_global ['cardinal'], '@?END_BLOCKS', $P0
 
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     set_hll_global ['cardinal';'Grammar';'Actions'], '@?BLOCK', $P0
 
     $P1 = get_hll_global ['PAST';'Compiler'], '%valflags'
-    $P1['CardinalString'] = 'e'
+    $P1['String'] = 'e'
 .end
 
 =item main(args :slurpy)  :main
@@ -86,7 +86,7 @@ to the cardinal compiler.
 
     ##  create ARGS global.
     .local pmc args, it
-    args = new 'CardinalArray'
+    args = new 'Array'
     it = iter args_str
     $P0 = shift it
   args_loop:
