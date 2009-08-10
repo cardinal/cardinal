@@ -192,17 +192,10 @@ rule 'arg' is optable { ... }
 
 proto 'infix:=' is precedence('1') is pasttype('copy') is lvalue(1)     { ... }
 
-
-
 token basic_primary {
     | <literal> {*}                         #= literal
     | <funcall> {*}                         #= funcall
     | <variable> {*}                        #= variable
-    | <ahash> {*}                           #= ahash
-    | <regex> {*}                           #= regex
-    | <quote_string> {*}                    #= quote_string
-    | <warray> {*}                          #= warray
-    | <array> {*}                           #= array
     | <pcomp_stmt> {*}                      #= pcomp_stmt
     | <yield> {*}                           #= yield
     | <control_command> {*}                 #= control_command
@@ -418,6 +411,11 @@ token literal {
     | <float> {*}          #= float
     | <integer> {*}        #= integer
     | <string> {*}         #= string
+    | <ahash> {*}          #= ahash
+    | <regex> {*}          #= regex
+    | <quote_string> {*}   #= quote_string
+    | <warray> {*}         #= warray
+    | <array> {*}          #= array
     | 'true' {*}           #= true
     | 'false' {*}          #= false
     | 'nil' {*}            #= nil
