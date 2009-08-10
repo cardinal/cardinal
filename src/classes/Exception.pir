@@ -44,6 +44,17 @@
     proto = meta.'new_class'('fatal', 'parent'=>'CardinalException')
 .end
 
+.sub message :method
+    $S0 = self
+    .return ($S0)
+.end
+
+.sub 'message=' :method
+    .param pmc msg
+    self['message'] = msg
+    .return (msg)
+.end
+
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

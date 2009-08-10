@@ -29,14 +29,27 @@ src/builtins/control.pir - Cardinal Control functions
 .end
 
 .sub raise :multi(CardinalString)
-    .param pmc description
+    .param pmc descr
     .local pmc ex
     ex = new 'RuntimeError'
     ex['severity'] = .EXCEPT_ERROR
-    $S0 = description
-    ex = $S0
-    say $S0
+    ex.'message='(descr)
     throw ex
+.end
+
+.sub raise :multi(Exception,CardinalString)
+    .param pmc name
+    .param pmc descr
+    .local pmc ex
+    ex = new name
+    ex['severity'] = .EXCEPT_ERROR
+    ex['message'] = descr
+    throw ex
+.end
+
+.sub fail
+    .param pmc args :slurpy
+    .tailcall raise(args :flat)
 .end
 
 =item lambda
