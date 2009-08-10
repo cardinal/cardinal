@@ -4,8 +4,8 @@
 
 .sub 'onload' :anon :load :init
     .local pmc cardinalmeta, nilproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    nilproto = cardinalmeta.'new_class'('NilClass', 'parent'=>'parrot;Undef CardinalObject')
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
+    nilproto = cardinalmeta.'new_class'('NilClass', 'parent'=>'parrot;Undef Object')
     cardinalmeta.'register'('Undef', 'parent'=>nilproto, 'protoobject'=>nilproto)
 .end
 
@@ -18,24 +18,24 @@ Return the elements of the list concatenated.
 =cut
 
 .sub 'get_string' :vtable :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = 'nil'
     .return($P0)
 .end
 
 .sub 'to_i' :method
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = 0
     .return ($P0)
 .end
 
 .sub 'to_a' :method
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     .return ($P0)
 .end
 
 .sub 'to_s' :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = ''
     .return($P0)
 .end

@@ -21,8 +21,8 @@ Perform initializations and create the Queue class
 
 .sub 'onload' :anon :init :load
     .local pmc meta, qproto
-    meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    qproto = meta.'new_class'('Queue', 'parent'=>'parrot;TQueue CardinalObject', 'attr'=>'')
+    meta = get_hll_global ['Object'], '!CARDINALMETA'
+    qproto = meta.'new_class'('Queue', 'parent'=>'parrot;TQueue Object', 'attr'=>'')
     meta.'register'('TQueue', 'parent'=>'TQueue', 'protoobject'=>qproto)
 .end
 

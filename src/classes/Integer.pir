@@ -2,11 +2,11 @@
 
 =head1 TITLE
 
-CardinalInteger - Cardinal integers
+Integer - Cardinal integers
 
 =cut
 
-.namespace [ 'CardinalInteger' ]
+.namespace [ 'Integer' ]
 
 
 =head1 SUBROUTINES
@@ -19,9 +19,9 @@ CardinalInteger - Cardinal integers
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta, intproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    intproto = cardinalmeta.'new_class'('CardinalInteger', 'parent'=>'parrot;Integer CardinalObject')
-    cardinalmeta.'register'('Float', 'parent'=>'CardinalObject', 'protoobject'=>intproto)
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
+    intproto = cardinalmeta.'new_class'('Integer', 'parent'=>'parrot;Integer Object')
+    cardinalmeta.'register'('Float', 'parent'=>'Object', 'protoobject'=>intproto)
 .end
 
 =item ACCEPTS()
@@ -35,7 +35,7 @@ CardinalInteger - Cardinal integers
 
 =item perl()
 
-Returns a Perl representation of the CardinalInteger.
+Returns a Perl representation of the Integer.
 
 =cut
 
@@ -51,12 +51,12 @@ Returns a Perl representation of the CardinalInteger.
 
 =item to_s()
 
-Returns a CardinalString representation of the CardinalInteger.
+Returns a String representation of the Integer.
 
 =cut
 
 .sub 'to_s' :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $S0 = self
     $P0 = $S0
     .return($P0)
@@ -109,7 +109,7 @@ Returns 1
 =cut
 
 .sub 'denominator' :method
-   $P0 = new 'CardinalInteger'
+   $P0 = new 'Integer'
    $P0 = 1
    .return($P0)
 .end
@@ -191,7 +191,7 @@ Return C<self> plus 1
 =cut
 
 .sub 'succ' :method
-  $P0 = new 'CardinalInteger'
+  $P0 = new 'Integer'
   $P0 = 1
   $P1 = 'infix:+'($P0, self)
   .return ($P1)
@@ -204,7 +204,7 @@ Return C<self> plus 1
 =cut
 
 .sub 'next' :method
-  $P0 = new 'CardinalInteger'
+  $P0 = new 'Integer'
   $P0 = 1
   $P1 = 'infix:+'($P0, self)
   .return ($P1)
@@ -217,7 +217,7 @@ Return C<self> plus 1
 
 .namespace []
 
-.sub 'infix:<' :multi('CardinalInteger', 'CardinalInteger')
+.sub 'infix:<' :multi('Integer', 'Integer')
     .param pmc this
     .param pmc that
     $I0 = this

@@ -24,15 +24,15 @@ Perform initializations and create the base classes.
 
 =cut
 
-.namespace ['CardinalObject']
+.namespace ['Object']
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
     load_bytecode 'P6object.pbc'
     $P0 = get_root_global ['parrot'], 'P6metaclass'
-    $P0.'new_class'('CardinalObject', 'attr'=>'%!properties')
+    $P0.'new_class'('Object', 'attr'=>'%!properties')
     cardinalmeta = $P0.'HOW'()
-    set_hll_global ['CardinalObject'], '!CARDINALMETA', cardinalmeta
+    set_hll_global ['Object'], '!CARDINALMETA', cardinalmeta
 .end
 
 
@@ -52,7 +52,7 @@ Internal helper method to create a class.
     # Set resolve list to include all methods of the class.
     methods = inspect class, 'methods'
     it = iter methods
-    resolve_list = new 'ResizableStringCardinalArray'
+    resolve_list = new 'ResizableStringArray'
 resolve_loop:
     unless it goto resolve_loop_end
     $P0 = shift it
@@ -78,7 +78,7 @@ Internal helper method to create a role.
     # namespace.
     info = new 'Hash'
     info['name'] = name
-    $P0 = new 'ResizablePMCCardinalArray'
+    $P0 = new 'ResizablePMCArray'
     $P0[0] = name
     info['namespace'] = $P0
 
@@ -86,7 +86,7 @@ Internal helper method to create a role.
     role = new 'Role', info
 
     # Stash in namespace.
-    $P0 = new 'ResizableStringCardinalArray'
+    $P0 = new 'ResizableStringArray'
     set_hll_global $P0, name, role
 
     .return(role)
@@ -135,7 +135,7 @@ Create a new object having the same class as the invocant.
     .param pmc named_args :named :slurpy
     # Instantiate.
     .local pmc cardinalmeta
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
     $P0 = cardinalmeta.'get_parrotclass'(self)
     $P1 = $P0.'new'()
 #print 'constructing a new object w/ id'
@@ -223,12 +223,12 @@ Print the object
 
 =item to_s()
 
-Return a CardinalString representation of the object.
+Return a String representation of the object.
 
 =cut
 
 .sub 'to_s' :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = self
     .return ($P0)
 .end
@@ -253,7 +253,7 @@ Create a clone of self, also cloning the attributes given by attrlist.
     .param string attrlist
     .local pmc result
     .local pmc cardinalmeta
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
     $P0 = cardinalmeta.'get_parrotclass'(self)
     result = new $P0
 
@@ -269,7 +269,7 @@ Create a clone of self, also cloning the attributes given by attrlist.
     setattribute result, $S0, $P1
     goto attr_loop
   set_default:
-    $P2 = new 'CardinalInteger'
+    $P2 = new 'Integer'
     $P2 = 0
     setattribute result, $S0, $P2
     goto attr_loop
@@ -289,7 +289,7 @@ Get a list of all methods in the object.
     .local pmc meth_iter
     meth_iter = iter $P1
     .local pmc method_list
-    method_list = new 'CardinalArray'
+    method_list = new 'Array'
   methods_loop:
     unless meth_iter goto methods_loop_end
     $P0 = shift meth_iter
@@ -300,7 +300,7 @@ Get a list of all methods in the object.
 .end
 
 .sub 'class' :method
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $S0 = self.'WHAT'()
         $P0.'concat'($S0)
         .return ($P0)

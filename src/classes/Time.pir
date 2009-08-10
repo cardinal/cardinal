@@ -23,8 +23,8 @@ Perform initializations and create the Time class
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Time', 'parent'=>'CardinalObject', 'attr'=>'$!time_in_millis $!gmt')
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
+    cardinalmeta = $P0.'new_class'('Time', 'parent'=>'Object', 'attr'=>'$!time_in_millis $!gmt')
     cardinalmeta = $P0.'HOW'()
     set_hll_global ['Time'], '!CARDINALMETA', cardinalmeta
 .end
@@ -55,7 +55,7 @@ Returns true if he object is defined, false otherwise
 
 .sub 'initialize' :method :multi(_,_)
     .param pmc t
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = t
     setattribute self, '$!time_in_millis', $P0
     $P1 = get_hll_global 'false'
@@ -65,7 +65,7 @@ Returns true if he object is defined, false otherwise
 
 .sub 'initialize' :method :multi(_)
     time $I0
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = $I0
     setattribute self, '$!time_in_millis', $P0
     $P1 = get_hll_global 'false'
@@ -74,13 +74,13 @@ Returns true if he object is defined, false otherwise
 .end
 
 #.sub 'now'
-    #call CardinalObject super .new
+    #call Object super .new
     #return the object returned by super
 #.end
 
 .sub 'to_s' :method :vtable('get_string')
     .local pmc is_gmt, to_s
-    to_s = new 'CardinalString'
+    to_s = new 'String'
     $P0 = getattribute self, '$!time_in_millis'
     $I0 = $P0
     is_gmt = getattribute self, '$!gmt'
@@ -136,7 +136,7 @@ Returns true if he object is defined, false otherwise
    .param int offset
    .local pmc is_gmt
    .local pmc return_value
-   return_value = new 'CardinalInteger'
+   return_value = new 'Integer'
    $P0 = getattribute self, '$!time_in_millis'
    $I0 = $P0
    is_gmt = getattribute self, '$!gmt'

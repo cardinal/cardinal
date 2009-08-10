@@ -23,7 +23,7 @@ Perform initializations and create the Math class
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
     cardinalmeta = $P0.'new_class'('Math', 'parent'=>'', 'attr'=>'')
     #cardinalmeta = $P0.'HOW'()
     #set_hll_global ['Math'], '!CARDINALMETA', cardinalmeta
@@ -32,7 +32,7 @@ Perform initializations and create the Math class
     #base_clazz = class $P0
     ###newclass math_clazz, 'Math'
     ###math_clazz.'add_parent'(base_clazz)
-    #get_class $P0, "CardinalObject"
+    #get_class $P0, "Object"
     #subclass math_clazz, $P0, "Math"
     #set_hll_global ['Math'], '!CARDINALMETA', math_clazz
 

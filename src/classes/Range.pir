@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-src/classes/CardinalRange.pir - methods for the CardinalRange class
+src/classes/Range.pir - methods for the Range class
 
 =head1 DESCRIPTION
 
@@ -12,13 +12,13 @@ src/classes/CardinalRange.pir - methods for the CardinalRange class
 
 =cut
 
-.namespace ['CardinalRange']
+.namespace ['Range']
 
 .sub 'onload' :anon :load :init
     .local pmc meta, proto
-    meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    proto = meta.'new_class'('CardinalRange', 'parent'=>'CardinalObject', 'attr'=>'$!from $!to $!from_exclusive $!to_exclusive')
-    #meta.'register'('CardinalRange', 'CardinalObject', 'protoobject'=>proto)
+    meta = get_hll_global ['Object'], '!CARDINALMETA'
+    proto = meta.'new_class'('Range', 'parent'=>'Object', 'attr'=>'$!from $!to $!from_exclusive $!to_exclusive')
+    #meta.'register'('Range', 'Object', 'protoobject'=>proto)
 .end
 
 =item VTABLE_get integer (vtable method)
@@ -57,7 +57,7 @@ Determines if topic is within the range or equal to the range.
 .sub 'ACCEPTS' :method
     .param pmc topic
 
-    $I0 = isa topic, 'CardinalRange'
+    $I0 = isa topic, 'Range'
     unless $I0 goto value_in_range_check
     $I0 = self.'from'()
     $I1 = topic.'from'()
@@ -90,7 +90,7 @@ Determines if topic is within the range or equal to the range.
 
 =item clone()   (vtable method)
 
-Create a clone of the CardinalRange.
+Create a clone of the Range.
 
 =cut
 
@@ -148,7 +148,7 @@ Gets the beginning or end of the range.
    build_return:
       $P0 = getattribute self, '$!from'
       $P1 = getattribute self, '$!to'
-      $P3 = new 'CardinalString'
+      $P3 = new 'String'
       $P3.'concat'($P0)
       $P3.'concat'($S0)
       $P3.'concat'($P1)
@@ -157,7 +157,7 @@ Gets the beginning or end of the range.
 
 =item iterator()  (vtable method)
 
-Return an iterator for the CardinalRange.  Since CardinalRanges are already
+Return an iterator for the Range.  Since Ranges are already
 iterators, we can just return a clone.
 
 =cut
@@ -170,16 +170,16 @@ iterators, we can just return a clone.
 
 =item list()
 
-Generate the CardinalRange in list context.  Currently we generate all
+Generate the Range in list context.  Currently we generate all
 of the elements in the range; when we have lazy lists we can
-just return a clone of the CardinalRange.
+just return a clone of the Range.
 
 =cut
 
 .sub 'list' :method
     .local pmc range_it, result
     range_it = self.'iterator'()
-    result = new 'CardinalArray'
+    result = new 'Array'
   range_loop:
     unless range_it goto range_end
     $P0 = shift range_it
@@ -198,24 +198,24 @@ just return a clone of the CardinalRange.
 
 =cut
 
-.namespace ['CardinalRange']
+.namespace ['Range']
 
 =item
- Return first element in CardinalRange. Will later be refactored as part of the Enumerable module.
+ Return first element in Range. Will later be refactored as part of the Enumerable module.
 =cut
 .sub 'min' :method
     .tailcall self.'from'()
 .end
 
 =item
- Return first element in CardinalRange.
+ Return first element in Range.
 =cut
 .sub 'begin' :method
     .tailcall self.'from'()
 .end
 
 =item
- Return first element in CardinalRange.
+ Return first element in Range.
 =cut
 .sub 'first' :method
     .tailcall self.'from'()
@@ -229,28 +229,28 @@ just return a clone of the CardinalRange.
 .end
 
 =item
- Return last element in CardinalRange. Will later be refactored as part of the Enumerable module.
+ Return last element in Range. Will later be refactored as part of the Enumerable module.
 =cut
 .sub 'max' :method
     .tailcall self.'to'()
 .end
 
 =item
- Return last element in CardinalRange.
+ Return last element in Range.
 =cut
 .sub 'last' :method
     .tailcall self.'to'()
 .end
 
 =item
- Return last element in CardinalRange.
+ Return last element in Range.
 =cut
 .sub 'end' :method
     .tailcall self.'to'()
 .end
 
 =item
-Return true if the parameter is located with this CardinalRange
+Return true if the parameter is located with this Range
 =cut
 .sub 'covers?' :method
    .param pmc test
@@ -259,7 +259,7 @@ Return true if the parameter is located with this CardinalRange
 .end
 
 =item
-Return true if the parameter is located with this CardinalRange
+Return true if the parameter is located with this Range
 1.9 does a succ on the last element if it isnt a integer, so this doesnt work
 =cut
 .sub 'include?' :method
@@ -284,7 +284,7 @@ Return true if the parameter is located with this CardinalRange
 
 =item
 
-Return C<true> if the parameter is a member of this CardinalRange
+Return C<true> if the parameter is a member of this Range
 
 =cut
 
@@ -297,7 +297,7 @@ Return C<true> if the parameter is a member of this CardinalRange
 
 =item pop()  (vtable_method)
 
-Generate the next element at the end of the CardinalRange.
+Generate the next element at the end of the Range.
 
 =cut
 
@@ -320,7 +320,7 @@ Generate the next element at the end of the CardinalRange.
 
 =item shift()   (vtable_method)
 
-Generate the next element at the front of the CardinalRange.
+Generate the next element at the front of the Range.
 
 =cut
 
@@ -371,7 +371,7 @@ Return true if there are any more values to iterate over.
     setattribute self, '$!to_exclusive', $P2
     goto finish
     default:
-        $P0 = new 'CardinalInteger'
+        $P0 = new 'Integer'
         $P0 = 0
         setattribute self, '$!from_exclusive', $P0
         setattribute self, '$!to_exclusive', $P0
@@ -386,7 +386,7 @@ Return true if there are any more values to iterate over.
 .sub 'initialize' :method :multi(_,_,_)
     .param pmc from
     .param pmc to
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = 0
     setattribute self, '$!from_exclusive', $P0
     setattribute self, '$!to_exclusive', $P0
@@ -409,7 +409,7 @@ Run C<block> once for each item in C<self>, with the item passed as an arg.
     $P0 = self.'iterator'()
     goto each_loop
   continuous_range:
-    $P1 = new 'CardinalString'
+    $P1 = new 'String'
     $P1 = "Cant iterate from "
     $P2 = $P0.'class'()
     $P1.'concat'($P2)
@@ -444,7 +444,7 @@ Construct a range from the endpoints.
     .param pmc from
     .param pmc to
     .local pmc proto
-    proto = get_hll_global 'CardinalRange'
+    proto = get_hll_global 'Range'
     $P1 = proto.'new'('$!from'=>from, '$!to'=>to)
     .return ($P1)
 .end
@@ -453,9 +453,15 @@ Construct a range from the endpoints.
     .param pmc from
     .param pmc to
     .local pmc proto, true, false
+<<<<<<< HEAD:src/classes/Range.pir
     proto = get_hll_global 'CardinalRange'
     true = get_hll_global 'true'
     false = get_hll_global 'false'
+=======
+    proto = get_hll_global 'Range'
+    true = get_hll_global ['Bool'], 'True'
+    false = get_hll_global ['Bool'], 'False'
+>>>>>>> Just do the quick conversions.:src/classes/Range.pir
     $P0 = proto.'new'('$!from'=>from, '$!to'=>to, '$!from_exclusive'=>false, '$!to_exclusive'=>true)
     .return ($P0)
 .end
@@ -475,7 +481,7 @@ honoring exclusive flags.
 
 =cut
 
-.namespace ['CardinalRange']
+.namespace ['Range']
 .sub '!from_test' :method
     .param pmc topic
     .local pmc from, fromexc

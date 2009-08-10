@@ -21,8 +21,8 @@ Perform initializations and create the Proc class
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Proc', 'parent'=>'CardinalObject', 'attr'=>'!block')
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
+    cardinalmeta = $P0.'new_class'('Proc', 'parent'=>'Object', 'attr'=>'!block')
 .end
 
 .sub 'get_bool' :vtable
@@ -57,7 +57,7 @@ Perform initializations and create the Proc class
     $I0 = block.'arity'()
     #$P2 = block.'inspect'()
     #say $P2
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     dec $I0
     $P0 = $I0
     .return ($P0)

@@ -17,13 +17,13 @@ Perform initializations and create the Continuation class
 
 =cut
 
-.namespace ['CardinalContinuation']
+.namespace ['Continuation']
 
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta, contproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    contproto = cardinalmeta.'new_class'('CardinalContinuation', 'parent'=>'parrot;Continuation CardinalObject')
-    cardinalmeta.'register'('Continuation', 'parent'=>'CardinalObject', 'protoobject'=>contproto)
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
+    contproto = cardinalmeta.'new_class'('Continuation', 'parent'=>'parrot;Continuation Object')
+    cardinalmeta.'register'('Continuation', 'parent'=>'Object', 'protoobject'=>contproto)
 
 .end
 

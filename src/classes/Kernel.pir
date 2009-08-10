@@ -21,16 +21,16 @@ Perform initializations and create the kernel class
 .sub 'onload' :anon :init :load
     .local pmc cardinalmeta, kernelprototype
     load_bytecode 'P6object.pbc'
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    $P0 = get_hll_global ['Object'], '!CARDINALMETA'
     kernelprototype = $P0.'new_class'('Kernel', 'attr'=>'%!properties')
     #cardinalmeta = $P0.'HOW'()
     cardinalmeta = kernelprototype.'new'()
     set_hll_global ['Kernel'], '!CARDINALMETA', cardinalmeta
     #.local pmc cardinalmeta
-    #cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    #cardinalmeta.'new_class'('CardinalKernel')
+    #cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
+    #cardinalmeta.'new_class'('Kernel')
     #$P0 = cardinalmeta.'HOW'()
-    #set_hll_global ['CardinalKernel'], '!CARDINALMETA', $P0
+    #set_hll_global ['Kernel'], '!CARDINALMETA', $P0
 .end
 
 
@@ -95,7 +95,7 @@ Returns true if the object is defined, false otherwise
 .sub 'sprintf' :method
     .param pmc fmt
     .param pmc args     :slurpy
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     sprintf $P0, fmt, args
     .return ($P0)
 .end
@@ -109,7 +109,7 @@ Call the OS with C<cmd>, return the ouput.
    pipe = open cmd, "-|"
    .local string buffer
    .local pmc output
-   output = new 'CardinalString'
+   output = new 'String'
    $S0 = pop pipe      # pop buf layer
    goto lp
    lp:
@@ -147,7 +147,7 @@ Call the OS, return C<true> if successful, otherwise  C<false>
 .sub callcc :method
         .param pmc block :named('!BLOCK')
         .local pmc cont
-        cont = new 'CardinalContinuation'
+        cont = new 'Continuation'
         set_addr cont, done
         block(cont)
         goto done
