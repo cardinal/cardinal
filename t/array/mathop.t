@@ -39,7 +39,7 @@ is d, "25 50", "Array multiplication with String"
 a = [1,3,5,7,8]
 b = [1,5,8,9]
 c = a & b
-is c, [1,5,8], "Array & (union)"
+is c, [1,5,8], "Array & (intersection)"
 
 a = [1,2] << "a" << 3 << [4,5]
 is a, [1,2,"a",3,[4,5]], "Array <<"

@@ -30,27 +30,6 @@ src/builtins/op.pir - Cardinal ops
     .return ($P0)
 .end
 
-.sub 'infix:-' :multi(CardinalArray,CardinalArray)
-    .param pmc a
-    .param pmc b
-    $P0 = new 'CardinalArray'
-    .local pmc it
-    it = iter a
-    $P3 = get_hll_global['Bool'], 'False'
-    iter_loop:
-        unless it goto done
-        $P1 = shift it
-        $P2 = b.'include?'($P1)
-        $I0 = 'infix:=='($P2, $P3)
-        eq $I0, 1, appendit
-        #eq $P2, $P3, appendit
-        goto iter_loop
-    appendit:
-        $P0.'push'($P1)
-        goto iter_loop
-    done:
-        .return($P0)
-.end
 
 .sub 'infix:*' :multi(_,_)
     .param num a
@@ -113,25 +92,6 @@ src/builtins/op.pir - Cardinal ops
     .param int b
     $I0 = band a, b
     .return ($I0)
-.end
-
-.sub 'infix:&' :multi(CardinalArray,CardinalArray)
-    .param pmc a
-    .param pmc b
-    .local pmc intersection
-    intersection = new 'CardinalArray'
-    .local pmc item
-    .local pmc it
-    it = iter a
-  loop:
-    unless it goto loop_end
-    item = shift it
-    $I0 = b.'include?'(item)
-    unless $I0, loop
-    intersection.'push'(item)
-    goto loop
-  loop_end:
-    .return (intersection)
 .end
 
 .sub 'infix:*' :multi(CardinalString,CardinalInteger)
