@@ -41,6 +41,20 @@ Perform initializations and create the IO class
         .return(0)
 .end
 
+.sub 'to_io' :method
+    .return (self)
+.end
+
+.sub 'to_i' :method
+    .tailcall self.'fileno'()
+.end
+
+.sub 'fileno' :method
+    $P0 = new 'Exception'
+    $P0['message'] = "IO.fileno is not yet implemented."
+    throw $P0
+.end
+
 #.sub 'get_string' :vtable
 #   $S0 = 'IO'
 #   .return ($S0)
