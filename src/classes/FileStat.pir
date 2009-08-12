@@ -41,10 +41,10 @@ Perform initializations and create the File Stat class
     if what == "FileStat" goto match
     goto no_match
     no_match:
-        $P0 = get_hll_global ['Bool'], 'False'
+        $P0 = get_hll_global 'false'
         .return($P0)
     match:
-        $P0 = get_hll_global ['Bool'], 'True'
+        $P0 = get_hll_global 'true'
         .return($P0)
 .end
 
@@ -82,10 +82,10 @@ Perform initializations and create the File Stat class
         if $I1 == 1 goto yes
         goto no
         yes:
-            $P0 = get_hll_global ['Bool'], 'True'
+            $P0 = get_hll_global 'true'
             .return ($P0)
         no:
-            $P0 = get_hll_global ['Bool'], 'False'
+            $P0 = get_hll_global 'false'
             .return ($P0)
 .end
 
@@ -99,10 +99,10 @@ Perform initializations and create the File Stat class
         if $I1 == 1 goto no
         goto yes
         yes:
-            $P0 = get_hll_global ['Bool'], 'True'
+            $P0 = get_hll_global 'true'
             .return ($P0)
         no:
-            $P0 = get_hll_global ['Bool'], 'False'
+            $P0 = get_hll_global 'false'
             .return ($P0)
 .end
 

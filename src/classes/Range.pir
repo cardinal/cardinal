@@ -80,10 +80,10 @@ Determines if topic is within the range or equal to the range.
     unless $I0 goto false
 
   true:
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
     .return ($P0)
   false:
-    $P0 = get_hll_global ['Bool'], 'False'
+    $P0 = get_hll_global 'false'
     .return ($P0)
 .end
 
@@ -273,10 +273,10 @@ Return true if the parameter is located with this CardinalRange
   if $I0 == 0 goto out_of_bounds
   #if test <= $P0 goto out_of_bounds
   #if test >= $P1 goto out_of_bounds
-  $P3 = get_hll_global ['Bool'], 'True'
+  $P3 = get_hll_global 'true'
   .return ($P3)
   out_of_bounds:
-      $P3 = get_hll_global ['Bool'], 'False'
+      $P3 = get_hll_global 'false'
       #say 'out of bounds'
       #throw 'out of bounds!'
       .return ($P3)
@@ -284,7 +284,7 @@ Return true if the parameter is located with this CardinalRange
 
 =item
 
-Return C<True> if the parameter is a member of this CardinalRange
+Return C<true> if the parameter is a member of this CardinalRange
 
 =cut
 
@@ -454,8 +454,8 @@ Construct a range from the endpoints.
     .param pmc to
     .local pmc proto, true, false
     proto = get_hll_global 'CardinalRange'
-    true = get_hll_global ['Bool'], 'True'
-    false = get_hll_global ['Bool'], 'False'
+    true = get_hll_global 'true'
+    false = get_hll_global 'false'
     $P0 = proto.'new'('$!from'=>from, '$!to'=>to, '$!from_exclusive'=>false, '$!to_exclusive'=>true)
     .return ($P0)
 .end

@@ -162,10 +162,10 @@ list_cmp_loop_end:
     goto match
 
 no_match:
-    $P0 = get_hll_global ['Bool'], 'False'
+    $P0 = get_hll_global 'false'
     .return($P0)
 match:
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
     .return($P0)
 .end
 
@@ -343,10 +343,10 @@ Return true if self contains ELEMENT
     eq $P0, args, done_t
     goto iter_loop
    done_f:
-        $P0 = get_hll_global ['Bool'], 'False'
+        $P0 = get_hll_global 'false'
         .return($P0)
    done_t:
-        $P0 = get_hll_global ['Bool'], 'True'
+        $P0 = get_hll_global 'true'
         .return($P0)
 .end
 
@@ -449,10 +449,10 @@ Return true is C<self> is of size 0
     if len == 0 goto empty
     goto not_empty
     empty:
-       $P0 = get_hll_global ['Bool'], 'True'
+       $P0 = get_hll_global 'true'
        .return ($P0)
     not_empty:
-        $P0 = get_hll_global ['Bool'], 'False'
+        $P0 = get_hll_global 'false'
         .return ($P0)
 .end
 
@@ -862,7 +862,7 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     goto loop
 
   done:
-    .tailcall 'prefix:?'(test)
+    .tailcall 'bool'(test)
 .end
 
 =item kv()

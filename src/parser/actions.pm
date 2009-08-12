@@ -711,9 +711,9 @@ method scope_identifier($/) {
 method literal($/, $key) {
     my $past;
     if $key eq 'true' {
-        $past := PAST::Op.new(:inline("%t = get_hll_global ['Bool'], 'True'"), :returns('Bool'));
+        $past := PAST::Op.new(:inline("%t = get_hll_global 'true'"), :returns('Bool'));
     } elsif $key eq 'false' {
-        $past := PAST::Op.new(:inline("%t = get_hll_global ['Bool'], 'False'"), :returns('Bool'));
+        $past := PAST::Op.new(:inline("%t = get_hll_global 'false'"), :returns('Bool'));
     } elsif $key eq 'nil' {
         $past := PAST::Op.new(:inline("%t = get_hll_global 'nil'"), :returns('NilClass'));
     } elsif $key eq 'self' {

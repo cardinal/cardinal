@@ -45,7 +45,7 @@ Returns a Perl representation of the CardinalInteger.
 .end
 
 .sub 'integer?' :method
-  $P0 = get_hll_global['Bool'], 'True'
+  $P0 = get_hll_global 'true'
   .return($P0)
 .end
 
@@ -223,7 +223,7 @@ Return C<self> plus 1
     $I0 = this
     $I1 = that
     $I2 = islt $I0, $I1
-    .return ($I2)
+    .tailcall 'bool'($I2)
 .end
 
 # Local Variables:

@@ -185,10 +185,10 @@ Returns the characters in C<self> in reverse order. Destructive update.
     .local pmc value
     $I0 = elements self
     if $I0 == 0 goto yes
-    value = get_hll_global ['Bool'], 'False'
+    value = get_hll_global 'false'
     goto done
   yes:
-    value = get_hll_global ['Bool'], 'True'
+    value = get_hll_global 'true'
   done:
     .return (value)
 .end
