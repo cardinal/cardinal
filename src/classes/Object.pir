@@ -227,10 +227,32 @@ Return a CardinalString representation of the object.
 
 =cut
 
+.sub 'to_a' :method
+    $P0 = new 'CardinalArray'
+    $P0.'push'(self)
+    .return ($P0)
+.end
+
 .sub 'to_s' :method
     $P0 = new 'CardinalString'
-    $P0 = self
+    $P0 = self.'class'()
     .return ($P0)
+.end
+
+.sub 'get_string' :method :vtable
+    $P0 = new 'Exception'
+    $P1 = self.'class'()
+    $P2 = 'sprintf'("Cannot coerce %s to string.", $P1)
+    $P0['message'] = $P1
+    throw $P0
+.end
+
+.sub 'get_integer' :method :vtable
+    $P0 = new 'Exception'
+    $P1 = self.'class'()
+    $P2 = 'sprintf'("Cannot coerce %s to integer.", $P1)
+    $P0['message'] = $P1
+    throw $P0
 .end
 
 =item inspect()
