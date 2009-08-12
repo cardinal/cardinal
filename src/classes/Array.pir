@@ -26,12 +26,6 @@ Stolen from Rakudo
 
 .end
 
-.sub 'get_string' :vtable :method
-    $P0 = new 'Exception'
-    $P0['message'] = "Implicit conversion from Array to String is not allowed."
-    throw $P0
-.end
-
 .sub 'to_a' :method
     .return (self)
 .end
