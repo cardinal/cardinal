@@ -44,6 +44,22 @@
     proto = meta.'new_class'('fatal', 'parent'=>'CardinalException')
 .end
 
+.sub 'to_s' :method
+    $P0 = self['message']
+    unless $P0 == "" goto done
+    $P0 = self.'class'()
+  done:
+    .return($P0)
+.end
+
+.sub 'to_str' :method :vtable('get_string')
+    .tailcall self.'to_s'()
+.end
+
+.sub 'message' :method
+    .tailcall self.'to_s'()
+.end
+
 # Local Variables:
 #   mode: pir
 #   fill-column: 100
