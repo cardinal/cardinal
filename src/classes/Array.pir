@@ -26,16 +26,22 @@ Stolen from Rakudo
 
 .end
 
-=item get_string()    (vtable method)
-
-Return the elements of the list concatenated.
-
-=cut
-
 .sub 'get_string' :vtable :method
-    $S0 = join ', ', self
-    $S0 = concat '[', $S0
-    $S0 = concat $S0, ']'
+    $P0 = new 'Exception'
+    $P0['message'] = "Implicit conversion from Array to String is not allowed."
+    throw $P0
+.end
+
+.sub 'to_a' :method
+    .return (self)
+.end
+
+.sub 'to_ary' :method
+    .return (self)
+.end
+
+.sub 'to_s' :method
+    $S0 = self.'join'()
     .return ($S0)
 .end
 
