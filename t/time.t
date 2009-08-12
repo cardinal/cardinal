@@ -9,7 +9,7 @@ is Time.new.to_s.length, 25, '.to_s on Time'
 # that might work, but right now the to_s is 100% correct
 t = Time.new
 pass '.sec on Time' if t.sec
-pass '.hour on Time' if t.hour
+pass '.hour on Time' if t.hour >= 0 and t.hour < 24
 pass '.mday on Time' if t.mday
 pass '.day on Time' if t.day
 pass '.month on Time' if t.month
