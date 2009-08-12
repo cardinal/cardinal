@@ -158,6 +158,10 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .return (newlist)
 .end
 
+.sub 'to_hash' :method
+    .return (self)
+.end
+
 
 ## FIXME:  Parrot currently requires us to write our own "clone" method.
 .sub 'clone' :vtable :method
