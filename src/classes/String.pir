@@ -549,6 +549,18 @@ Returns self
     .return ($P0)
 .end
 
+.sub 'to_str' :method :vtable('get_string')
+    $P0 = new 'CardinalString'
+    $P0 = self
+    .return ($P0)
+.end
+
+.sub 'to_int' :method
+    $P0 = new 'Exception'
+    $P0['message'] = "Cannot coerce String to Integer. Use to_i instead."
+    throw $P0
+.end
+
 =back
 
 =head1 Functions
