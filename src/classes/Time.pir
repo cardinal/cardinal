@@ -78,7 +78,18 @@ Returns true if he object is defined, false otherwise
     #return the object returned by super
 #.end
 
-.sub 'to_s' :method :vtable('get_string')
+.sub 'to_a' :method
+    .local pmc a
+    $P0 = getattribute self, '$!time_in_millis'
+    $I0 = $P0
+    $P0 = decodetime $I0
+    # TODO push also the time zone onto the end of the array
+    a = new 'CardinalArray'
+    a.'concat'($P0)
+    .return (a)
+.end
+
+.sub 'to_s' :method
     .local pmc is_gmt, to_s
     to_s = new 'CardinalString'
     $P0 = getattribute self, '$!time_in_millis'
