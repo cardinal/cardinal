@@ -1,7 +1,7 @@
 require "Test"
 include Test
 
-puts "1..5" if 1
+puts "1..5" if true
 
 # comments work!
 #
