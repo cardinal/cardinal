@@ -243,6 +243,7 @@ namespace :test do |ns|
     test "alias.t"
     test "assignment.t"
     test "blocks.t"
+    test "bool.t"
     test "constants.t"
     test "continuation.t"
     test "freeze.t"

@@ -31,11 +31,31 @@ Swiped from Rakudo.
     .tailcall 'bool'($I0)
 .end
 
-.sub 'infix:==' :multi(Bool,Bool)
-    .param int a
-    .param int b
-    $I0 = a == b
-    $P0 = 'bool'($I0)
+.sub 'infix:==' :multi(TrueClass,TrueClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'true'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(FalseClass,FalseClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'true'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(TrueClass,FalseClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(FalseClass,TrueClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
     .return ($P0)
 .end
 
