@@ -328,7 +328,8 @@ Generate the next element at the front of the CardinalRange.
     .local pmc from, fromexc, value
     from = getattribute self, '$!from'
     fromexc = getattribute self, '$!from_exclusive'
-    value = 'postfix:++'(from)
+    value = clone from
+    inc from
     unless fromexc goto have_value
     value = clone from
   have_value:
@@ -353,7 +354,7 @@ Return true if there are any more values to iterate over.
     fromexc = getattribute self, '$!from_exclusive'
     unless fromexc goto have_value
     from = clone from
-    'postfix:++'(from)
+    inc from
   have_value:
     $I0 = self.'!to_test'(from)
     .return ($I0)

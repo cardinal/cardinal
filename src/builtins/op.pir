@@ -102,24 +102,6 @@ src/builtins/op.pir - Cardinal ops
     .return ($P0)
 .end
 
-
-## autoincrement
-.sub 'postfix:++' :multi(_)
-    .param pmc a
-    $P0 = clone a
-    inc a
-    .return ($P0)
-    #.return (a)
-.end
-
-.sub 'postfix:--' :multi(_)
-    .param pmc a
-    $P0 = clone a
-    dec a
-    .return ($P0)
-.end
-
-
 =back
 
 =cut
