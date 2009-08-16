@@ -102,6 +102,11 @@ src/builtins/op.pir - Cardinal ops
     .return ($P0)
 .end
 
+.sub 'circumfix:( )'
+    .param pmc a
+    .return (a)
+.end
+
 =back
 
 =cut
