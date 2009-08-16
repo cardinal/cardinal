@@ -556,3 +556,5 @@ proto 'infix:%' is equiv('infix:*')
 
 proto 'term:'   is tighter('infix:*')
                 is parsed(&primary)     { ... }
+
+proto 'circumfix:( )' is equiv('term:') { ... }
