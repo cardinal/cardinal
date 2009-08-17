@@ -423,7 +423,7 @@ token literal {
 }
 
 token float {
-    '-'? \d* '.' \d+
+    '-'? \d+ '.' \d+
     {*}
 }
 
