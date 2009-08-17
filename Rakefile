@@ -365,7 +365,7 @@ namespace :test do |ns|
         task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :empty, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
     end
 
-    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
+    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :bool, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
     task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
         dur_seconds = Time.now.to_i - $start.to_i
         dur_minutes = 0
