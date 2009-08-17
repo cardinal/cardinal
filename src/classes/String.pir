@@ -156,11 +156,41 @@ Returns the characters in C<self> in reverse order. Destructive update.
 .end
 
 .sub 'each' :method :multi('CardinalString',_)
-    .param pmc delim
+    .param pmc delim :optional
+    .param int delim_flag :opt_flag
     .param pmc block :named('!BLOCK')
-    .local pmc list
-    list = self.'split'(delim)
-    list.'each'(block)
+    .local pmc str, iterator
+    if delim_flag goto have_delim
+    delim = get_hll_global '$/'
+  have_delim:
+    iterator = iter self
+    str = new 'CardinalString'
+  main_loop:
+    unless iterator goto loop_end
+    $P0 = shift iterator
+    str.'concat'($P0)
+    unless $P0 == delim goto main_loop
+    block(str)
+    str = new 'CardinalString'
+    goto main_loop
+  loop_end:
+    $P0 = str.'empty?'()
+    if $P0 goto done
+    block(str)
+  done:
+    .return (self)
+.end
+
+.sub 'empty?' :method
+    .local pmc value
+    $I0 = elements self
+    if $I0 == 0 goto yes
+    value = get_hll_global 'false'
+    goto done
+  yes:
+    value = get_hll_global 'true'
+  done:
+    .return (value)
 .end
 
 .sub lc :method
@@ -425,7 +455,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
         .return($S0)
     oob:
         # out of bounds, return nil
-        $P0 = new 'NilClass'
+        $P0 = get_hll_global 'nil'
         .return($P0)
     init_stop:
         stop = 1
@@ -469,6 +499,18 @@ Warning: Partial implementation. Look for TODO
 .end
 
 .sub 'each_byte' :method
+    .param pmc block :named('!BLOCK')
+    .local pmc iterator, item
+    iterator = iter self
+  each_loop:
+    unless iterator goto each_loop_done
+    item = shift iterator
+    block(item)
+    goto each_loop
+  each_loop_done:
+.end
+
+.sub 'each_char' :method
     .param pmc block :named('!BLOCK')
     .local pmc iterator, item
     iterator = iter self

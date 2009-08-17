@@ -50,10 +50,10 @@ Perform initializations and create the Queue class
        if $I0 == 0 goto yes
        goto no
        yes:
-           $P0 = get_hll_global ['Bool'], 'True'
+           $P0 = get_hll_global 'true'
            .return ($P0)
        no:
-           $P0 = get_hll_global ['Bool'], 'False'
+           $P0 = get_hll_global 'false'
            .return ($P0)
 .end
 
@@ -76,7 +76,7 @@ Perform initializations and create the Queue class
         .param int has_blockt   :opt_flag
         .local pmc obj
         if has_blockt goto shiftem
-        blockt = get_hll_global ['Bool'], 'False'
+        blockt = get_hll_global 'false'
         shiftem:
             shift obj, self
             .return (obj)

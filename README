@@ -2,8 +2,8 @@ Cardinal is a Ruby compiler for Parrot.
 
 The parser is fairly complete.  The standard library exists, but still needs filling out.
 
-Cardinal's parser is very *very* slow.  It should be possible to precompile a script so that you don't need to wait for it to parse each time, but that's currently broken.
+Cardinal's parser is very *very* slow. You can precompile to PIR with --target=pir and run the result with Parrot directly to skip the parsing phase. (You may need cardinal.pbc in the same directory for this to work.)
 
 Cardinal is back in active development, under the stewardship of Ted Reed <ted.reed@gmail.com>.
 
-We also have an IRC channel: #cardinal on irc.perl.org
+We also have an IRC channel: #cardinal on irc.parrot.org

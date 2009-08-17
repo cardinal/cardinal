@@ -179,12 +179,12 @@ until we get roles).
 
 =item true()
 
-Defines the .true method on all objects via C<prefix:?>.
+Defines the .true method on all objects via C<bool>.
 
 =cut
 
 .sub 'true' :method
-        .tailcall 'prefix:?'(self)
+        .tailcall 'bool'(self)
 .end
 
 .sub 'object_id' :method
@@ -307,7 +307,7 @@ Get a list of all methods in the object.
 .end
 
 .sub 'defined' :method
-       $P0 = get_hll_global ['Bool'], 'False'
+       $P0 = get_hll_global 'false'
        .return ($P0)
 .end
 
@@ -316,10 +316,10 @@ Get a list of all methods in the object.
     if self == $P0 goto yes
     goto no
     yes:
-      $P0 = get_hll_global ['Bool'], 'True'
+      $P0 = get_hll_global 'true'
       .return ($P0)
     no:
-      $P0 = get_hll_global ['Bool'], 'False'
+      $P0 = get_hll_global 'false'
       .return ($P0)
 .end
 
@@ -343,10 +343,10 @@ Get a list of all methods in the object.
         if result goto yes
         goto no
         yes:
-          $P0 = get_hll_global ['Bool'], 'True'
+          $P0 = get_hll_global 'true'
           .return ($P0)
         no:
-          $P0 = get_hll_global ['Bool'], 'False'
+          $P0 = get_hll_global 'false'
 .end
 
 .sub 'kind_of?' :method

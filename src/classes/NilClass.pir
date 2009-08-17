@@ -41,7 +41,7 @@ Return the elements of the list concatenated.
 .end
 
 .sub 'nil?' :method
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
     .return ($P0)
 .end
 

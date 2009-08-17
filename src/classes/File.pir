@@ -39,10 +39,10 @@ Perform initializations and create the File class
     if what == "CardinalFile" goto match
     goto no_match
     no_match:
-        $P0 = get_hll_global ['Bool'], 'False'
+        $P0 = get_hll_global 'false'
         .return($P0)
     match:
-        $P0 = get_hll_global ['Bool'], 'True'
+        $P0 = get_hll_global 'true'
         .return($P0)
 .end
 
@@ -80,8 +80,11 @@ Perform initializations and create the File class
         .param pmc path
         .param string mode :optional
         .local string parrot_io_mode
+        .local pmc jmpstack
+        jmpstack = new 'ResizableIntegerArray'
+        
         $S0 = self.'!to_path'(path)
-        bsr parse_mode
+        local_branch jmpstack, parse_mode
         open $P1, $S0, parrot_io_mode
         #setprop self, '!io', $P0
         setattribute self, '!io', $P1
@@ -98,13 +101,13 @@ Perform initializations and create the File class
                 goto done
         default_mode:
                 parrot_io_mode = "<"
-                ret
+                local_return jmpstack
         append_mode:
                 parrot_io_mode = ">>"
-                ret
+                local_return jmpstack
         write_mode:
                 parrot_io_mode = ">"
-                ret
+                local_return jmpstack
         done:
                 .return (self)
 .end
@@ -183,10 +186,10 @@ Perform initializations and create the File class
         if $I1 == 1 goto yes
         goto no
         yes:
-            $P0 = get_hll_global ['Bool'], 'True'
+            $P0 = get_hll_global 'true'
             .return ($P0)
         no:
-            $P0 = get_hll_global ['Bool'], 'False'
+            $P0 = get_hll_global 'false'
             .return ($P0)
 .end
 

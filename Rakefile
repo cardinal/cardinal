@@ -1,4 +1,5 @@
-DEBUG = false
+DEBUG = ENV['debug'] || false
+ALTERNATIVE_RUBY = ENV['test_with'] || false
 CONFIG = {} 
 $tests = 0
 $test_files = 0
@@ -46,9 +47,11 @@ def them
     $pl ? "them" : "it"
 end
 
-def parrot(input, output, grammar="", target="")
+def parrot(input, output="", grammar="", target="")
     target = "--target=#{target}" if target != ""
-    sh "#{CONFIG[:parrot]} #{grammar} #{target} -o #{output} #{input}"
+    output = "-o #{output}" if output != ""
+    puts "Running parrot: #{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
+    sh "#{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}"
 end
 
 def make_exe(pbc)
@@ -57,19 +60,36 @@ end
 
 def test(file, name="")
     print "Adding #{file} as a test " if DEBUG
+    pir_file = file.gsub(/.t$/,'.pir')
+    if pir_file =~ /\//
+        pir_file.gsub!(/\/([^\/]+)$/) {"/gen_#$1"}
+    else
+        pir_file = "gen_#{pir_file}"
+    end
     if name == ""
         name = file.gsub(/.t$/,'').gsub(/^[0-9]+-/,'').gsub(/-/,'').gsub(/.*\//,'')
     end
-    puts "named #{name}" if DEBUG
-    task name => ["cardinal", "Test.pir"] do
-        run_test file
+    if ALTERNATIVE_RUBY
+        task name do
+            run_test file
+        end
+    else
+        file "t/#{pir_file}" => [:config, "t/#{file}", "src/gen_actions.pir", "src/gen_grammar.pir"] do
+            parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+        end
+        puts "named #{name}" if DEBUG
+        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do
+            run_test pir_file, name
+        end
     end
 end
 
-def run_test(file)
+def run_test(file,name="")
     puts file if DEBUG
+    name = file if name == ""
     $test_files += 1
-    IO.popen("./cardinal t/#{file}", "r") do |t|
+    command = ALTERNATIVE_RUBY || CONFIG[:parrot]
+    IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
             plan = t.readline
         rescue EOFError
@@ -133,7 +153,7 @@ def run_test(file)
             result = "Complete failure... no plan given"
             $failures += 1
         end
-        puts "Running test #{file} #{result}"
+        puts "Running test #{name} #{result}"
     end
 end
 
@@ -189,7 +209,7 @@ file "src/gen_actions.pir" => [:config, "src/parser/actions.pm"] do
     parrot("src/parser/actions.pm","src/gen_actions.pir",CONFIG[:nqp],'pir')
 end
 
-builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/Bool.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
+builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/TrueClass.pir", "src/classes/FalseClass.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
 
 file "src/gen_builtins.pir" => builtins do
     puts "Generating src/gen_builtins.pir"
@@ -223,6 +243,7 @@ namespace :test do |ns|
     test "alias.t"
     test "assignment.t"
     test "blocks.t"
+    test "bool.t"
     test "constants.t"
     test "continuation.t"
     test "freeze.t"
@@ -237,6 +258,7 @@ namespace :test do |ns|
     
     namespace :array do 
         test "array/array.t"
+        test "array/assign.t"
         test "array/at.t"
         test "array/clear.t"
         test "array/collect.t"
@@ -245,25 +267,32 @@ namespace :test do |ns|
         test "array/delete.t"
         test "array/empty.t"
         test "array/equals.t"
+        test "array/fetch.t"
         test "array/fill.t"
         test "array/first.t"
         test "array/flatten.t"
         test "array/grep.t"
         test "array/include.t"
+        test "array/index.t"
+        test "array/insert.t"
         test "array/intersection.t"
         test "array/join.t"
         test "array/mathop.t"
+        test "array/nitems.t"
         test "array/pop.t"
+        test "array/push.t"
         test "array/reject.t"
+        test "array/replace.t"
         test "array/reverse.t"
         test "array/shift.t"
         test "array/slice.t"
         test "array/sort.t"
         test "array/to_s.t"
         test "array/uniq.t"
+        test "array/values_at.t"
         test "array/warray.t"
 
-        task :all => [:array, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fill, :first, :flatten, :grep, :include, :intersection, :join, :mathop, :pop, :reject, :reverse, :shift, :slice, :sort, :to_s, :uniq, :warray]
+        task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :nitems, :pop, :push, :reject, :replace, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
     namespace :file do 
@@ -324,6 +353,7 @@ namespace :test do |ns|
         test "string/cmp.t"
         test "string/concat.t"
         test "string/downcase.t"
+        test "string/empty.t"
         test "string/eq.t"
         test "string/mult.t"
         test "string/new.t"
@@ -332,10 +362,10 @@ namespace :test do |ns|
         test "string/reverse.t"
         test "string/upcase.t"
 
-        task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
+        task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :empty, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
     end
 
-    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
+    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :bool, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
     task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
         dur_seconds = Time.now.to_i - $start.to_i
         dur_minutes = 0
@@ -349,7 +379,7 @@ namespace :test do |ns|
         puts " #{$ok} tests passed, #{$unexpected_passes} of which were unexpected." 
         unless $u_p_files.empty?
             $u_p_files.uniq!
-            $pl = $u_p_files > 1
+            $pl = $u_p_files.length > 1
             puts " Unexpected passes were found in the following #{pl "file"}:"
             $u_p_files.each do |pass|
                 puts "  #{pass}"

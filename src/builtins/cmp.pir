@@ -14,13 +14,13 @@ Swiped from Rakudo.
 .namespace []
 
 
-.sub 'prefix:?' :multi(_)
+.sub 'bool'
     .param pmc a
     if a goto a_true
-    $P0 = get_hll_global ['Bool'], 'False'
+    $P0 = get_hll_global 'false'
     .return ($P0)
   a_true:
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
     .return ($P0)
 .end
 
@@ -28,83 +28,120 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     $I0 = iseq a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
-.sub 'infix:==' :multi(Bool,Bool)
-    .param int a
-    .param int b
-    $I0 = a == b
-    $P0 = 'prefix:?'($I0)
+.sub 'infix:==' :multi(TrueClass,TrueClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'true'
     .return ($P0)
 .end
+
+.sub 'infix:==' :multi(FalseClass,FalseClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'true'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(TrueClass,_)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(FalseClass,_)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(_,TrueClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(_,FalseClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
 
 .sub 'infix:==' :multi(Integer,Integer)
     .param pmc a
     .param pmc b
     $I0 = iseq a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 .sub 'infix:==' :multi(String,String)
     .param pmc a
     .param pmc b
     $I0 = iseq a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 .sub 'infix:==' :multi(NilClass,_)
     .param pmc a
     .param pmc b
     # mmd tells us they are different types, so return false
-    $I0 = 0
-    .tailcall 'prefix:?'($I0)
+    $P0 = get_hll_global 'false' 
+    .return ($P0)
 .end
 
 .sub 'infix:==' :multi(_,NilClass)
     .param pmc a
     .param pmc b
     # mmd tells us they are different types, so return false
-    $I0 = 0
-    .tailcall 'prefix:?'($I0)
+    $P0 = get_hll_global 'false'
+    .return ($P0)
 .end
 
 .sub 'infix:==' :multi(NilClass,NilClass)
     .param pmc a
     .param pmc b
     # mmd tells us they are same types and both of type NilClass, so return true
-    $I0 = 1
-    .tailcall 'prefix:?'($I0)
+    $P0 = get_hll_global 'true'
+    .return ($P0)
 .end
 
 .sub 'infix:==' :multi(CardinalArray,CardinalArray)
     .param pmc a
     .param pmc b
     .local int i
-    $I1 = a.'elems'()
-    $I2 = b.'elems'()
+    $I1 = elements a
+    $I2 = elements b
     ne $I1, $I2, fail
     i = 0
   loop:
     unless i < $I1 goto success
     $P0 = a[i]
     $P1 = b[i]
-    $I0 = 'infix:=='($P0,$P1)
+    $P0 = 'infix:=='($P0,$P1)
     inc i
-    if $I0 goto loop
+    if $P0 goto loop
   fail:
-    .tailcall 'prefix:?'(0)
+    $P0 = get_hll_global 'false'
+    .return ($P0)
   success:
-    .tailcall 'prefix:?'(1)
+    $P0 = get_hll_global 'true'
+    .return ($P0)
 .end
 
 
 .sub 'infix:!=' :multi(_,_)
     .param pmc a
     .param pmc b
-    $I0 = 'infix:=='(a, b)
-    $I0 = not $I0
-    .tailcall 'prefix:?'($I0)
+    $P0 = 'infix:=='(a, b)
+    $P0 = not $P0
+    .return ($P0)
 .end
 
 
@@ -112,7 +149,7 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     $I0 = islt a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 .sub 'infix:<' :multi(Integer,Integer)
@@ -125,7 +162,7 @@ Swiped from Rakudo.
     $I1 = b
     #$I0 = islt a, b
     $I0 = islt $I0, $I1
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 
@@ -133,7 +170,7 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     $I0 = isle a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 
@@ -141,7 +178,7 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     $I0 = isgt a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 
@@ -149,7 +186,7 @@ Swiped from Rakudo.
     .param pmc a
     .param pmc b
     $I0 = isge a, b
-    .tailcall 'prefix:?'($I0)
+    .tailcall 'bool'($I0)
 .end
 
 

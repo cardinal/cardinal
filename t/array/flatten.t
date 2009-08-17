@@ -11,7 +11,7 @@ c = c.flatten
 
 if c.length == 8
 	c.each() do |x|
-		puts 'ok ' + x
+		puts "ok #{x}"
 	end
 else
 	puts "nok 1..8"

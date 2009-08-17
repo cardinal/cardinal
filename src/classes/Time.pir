@@ -58,7 +58,7 @@ Returns true if he object is defined, false otherwise
     $P0 = new 'CardinalInteger'
     $P0 = t
     setattribute self, '$!time_in_millis', $P0
-    $P1 = get_hll_global['Bool'], 'False'
+    $P1 = get_hll_global 'false'
     # TODO fix this, check gmt then set to appropriate value
     setattribute self, '$!gmt', $P1
 .end
@@ -68,7 +68,7 @@ Returns true if he object is defined, false otherwise
     $P0 = new 'CardinalInteger'
     $P0 = $I0
     setattribute self, '$!time_in_millis', $P0
-    $P1 = get_hll_global['Bool'], 'False'
+    $P1 = get_hll_global 'false'
     # TODO fix this, check gmt then set to appropriate value
     setattribute self, '$!gmt', $P1
 .end
@@ -124,7 +124,7 @@ Returns true if he object is defined, false otherwise
     is_gmt = getattribute self, '$!gmt'
     if is_gmt goto done
 
-    $P1 = get_hll_global['Bool'], 'True'
+    $P1 = get_hll_global 'true'
     setattribute self, '$!gmt', $P1
     goto done
 

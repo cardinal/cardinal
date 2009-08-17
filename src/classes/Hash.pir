@@ -200,10 +200,10 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .param pmc key
     $I0 = exists self[key]
     if $I0 goto true
-    $P0 = get_hll_global ['Bool'], 'False'
+    $P0 = get_hll_global 'false'
     goto done
   true:
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
   done:
     .return ($P0)
 .end
@@ -230,10 +230,10 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .param pmc key
     $I0 = defined self[key]
     if $I0 goto true
-    $P0 = get_hll_global ['Bool'], 'False'
+    $P0 = get_hll_global 'false'
     goto done
   true:
-    $P0 = get_hll_global ['Bool'], 'True'
+    $P0 = get_hll_global 'true'
   done:
     .return ($P0)
 .end

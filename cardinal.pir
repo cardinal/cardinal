@@ -49,6 +49,10 @@ object.
     cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
     compilerclass = cardinalmeta.'new_class'('cardinal::Compiler', 'parent'=>'PCT::HLLCompiler')
 
+    $P2 = new 'CardinalString'
+    $P2 = ""
+    set_hll_global '$,', $P2
+
     compiler = compilerclass.'new'()
     compiler.'language'('cardinal')
     $P0 = get_hll_namespace ['cardinal';'Grammar']
