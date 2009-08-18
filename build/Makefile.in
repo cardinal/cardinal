@@ -133,13 +133,13 @@ help:
 	@echo ""
 
 test: all
-	$(PERL) t/harness
+	rake test:all
 
 arraytest: all
-	$(PERL) t/harness --tests-from-dir=array
+	rake test:array:all
 
 hashtest: all
-	$(PERL) t/harness --tests-from-dir=hash
+	rake test:hash:all
 
 # this target has nothing to do
 testclean:
