@@ -299,13 +299,6 @@ rule functiondef {
     {*}
 }
 
-rule bodystmt {
-    <comp_stmt>
-    <rescue>?
-    <else>?
-    <ensure>?
-}
-
 rule argdecl {
     ['('
     <block_signature>
