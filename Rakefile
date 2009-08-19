@@ -227,7 +227,7 @@ file "src/gen_actions.pir" => [:config, "src/parser/actions.pm"] do
     parrot("src/parser/actions.pm","src/gen_actions.pir",CONFIG[:nqp],'pir')
 end
 
-builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/TrueClass.pir", "src/classes/FalseClass.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
+builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/TrueClass.pir", "src/classes/FalseClass.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/classes/Env.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
 
 file "src/gen_builtins.pir" => builtins do
     puts "Generating src/gen_builtins.pir"

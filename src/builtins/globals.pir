@@ -14,11 +14,12 @@ src/builtins/globals.pir - initialize miscellaneous global variables
 
     ##  set up $ENV
     .local pmc env
-    env = new 'CardinalHash'
-    set_hll_global '$ENV', env
+    env = new 'Env'
+    set_hll_global 'ENV', env
 
     ##  set up $:
     $S0 = env['RUBYLIB']
+    say $S0
     $P0 = split ':', $S0
     push $P0, '.'
     $P0 = 'list'($P0)
