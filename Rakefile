@@ -1,3 +1,16 @@
+require 'rake/classic_namespace'
+require 'rake/clean'
+
+CLEAN.include('gen_*.pir')
+CLEAN.include('*/gen_*.pir')
+CLEAN.include('*/*/gen_*.pir')
+CLEAN.include('Test.pir')
+CLEAN.include('build.yaml')
+CLEAN.include('*.c')
+CLEAN.include('*.o')
+CLOBBER.include('cardinal')
+CLOBBER.include('*.pbc')
+
 DEBUG = ENV['debug'] || false
 ALTERNATIVE_RUBY = ENV['test_with'] || false
 CONFIG = {} 
@@ -75,11 +88,14 @@ def test(file, name="")
         end
     else
         file "t/#{pir_file}" => [:config, "t/#{file}", "src/gen_actions.pir", "src/gen_grammar.pir"] do
+            unless File.exists?('cardinal.pbc')
+                Task['cardinal.pbc'].invoke
+            end
             parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
         end
         puts "named #{name}" if DEBUG
-        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do
-            run_test pir_file, name
+        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do |t|
+            run_test pir_file, "#{t.scope.join(':')}:#{name}"
         end
     end
 end
@@ -153,10 +169,11 @@ def run_test(file,name="")
             result = "Complete failure... no plan given"
             $failures += 1
         end
-        puts "Running test #{name} #{result}"
+        puts "Running #{name} #{result}"
     end
 end
 
+desc "Determine configuration information"
 task :config => "build.yaml" do
     require 'yaml'
     File.open("build.yaml","r") do |f|
@@ -187,6 +204,7 @@ file "build.yaml" do
     end
 end
 
+desc "Make the cardinal binary."
 file "cardinal" => [:config, "cardinal.pbc"] do
     make_exe("cardinal.pbc")
 end
@@ -292,6 +310,7 @@ namespace :test do |ns|
         test "array/values_at.t"
         test "array/warray.t"
 
+        desc "Run tests on Array."
         task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :nitems, :pop, :push, :reject, :replace, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
@@ -300,6 +319,7 @@ namespace :test do |ns|
         test "file/file.t"
         test "file/stat.t" 
         
+        desc "Run tests on File."
         task :all => [:dir, :file, :stat]
     end
 
@@ -307,6 +327,7 @@ namespace :test do |ns|
         test "hash/hash.t"
         test "hash/exists.t"
         
+        desc "Run tests on Hash."
         task :all => [:hash, :exists]
     end
     
@@ -315,6 +336,7 @@ namespace :test do |ns|
         test "integer/times.t"
         test "integer/cmp.t"
 
+        desc "Run tests on Integer."
         task :all => [:integer, :times, :cmp]
     end
 
@@ -323,12 +345,14 @@ namespace :test do |ns|
         test "kernel/open.t"
         test "kernel/sprintf.t"
 
+        desc "Run tests on Kernel."
         task :all => [:exit, :open, :sprintf]
     end
 
     namespace :math do
         test "math/functions.t"
         
+        desc "Run tests on Math."
         task :all => [:functions]
     end
     
@@ -342,6 +366,7 @@ namespace :test do |ns|
         test "range/to_s.t"
         test "range/tofrom-variants.t"
 
+        desc "Run tests on Range."
         task :all => [:each, :infixexclusive, :infixinclusive, :membershipvariants, :new, :to_a, :to_s, :tofromvariants]
     end 
 
@@ -362,10 +387,14 @@ namespace :test do |ns|
         test "string/reverse.t"
         test "string/upcase.t"
 
+        desc "Run tests on String."
         task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :empty, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
     end
 
-    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
+    desc "Run basic tests."
+    task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :bool, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
+
+    desc "Run the entire test suite."
     task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
         dur_seconds = Time.now.to_i - $start.to_i
         dur_minutes = 0
@@ -426,6 +455,7 @@ namespace :test do |ns|
         puts " -- CLEAN FOR COMMIT --" if clean?
     end
 
+    desc "Run test:all *and* produce stats about known issues."
     task :stats => [:all] do
         $pl = $issue_counts.size > 1
         unless $issue_counts.empty?

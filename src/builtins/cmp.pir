@@ -45,19 +45,34 @@ Swiped from Rakudo.
     .return ($P0)
 .end
 
-.sub 'infix:==' :multi(TrueClass,FalseClass)
+.sub 'infix:==' :multi(TrueClass,_)
     .param pmc a
     .param pmc b
     $P0 = get_hll_global 'false'
     .return ($P0)
 .end
 
-.sub 'infix:==' :multi(FalseClass,TrueClass)
+.sub 'infix:==' :multi(FalseClass,_)
     .param pmc a
     .param pmc b
     $P0 = get_hll_global 'false'
     .return ($P0)
 .end
+
+.sub 'infix:==' :multi(_,TrueClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
+.sub 'infix:==' :multi(_,FalseClass)
+    .param pmc a
+    .param pmc b
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+.end
+
 
 .sub 'infix:==' :multi(Integer,Integer)
     .param pmc a

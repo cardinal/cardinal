@@ -54,12 +54,10 @@ Perform initializations and create the GC class
         $P1 = 1
         setattribute self, '$!disabled', $P1
         collectoff
-        $P0 = new 'CardinalString'
-        $P0 = 'false'
+        $P0 = get_hll_global 'false'
         .return ($P0)
    already_disabled:
-        $P0 = new 'CardinalString'
-        $P0 = 'true'
+        $P0 = get_hll_global 'true'
         .return ($P0)
 .end
 
@@ -68,16 +66,14 @@ Perform initializations and create the GC class
    if $P0 == 1 goto enable
    goto already_enabled
    already_enabled:
-        $P0 = new 'CardinalString'
-        $P0 = 'false'
+        $P0 = get_hll_global 'false'
         .return ($P0)
    enable:
         $P1 = new 'CardinalInteger'
         $P1 = 0
         setattribute self, '$!disabled', $P1
         collecton
-        $P0 = new 'CardinalString'
-        $P0 = 'true'
+        $P0 = get_hll_global 'true'
         .return ($P0)
 .end
 

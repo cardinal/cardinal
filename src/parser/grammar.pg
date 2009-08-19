@@ -414,7 +414,7 @@ token literal {
 }
 
 token float {
-    '-'? \d* '.' \d+
+    '-'? \d+ '.' \d+
     {*}
 }
 
@@ -542,7 +542,6 @@ proto 'infix:/' is equiv('infix:*')  { ... }
 proto 'infix:%' is equiv('infix:*')
                 is pirop('mod')       { ... }
 
-#
 #proto 'prefix:+' is tighter('infix:*')  { ... }
 #proto 'prefix:-' is equiv('prefix:+')  { ... }
 #proto 'prefix:!' is equiv('prefix:+')  { ... }
