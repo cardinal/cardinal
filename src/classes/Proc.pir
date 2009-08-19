@@ -20,9 +20,11 @@ Perform initializations and create the Proc class
 .namespace ['Proc']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Proc', 'parent'=>'CardinalObject', 'attr'=>'!block')
+    $P0 = newclass 'Proc'
+    $P1 = get_class 'CardinalObject'
+    addparent $P0, $P1
+
+    addattribute $P0, "!block"
 .end
 
 .sub 'get_bool' :vtable

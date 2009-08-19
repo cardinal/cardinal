@@ -20,11 +20,15 @@ Perform initializations and create the Continuation class
 .namespace ['CardinalContinuation']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, contproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    contproto = cardinalmeta.'new_class'('CardinalContinuation', 'parent'=>'parrot;Continuation CardinalObject')
-    cardinalmeta.'register'('Continuation', 'parent'=>'CardinalObject', 'protoobject'=>contproto)
+    .local pmc contproto, objproto, pcontproto
+    contproto = newclass 'CardinalContinuation'
 
+    objproto = get_class 'CardinalObject'
+    addparent contproto, objproto
+
+    $P0 = get_root_namespace ['parrot';'Continuation']
+    pcontproto = get_class $P0
+    addparent contproto, pcontproto
 .end
 
 .sub 'get_string' :vtable

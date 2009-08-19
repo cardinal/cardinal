@@ -22,11 +22,14 @@ Perform initializations and create the Time class
 .include "tm.pasm"
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Time', 'parent'=>'CardinalObject', 'attr'=>'$!time_in_millis $!gmt')
-    cardinalmeta = $P0.'HOW'()
-    set_hll_global ['Time'], '!CARDINALMETA', cardinalmeta
+    .local pmc timeproto
+    timeproto = newclass 'Time'
+
+    $P0 = get_class 'CardinalObject'
+    addparent timeproto, $P0
+
+    addattribute timeproto, "$!time_in_millis"
+    addattribute timeproto, "$!gmt"
 .end
 
 

@@ -502,25 +502,25 @@ method classdef($/,$key) {
         $block.blocktype('declaration');
         $block.pirflags(':init :load');
 
-        $?CLASS.push(
-            PAST::Op.new(
-                :pasttype('callmethod'),
-                :name('register'),
-                PAST::Var.new(
-                    :scope('package'),
-                    :name('!CARDINALMETA'),
-                    :namespace('CardinalObject')
-                ),
-                PAST::Var.new(
-                    :scope('lexical'),
-                    :name('$def')
-                ),
-                PAST::Val.new(
-                    :value('CardinalObject'),
-                    :named( PAST::Val.new( :value('parent') ) )
-                )
-            )
-        );
+        #$?CLASS.push(
+        #    PAST::Op.new(
+        #        :pasttype('callmethod'),
+        #        :name('register'),
+        #        PAST::Var.new(
+        #            :scope('package'),
+        #            :name('!CARDINALMETA'),
+        #            :namespace('CardinalObject')
+        #        ),
+        #        PAST::Var.new(
+        #            :scope('lexical'),
+        #            :name('$def')
+        #        ),
+        #        PAST::Val.new(
+        #            :value('CardinalObject'),
+        #            :named( PAST::Val.new( :value('parent') ) )
+        #        )
+        #    )
+        #);
 
         unless defined( $?INIT ) {
             $?INIT := PAST::Block.new();

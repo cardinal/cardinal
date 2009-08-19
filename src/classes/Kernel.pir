@@ -19,18 +19,13 @@ Perform initializations and create the kernel class
 .namespace ['Kernel']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, kernelprototype
-    load_bytecode 'P6object.pbc'
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    kernelprototype = $P0.'new_class'('Kernel', 'attr'=>'%!properties')
-    #cardinalmeta = $P0.'HOW'()
-    cardinalmeta = kernelprototype.'new'()
-    set_hll_global ['Kernel'], '!CARDINALMETA', cardinalmeta
-    #.local pmc cardinalmeta
-    #cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    #cardinalmeta.'new_class'('CardinalKernel')
-    #$P0 = cardinalmeta.'HOW'()
-    #set_hll_global ['CardinalKernel'], '!CARDINALMETA', $P0
+    .local pmc kernelproto
+    kernelproto = newclass 'Kernel'
+
+    $P0 = get_class 'CardinalObject'
+    addparent kernelproto, $P0
+
+    addattribute kernelproto, '%!properties'
 .end
 
 

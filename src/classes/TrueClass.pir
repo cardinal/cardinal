@@ -11,9 +11,15 @@ TrueClass - Cardinal boolean class
 .namespace ['TrueClass']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, trueproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    trueproto = cardinalmeta.'new_class'('TrueClass', 'parent'=>'CardinalObject parrot;Boolean')
+    .local pmc trueproto
+    trueproto = newclass 'TrueClass'
+
+    $P0 = get_class 'CardinalObject'
+    addparent trueproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'Boolean']
+    $P0 = get_class $P0
+    addparent trueproto, $P0
 
     $P0 = new 'TrueClass'
     set_hll_global 'true', $P0

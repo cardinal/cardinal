@@ -22,21 +22,11 @@ Perform initializations and create the Math class
 .const num PI = 3.14159265358979
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Math', 'parent'=>'', 'attr'=>'')
-    #cardinalmeta = $P0.'HOW'()
-    #set_hll_global ['Math'], '!CARDINALMETA', cardinalmeta
+    .local pmc mathproto
+    mathproto = newclass 'Math'
 
-    #.local pmc math_clazz, base_clazz
-    #base_clazz = class $P0
-    ###newclass math_clazz, 'Math'
-    ###math_clazz.'add_parent'(base_clazz)
-    #get_class $P0, "CardinalObject"
-    #subclass math_clazz, $P0, "Math"
-    #set_hll_global ['Math'], '!CARDINALMETA', math_clazz
-
-
+    $P0 = get_class 'CardinalObject'
+    addparent mathproto, $P0
 .end
 
 #=item WHENCE()

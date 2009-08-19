@@ -14,16 +14,18 @@ Stolen from Rakudo
 .namespace ['CardinalArray']
 
 .sub 'onload' :anon :load :init
-    .local pmc cardinalmeta, arrayproto, interp, core_type, hll_type
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    arrayproto = cardinalmeta.'new_class'('CardinalArray', 'parent'=>'parrot;ResizablePMCArray CardinalObject')
-    #cardinalmeta.'register'('ResizablePMCArray', 'parent'=>'CardinalObject', 'protoobject'=>arrayproto)
-    core_type = get_class 'ResizablePMCArray'
-    hll_type = get_class 'CardinalArray'
+    .local pmc objproto, rpaproto, arrayproto, interp
+    arrayproto = newclass 'CardinalArray'
+
+    objproto = get_class 'CardinalObject'
+    addparent arrayproto, objproto
+
+    $P0 = get_root_namespace ['parrot';'ResizablePMCArray']
+    rpaproto = get_class $P0
+    addparent arrayproto, rpaproto
 
     interp = getinterp
-    interp.'hll_map'(core_type, hll_type)
-
+    interp.'hll_map'(rpaproto, arrayproto)
 .end
 
 =item get_string()    (vtable method)

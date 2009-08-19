@@ -18,10 +18,15 @@ CardinalInteger - Cardinal integers
 =cut
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, intproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    intproto = cardinalmeta.'new_class'('CardinalInteger', 'parent'=>'parrot;Integer CardinalObject')
-    cardinalmeta.'register'('Float', 'parent'=>'CardinalObject', 'protoobject'=>intproto)
+    .local pmc intproto
+    intproto = newclass 'CardinalInteger'
+
+    $P0 = get_class 'CardinalObject'
+    addparent intproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'Integer']
+    $P0 = get_class $P0
+    addparent intproto, $P0
 .end
 
 =item ACCEPTS()

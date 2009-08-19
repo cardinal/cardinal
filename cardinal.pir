@@ -45,9 +45,13 @@ object.
 #.loadlib 'cardinal_group'
 
 .sub 'onload' :anon :load :init
-    .local pmc cardinalmeta, compilerclass, compiler
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    compilerclass = cardinalmeta.'new_class'('cardinal::Compiler', 'parent'=>'PCT::HLLCompiler')
+    .local pmc compilerclass, compiler
+
+    load_bytecode "PCT.pbc"
+
+    $P0 = get_root_namespace ["parrot";"PCT";'HLLCompiler']
+    $P0 = get_class $P0
+    compilerclass = subclass $P0, 'Compiler'
 
     $P2 = new 'CardinalString'
     $P2 = ""

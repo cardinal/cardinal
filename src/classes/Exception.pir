@@ -1,9 +1,15 @@
 .namespace ['CardinalException']
 
 .sub 'onload' :anon :init :load
-    .local pmc meta, proto, core_type, hll_type, interp
-    meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    proto = meta.'new_class'('CardinalException', 'parent'=>'parrot;Exception CardinalObject')
+    .local pmc excproto, core_type, hll_type, interp
+    excproto = newclass 'CardinalException'
+
+    $P0 = get_class 'CardinalObject'
+    addparent excproto, $P0 
+
+    $P0 = get_root_namespace ['parrot';'Exception']
+    $P0 = get_class $P0
+    addparent excproto, $P0
 
     core_type = get_class 'Exception'
     hll_type = get_class 'CardinalException'
@@ -11,37 +17,86 @@
     interp = getinterp
     interp.'hll_map'(core_type, hll_type)
 
-    proto = meta.'new_class'('NoMemoryError', 'parent'=>'CardinalException')
+    $P0 = newclass 'NoMemoryError'
+    addparent $P0, excproto
     
-    proto = meta.'new_class'('ScriptError', 'parent'=>'CardinalException')
-    proto = meta.'new_class'('LoadError', 'parent'=>'ScriptError')
-    proto = meta.'new_class'('NotImplementedError', 'parent'=>'ScriptError')
-    proto = meta.'new_class'('SyntaxError', 'parent'=>'ScriptError')
+    $P0 = newclass 'ScriptError'
+    addparent $P0, excproto
 
-    proto = meta.'new_class'('SignalException', 'parent'=>'CardinalException')
-    proto = meta.'new_class'('Interrupt', 'parent'=>'SignalException')
+    $P1 = newclass 'LoadError'
+    addparent $P1, $P0
 
-    proto = meta.'new_class'('StandardError', 'parent'=>'CardinalException')
-    proto = meta.'new_class'('ArgumentError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('IOError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('EOFError', 'parent'=>'IOError')
-    proto = meta.'new_class'('IndexError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('LocalJumpError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('NameError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('NoMethodError', 'parent'=>'NameError')
-    proto = meta.'new_class'('RangeError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('FloatDomainError', 'parent'=>'RangeError')
-    proto = meta.'new_class'('RegexpError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('RuntimeError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('SecurityError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('SystemCallError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('SystemStackError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('ThreadError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('TypeError', 'parent'=>'StandardError')
-    proto = meta.'new_class'('ZeroDivisionError', 'parent'=>'StandardError')
+    $P1 = newclass 'NotImplementedError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'SyntaxError'
+    addparent $P1, $P0
+
+    $P0 = newclass 'SignalException'
+    addparent $P0, excproto
+
+    $P1 = newclass 'Interrupt'
+    addparent $P1, $P0
+
+    $P0 = newclass 'StandardError'
+    addparent $P0, excproto
+
+    $P1 = newclass 'ArgumentError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'IOError'
+    addparent $P1, $P0
+
+    $P2 = newclass 'EOFError'
+    addparent $P2, $P1
     
-    proto = meta.'new_class'('SystemExit', 'parent'=>'CardinalException')
-    proto = meta.'new_class'('fatal', 'parent'=>'CardinalException')
+    $P1 = newclass 'IndexError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'LocalJumpError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'NameError'
+    addparent $P1, $P0
+
+    $P2 = newclass 'NoMethodError'
+    addparent $P2, $P1
+
+    $P1 = newclass 'RangeError'
+    addparent $P1, $P0
+
+    $P2 = newclass 'FloatDomainError'
+    addparent $P2, $P1
+    
+    $P1 = newclass 'RegexpError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'RuntimeError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'SecurityError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'SystemCallError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'SystemStackError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'ThreadError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'TypeError'
+    addparent $P1, $P0
+
+    $P1 = newclass 'ZeroDivisionError'
+    addparent $P1, $P0
+
+    $P0 = newclass 'SystemExit'
+    addparent $P0, excproto
+
+    $P0 = newclass 'fatal'
+    addparent $P0, excproto
 .end
 
 # Local Variables:

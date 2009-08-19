@@ -15,10 +15,16 @@ src/classes/CardinalRange.pir - methods for the CardinalRange class
 .namespace ['CardinalRange']
 
 .sub 'onload' :anon :load :init
-    .local pmc meta, proto
-    meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    proto = meta.'new_class'('CardinalRange', 'parent'=>'CardinalObject', 'attr'=>'$!from $!to $!from_exclusive $!to_exclusive')
-    #meta.'register'('CardinalRange', 'CardinalObject', 'protoobject'=>proto)
+    .local pmc proto
+    proto = newclass 'CardinalRange'
+    
+    $P0 = get_class 'CardinalObject'
+    addparent proto, $P0
+
+    addattribute proto, "$!from"
+    addattribute proto, "$!to"
+    addattribute proto, "$!from_exclusive"
+    addattribute proto, "$!to_exclusive"
 .end
 
 =item VTABLE_get integer (vtable method)

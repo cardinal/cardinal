@@ -20,9 +20,11 @@ Perform initializations and create the Dir class
 .namespace ['Dir']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('Dir', 'parent'=>'CardinalObject', 'attr'=>'!umask')
+    .local pmc cardinalmeta, dirproto, objproto
+    dirproto = newclass 'Dir'
+
+    objproto = get_class 'CardinalObject'
+    addparent dirproto, objproto
 .end
 
 #.sub 'new' :method

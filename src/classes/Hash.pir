@@ -13,12 +13,17 @@ src/classes/CardinalHash.pir - Cardinal hash class and related functions
 .namespace ['CardinalHash']
 
 .sub 'onload' :anon :load :init
-    .local pmc cardinalmeta, mappingproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    mappingproto = cardinalmeta.'new_class'('CardinalHash', 'parent'=>'parrot;Hash CardinalObject')
-    cardinalmeta.'register'('Hash', 'parent'=>'CardinalObject', 'protoobject'=>mappingproto)
-    $P0 = get_class 'CardinalHash'
-    addattribute $P0, 'default'
+    .local pmc hashproto
+    hashproto = newclass 'CardinalHash'
+    
+    $P0 = get_class 'CardinalObject'
+    addparent hashproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'Hash']
+    $P0 = get_class $P0
+    addparent hashproto, $P0
+
+    addattribute hashproto, 'default'
 .end
 
 

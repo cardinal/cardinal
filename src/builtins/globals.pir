@@ -13,10 +13,8 @@ src/builtins/globals.pir - initialize miscellaneous global variables
     cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
 
     ##  set up $ENV
-    $P0 = get_hll_global 'CardinalHash'
-    cardinalmeta.'register'('Env', 'parent'=>$P0, 'protoobject'=>$P0)
     .local pmc env
-    env = new 'Env'
+    env = new 'CardinalHash'
     set_hll_global '$ENV', env
 
     ##  set up $:
@@ -33,10 +31,10 @@ src/builtins/globals.pir - initialize miscellaneous global variables
     #$P1 = new 'CardinalString'
     #$P1 = "\n"
     ## global input record separator
-    $P1 = get_hll_global ['NilClass'], '!CARDINALMETA'
+    $P1 = get_hll_global 'nil'
     set_hll_global '$/', $P1
     ## global output record separator
-    $P4 = get_hll_global ['NilClass'], '!CARDINALMETA'
+    $P4 = get_hll_global 'nil'
     set_hll_global '$\', $P4
 
     #getstdin $P5

@@ -22,9 +22,13 @@ Perform initializations and create the IO class
 .const int DEFAULT_BLOCK_SIZE = 8129
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('IO', 'parent'=>'CardinalObject', 'attr'=>'!io')
+    .local pmc ioproto
+    ioproto = newclass 'IO'
+
+    $P0 = get_class 'CardinalObject'
+    addparent ioproto, $P0
+
+    addattribute ioproto, '!io'
 .end
 
 .sub 'ACCEPTS' :method

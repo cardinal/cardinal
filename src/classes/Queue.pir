@@ -20,10 +20,15 @@ Perform initializations and create the Queue class
 .namespace ['Queue']
 
 .sub 'onload' :anon :init :load
-    .local pmc meta, qproto
-    meta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    qproto = meta.'new_class'('Queue', 'parent'=>'parrot;TQueue CardinalObject', 'attr'=>'')
-    meta.'register'('TQueue', 'parent'=>'TQueue', 'protoobject'=>qproto)
+    .local pmc qproto
+    qproto = newclass 'Queue'
+
+    $P0 = get_class 'CardinalObject'
+    addparent qproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'TQueue']
+    $P0 = get_class $P0
+    addparent qproto, $P0
 .end
 
 .sub 'get_bool' :vtable

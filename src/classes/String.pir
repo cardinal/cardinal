@@ -21,10 +21,15 @@ Stolen from Rakudo
 .include 'cclass.pasm'
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, strproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    strproto = cardinalmeta.'new_class'('CardinalString', 'parent'=>'parrot;String CardinalObject')
-    cardinalmeta.'register'('String', 'parent'=>'CardinalObject', 'protoobject'=>strproto)
+    .local pmc strproto
+    strproto = newclass 'CardinalString'
+
+    $P0 = get_class 'CardinalObject'
+    addparent strproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'String']
+    $P0 = get_class $P0
+    addparent strproto, $P0
 .end
 
 .sub 'new' :method :multi(_)

@@ -22,10 +22,12 @@ Perform initializations and create the File Stat class
 .include 'stat.pasm'
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('FileStat', 'parent'=>'CardinalObject', 'attr'=>'!path')
-    #$P0.'register'('File', 'parent'=>'CardinalObject', 'protoobject'=>cardinalmeta)
+    .local pmc statproto
+
+    statproto = newclass 'FileStat'
+
+    $P0 = get_class 'CardinalObject'
+    addparent statproto, $P0
 .end
 
 .sub 'get_bool' :vtable

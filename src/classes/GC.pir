@@ -19,14 +19,13 @@ Perform initializations and create the GC class
 .namespace ['GC']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('GC', 'parent'=>'', 'attr'=>'$!disabled')
-    #$P2 = cardinalmeta.'HOW'()
-    #$P1 = new 'CardinalInteger'
-    #$P1 = 0
-    #setattribute $P2, '$!disabled', $P1
-    #set_hll_global ['GC'], '!CARDINALMETA', cardinalmeta
+    .local pmc gcproto
+    gcproto = newclass 'GC'
+
+    $P0 = get_class 'CardinalObject'
+    addparent gcproto, $P0
+
+    addattribute gcproto, '$!disabled'
 .end
 
 .sub 'get_bool' :vtable

@@ -20,10 +20,16 @@ Perform initializations and create the File class
 .namespace ['CardinalFile']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta
-    $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    cardinalmeta = $P0.'new_class'('CardinalFile', 'parent'=>'parrot;File IO CardinalObject', 'attr'=>'!path')
-    $P0.'register'('File', 'parent'=>'CardinalObject', 'protoobject'=>cardinalmeta)
+    .local pmc fileproto
+
+    fileproto = newclass 'CardinalFile'
+    
+    $P0 = get_class 'IO'
+    addparent fileproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'File']
+    $P0 = get_class $P0
+    addparent fileproto, $P0
 .end
 
 .sub 'get_bool' :vtable

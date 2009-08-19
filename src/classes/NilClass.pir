@@ -3,10 +3,15 @@
 .namespace [ 'NilClass' ]
 
 .sub 'onload' :anon :load :init
-    .local pmc cardinalmeta, nilproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    nilproto = cardinalmeta.'new_class'('NilClass', 'parent'=>'parrot;Undef CardinalObject')
-    cardinalmeta.'register'('Undef', 'parent'=>nilproto, 'protoobject'=>nilproto)
+    .local pmc nilproto
+    nilproto = newclass 'NilClass'
+
+    $P0 = get_class 'CardinalObject'
+    addparent nilproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'Undef']
+    $P0 = get_class $P0
+    addparent nilproto, $P0
 .end
 
 =over 4

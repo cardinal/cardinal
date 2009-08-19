@@ -11,9 +11,15 @@ FalseClass - Cardinal boolean class
 .namespace ['FalseClass']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, falseproto
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
-    falseproto = cardinalmeta.'new_class'('FalseClass', 'parent'=>'CardinalObject parrot;Boolean')
+    .local pmc falseproto
+    falseproto = newclass 'FalseClass'
+
+    $P0 = get_class 'CardinalObject'
+    addparent falseproto, $P0
+
+    $P0 = get_root_namespace ['parrot';'Boolean']
+    $P0 = get_class $P0
+    addparent falseproto, $P0
 
     $P0 = new 'FalseClass'
     set_hll_global 'false', $P0
