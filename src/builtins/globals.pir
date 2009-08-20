@@ -19,10 +19,9 @@ src/builtins/globals.pir - initialize miscellaneous global variables
 
     ##  set up $:
     $S0 = env['RUBYLIB']
-    say $S0
     $P0 = split ':', $S0
-    push $P0, '.'
     $P0 = 'list'($P0)
+    $P0.'push'('.')
     set_hll_global '$:', $P0
 
     ##  set up %*INC
