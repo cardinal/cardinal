@@ -26,7 +26,7 @@ Perform initializations and create the File Stat class
 
     statproto = newclass 'FileStat'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent statproto, $P0
 .end
 
@@ -61,7 +61,7 @@ Perform initializations and create the File Stat class
 .end
 
 .sub 'class' :method
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $S0 = "File::Stat"
         $P0.'concat'($S0)
         .return ($P0)
@@ -69,7 +69,7 @@ Perform initializations and create the File Stat class
 
 .sub 'path' :method
         .local pmc path
-        path = new 'CardinalString'
+        path = new 'String'
         getattribute path, self, '!path'
         .return (path)
 .end
@@ -116,7 +116,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[0]
-        dev = new 'CardinalInteger'
+        dev = new 'Integer'
         dev = $I0
         .return (dev)
 .end
@@ -129,7 +129,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[1]
-        mode = new 'CardinalInteger'
+        mode = new 'Integer'
         mode = $I0
         .return (mode)
 .end
@@ -142,7 +142,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[2]
-        mode = new 'CardinalInteger'
+        mode = new 'Integer'
         mode = $I0
         .return (mode)
 .end
@@ -155,7 +155,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[3]
-        links = new 'CardinalInteger'
+        links = new 'Integer'
         links = $I0
         .return (links)
 .end
@@ -168,7 +168,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[4]
-        gid = new 'CardinalInteger'
+        gid = new 'Integer'
         gid = $I0
         .return (gid)
 .end
@@ -181,7 +181,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[5]
-        gid = new 'CardinalInteger'
+        gid = new 'Integer'
         gid = $I0
         .return (gid)
 .end
@@ -194,7 +194,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[6]
-        rdev = new 'CardinalInteger'
+        rdev = new 'Integer'
         rdev = $I0
         .return (rdev)
 .end
@@ -207,7 +207,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[7]
-        mode = new 'CardinalInteger'
+        mode = new 'Integer'
         mode = $I0
         .return (mode)
 .end
@@ -270,7 +270,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[11]
-        blksize = new 'CardinalInteger'
+        blksize = new 'Integer'
         blksize = $I0
         .return (blksize)
 .end
@@ -283,7 +283,7 @@ Perform initializations and create the File Stat class
         os = new 'OS'
         $P0 = os.'stat'(path)
         $I0 = $P0[12]
-        size = new 'CardinalInteger'
+        size = new 'Integer'
         size = $I0
         .return (size)
 .end

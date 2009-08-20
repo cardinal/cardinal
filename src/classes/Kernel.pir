@@ -22,7 +22,7 @@ Perform initializations and create the kernel class
     .local pmc kernelproto
     kernelproto = newclass 'Kernel'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent kernelproto, $P0
 
     addattribute kernelproto, '%!properties'
@@ -90,7 +90,7 @@ Returns true if the object is defined, false otherwise
 .sub 'sprintf' :method
     .param pmc fmt
     .param pmc args     :slurpy
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     sprintf $P0, fmt, args
     .return ($P0)
 .end
@@ -104,7 +104,7 @@ Call the OS with C<cmd>, return the ouput.
    pipe = open cmd, "-|"
    .local string buffer
    .local pmc output
-   output = new 'CardinalString'
+   output = new 'String'
    $S0 = pop pipe      # pop buf layer
    goto lp
    lp:
@@ -142,7 +142,7 @@ Call the OS, return C<true> if successful, otherwise  C<false>
 .sub callcc :method
         .param pmc block :named('!BLOCK')
         .local pmc cont
-        cont = new 'CardinalContinuation'
+        cont = new 'Continuation'
         set_addr cont, done
         block(cont)
         goto done

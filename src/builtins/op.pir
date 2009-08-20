@@ -15,7 +15,7 @@ src/builtins/op.pir - Cardinal ops
 .sub 'infix:+' :multi(_,_)
     .param num a
     .param num b
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $N0 = add a, b
     $P0 = $N0
     .return ($P0)
@@ -24,17 +24,16 @@ src/builtins/op.pir - Cardinal ops
 .sub 'infix:-' :multi(_,_)
     .param num a
     .param num b
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $N0 = sub a, b
     $P0 = $N0
     .return ($P0)
 .end
 
-
 .sub 'infix:*' :multi(_,_)
     .param num a
     .param num b
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $N0 = mul a, b
     $P0 = $N0
     .return ($P0)
@@ -43,24 +42,24 @@ src/builtins/op.pir - Cardinal ops
 .sub 'infix:/' :multi(_,_)
     .param num a
     .param num b
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $N0 = div a, b
     $P0 = $N0
     .return ($P0)
 .end
 
-.sub 'infix:+' :multi(CardinalString,_)
+.sub 'infix:+' :multi(String,_)
     .param pmc a
     .param pmc b
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = concat a, b
     .return ($P0)
 .end
 
-.sub 'infix:+' :multi(CardinalArray,CardinalArray)
+.sub 'infix:+' :multi(Array,Array)
     .param pmc a
     .param pmc b
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     $P0 = 'list'(a :flat, b :flat)
     .return ($P0)
 .end
@@ -79,7 +78,7 @@ src/builtins/op.pir - Cardinal ops
     .return (a)
 .end
 
-.sub 'infix:+=' :multi(CardinalString,_)
+.sub 'infix:+=' :multi(String,_)
     .param pmc a
     .param pmc b
     $P0 = 'infix:+'(a,b)
@@ -94,10 +93,10 @@ src/builtins/op.pir - Cardinal ops
     .return ($I0)
 .end
 
-.sub 'infix:*' :multi(CardinalString,CardinalInteger)
+.sub 'infix:*' :multi(String,Integer)
     .param pmc a
     .param pmc b
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = repeat a, b
     .return ($P0)
 .end

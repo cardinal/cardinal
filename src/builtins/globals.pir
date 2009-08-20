@@ -10,7 +10,7 @@ src/builtins/globals.pir - initialize miscellaneous global variables
 
 .sub 'onload' :anon :load :init
     .local pmc cardinalmeta
-    cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
 
     ##  set up $ENV
     .local pmc env
@@ -25,10 +25,10 @@ src/builtins/globals.pir - initialize miscellaneous global variables
     set_hll_global '$:', $P0
 
     ##  set up %*INC
-    $P0 = new 'CardinalHash'
+    $P0 = new 'Hash'
     set_hll_global '%INC', $P0
 
-    #$P1 = new 'CardinalString'
+    #$P1 = new 'String'
     #$P1 = "\n"
     ## global input record separator
     $P1 = get_hll_global 'nil'
@@ -47,11 +47,11 @@ src/builtins/globals.pir - initialize miscellaneous global variables
     #getstderr $P7
     #set_hll_global 'stderr', $P7
 
-    $P2 = new 'CardinalString'
+    $P2 = new 'String'
     $P2 = "parrot"
     set_hll_global 'RUBY_PLATFORM', $P2
 
-    $P3 = new 'CardinalString'
+    $P3 = new 'String'
     $P3 = "1.9"
     set_hll_global 'RUBY_VERSION', $P3
 .end

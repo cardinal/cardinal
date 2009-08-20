@@ -6,7 +6,7 @@
     .local pmc nilproto
     nilproto = newclass 'NilClass'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent nilproto, $P0
 
     $P0 = get_root_namespace ['parrot';'Undef']
@@ -23,24 +23,24 @@ Return the elements of the list concatenated.
 =cut
 
 .sub 'get_string' :vtable :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = 'nil'
     .return($P0)
 .end
 
 .sub 'to_i' :method
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = 0
     .return ($P0)
 .end
 
 .sub 'to_a' :method
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     .return ($P0)
 .end
 
 .sub 'to_s' :method
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = ''
     .return($P0)
 .end

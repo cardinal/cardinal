@@ -22,7 +22,7 @@ Perform initializations and create the GC class
     .local pmc gcproto
     gcproto = newclass 'GC'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent gcproto, $P0
 
     addattribute gcproto, '$!disabled'
@@ -38,8 +38,8 @@ Perform initializations and create the GC class
 #.end
 
 .sub 'init' :vtable('init')
-    $P1 = new 'CardinalInteger'
-    $P1 = 0
+    $P1 = new 'Bool'
+    $P1 = get_hll_global ['Bool'], 'false'
     setattribute self, '$!disabled', $P1
 .end
 
@@ -49,7 +49,7 @@ Perform initializations and create the GC class
    if $P0 == 1 goto already_disabled
    goto disable
    disable:
-        $P1 = new 'CardinalInteger'
+        $P1 = new 'Integer'
         $P1 = 1
         setattribute self, '$!disabled', $P1
         collectoff
@@ -68,7 +68,7 @@ Perform initializations and create the GC class
         $P0 = get_hll_global 'false'
         .return ($P0)
    enable:
-        $P1 = new 'CardinalInteger'
+        $P1 = new 'Integer'
         $P1 = 0
         setattribute self, '$!disabled', $P1
         collecton
@@ -87,7 +87,7 @@ Perform initializations and create the GC class
     .local pmc addr_space, itr
     .local pmc test
     .return(1)
-    test = new 'CardinalString'
+    test = new 'String'
     test = "yo"
     # Nope AddrResgistry is not what I expected, we cant use it.
     # We need to create Hash to store all the objects, Use WeakRefs to store the pmcs?

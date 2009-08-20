@@ -14,7 +14,7 @@ TrueClass - Cardinal boolean class
     .local pmc trueproto
     trueproto = newclass 'TrueClass'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent trueproto, $P0
 
     $P0 = get_root_namespace ['parrot';'Boolean']

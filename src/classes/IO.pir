@@ -25,7 +25,7 @@ Perform initializations and create the IO class
     .local pmc ioproto
     ioproto = newclass 'IO'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent ioproto, $P0
 
     addattribute ioproto, '!io'

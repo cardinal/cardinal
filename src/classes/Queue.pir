@@ -23,7 +23,7 @@ Perform initializations and create the Queue class
     .local pmc qproto
     qproto = newclass 'Queue'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent qproto, $P0
 
     $P0 = get_root_namespace ['parrot';'TQueue']

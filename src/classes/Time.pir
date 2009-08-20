@@ -25,7 +25,7 @@ Perform initializations and create the Time class
     .local pmc timeproto
     timeproto = newclass 'Time'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent timeproto, $P0
 
     addattribute timeproto, "$!time_in_millis"
@@ -58,7 +58,7 @@ Returns true if he object is defined, false otherwise
 
 .sub 'initialize' :method :multi(_,_)
     .param pmc t
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = t
     setattribute self, '$!time_in_millis', $P0
     $P1 = get_hll_global 'false'
@@ -68,7 +68,7 @@ Returns true if he object is defined, false otherwise
 
 .sub 'initialize' :method :multi(_)
     time $I0
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     $P0 = $I0
     setattribute self, '$!time_in_millis', $P0
     $P1 = get_hll_global 'false'
@@ -77,13 +77,13 @@ Returns true if he object is defined, false otherwise
 .end
 
 #.sub 'now'
-    #call CardinalObject super .new
+    #call Object super .new
     #return the object returned by super
 #.end
 
 .sub 'to_s' :method :vtable('get_string')
     .local pmc is_gmt, to_s
-    to_s = new 'CardinalString'
+    to_s = new 'String'
     $P0 = getattribute self, '$!time_in_millis'
     $I0 = $P0
     is_gmt = getattribute self, '$!gmt'
@@ -139,7 +139,7 @@ Returns true if he object is defined, false otherwise
    .param int offset
    .local pmc is_gmt
    .local pmc return_value
-   return_value = new 'CardinalInteger'
+   return_value = new 'Integer'
    $P0 = getattribute self, '$!time_in_millis'
    $I0 = $P0
    is_gmt = getattribute self, '$!gmt'

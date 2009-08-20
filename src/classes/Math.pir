@@ -25,7 +25,7 @@ Perform initializations and create the Math class
     .local pmc mathproto
     mathproto = newclass 'Math'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent mathproto, $P0
 .end
 

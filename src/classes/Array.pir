@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-src/classes/CardinalArray.pir - Cardinal CardinalArray class and related functions
+src/classes/Array.pir - Cardinal Array class and related functions
 Stolen from Rakudo
 
 =head1 Methods
@@ -11,13 +11,13 @@ Stolen from Rakudo
 
 =cut
 
-.namespace ['CardinalArray']
+.namespace ['Array']
 
 .sub 'onload' :anon :load :init
     .local pmc objproto, rpaproto, arrayproto, interp
-    arrayproto = newclass 'CardinalArray'
+    arrayproto = newclass 'Array'
 
-    objproto = get_class 'CardinalObject'
+    objproto = get_class 'Object'
     addparent arrayproto, objproto
 
     $P0 = get_root_namespace ['parrot';'ResizablePMCArray']
@@ -46,10 +46,10 @@ Return the elements of the list concatenated.
 .end
 
 .include "hllmacros.pir"
-.sub 'initialize' :method :multi(_,CardinalInteger)
+.sub 'initialize' :method :multi(_,Integer)
     .param pmc size
     .local pmc i
-    i = new 'CardinalInteger'
+    i = new 'Integer'
     i = 0
     $P0 = get_hll_global 'nil'
     .DoWhile( {
@@ -60,13 +60,13 @@ Return the elements of the list concatenated.
 
 =item to_s()    (method)
 
-Return a CardinalString representing the Array.
+Return a String representing the Array.
 
 =cut
 
 .sub 'to_s' :method
     $S0 = join '', self
-    $P0 = new 'CardinalString'
+    $P0 = new 'String'
     $P0 = $S0
     .return($P0)
 .end
@@ -140,7 +140,7 @@ Doesnt work, but it should be close...
 
     .local string what
     what = topic.'WHAT'()
-    if what == "CardinalArray" goto acc_list
+    if what == "Array" goto acc_list
     goto no_match
 
 acc_list:
@@ -235,8 +235,8 @@ Return a sorted copy of the list
     .local pmc uarray, hash, val, key
     .local int i, len 
 
-    uarray = new 'CardinalArray'
-    hash = new 'CardinalHash'
+    uarray = new 'Array'
+    hash = new 'Hash'
 
     i = 0
     len = elements self
@@ -291,7 +291,7 @@ Return a sorted copy of the list
     .local pmc uarray, val
     .local int i, len
     
-    uarray = new 'CardinalArray'
+    uarray = new 'Array'
     
     i = 0
     len = elements self
@@ -484,7 +484,7 @@ Prepends ELEMENTS to the front of the list.
 
 =item keys()
 
-Returns a CardinalArray containing the keys of the CardinalArray.
+Returns a Array containing the keys of the Array.
 
 =cut
 
@@ -494,14 +494,14 @@ Returns a CardinalArray containing the keys of the CardinalArray.
     .local int len
     .local int i
 
-    res = new 'CardinalArray'
+    res = new 'Array'
     len = elements self
     i = 0
 
   loop:
     if i == len goto done
 
-    elem = new 'CardinalInteger'
+    elem = new 'Integer'
     elem = i
     res.'push'(elem)
 
@@ -514,7 +514,7 @@ Returns a CardinalArray containing the keys of the CardinalArray.
 
 =item values()
 
-Returns a CardinalArray containing the values of the CardinalArray.
+Returns a Array containing the values of the Array.
 
 =cut
 
@@ -524,14 +524,14 @@ Returns a CardinalArray containing the values of the CardinalArray.
     .local int len
     .local int i
 
-    res = new 'CardinalArray'
+    res = new 'Array'
     len = elements self
     i = 0
 
   loop:
     if i == len goto done
 
-    elem = new 'CardinalInteger'
+    elem = new 'Integer'
     elem = self[i]
     res.'push'(elem)
 
@@ -661,7 +661,7 @@ Returns a list of the elements in revese order.
     .local int len
     .local int i
 
-    res = new 'CardinalArray'
+    res = new 'Array'
 
     len = elements self
     if len == 0 goto done
@@ -714,7 +714,7 @@ Returns self.
 .sub 'compact' :method
     .local pmc array
     .local int i, len
-    array = new 'CardinalArray'
+    array = new 'Array'
 
     len = self
     i = 0
@@ -743,7 +743,7 @@ Returns self.
 
 =item delete()
 
-Deletes the given element from the CardinalArray, replacing them with Undef.
+Deletes the given element from the Array, replacing them with Undef.
 Returns the item if found, otherwise returns the result of running the block
 if passed, otherwise returns nil.
 
@@ -877,14 +877,14 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     .local int len
     .local int i
 
-    res = new 'CardinalArray'
+    res = new 'Array'
     len = elements self
     i = 0
 
   loop:
     if i == len goto done
 
-    elem = new 'CardinalInteger'
+    elem = new 'Integer'
     elem = i
     res.'push'(elem)
 
@@ -910,14 +910,14 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     .local int len
     .local int i
 
-    res = new 'CardinalArray'
+    res = new 'Array'
     len = elements self
     i = 0
 
   loop:
     if i == len goto done
 
-    key = new 'CardinalInteger'
+    key = new 'Integer'
     key = i
 
     val = self[i]
@@ -947,7 +947,7 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     .local int narg
     .local int i
 
-    retv = new 'CardinalArray'
+    retv = new 'Array'
     narg = elements self
     i = 0
 
@@ -976,14 +976,14 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
 
 =cut
 
-.sub first :method :multi(CardinalArray,_)
+.sub first :method :multi(Array,_)
     .param int count
     .local pmc newlist
     .local pmc item
     .local int elems
     .local int i
 
-    newlist = new 'CardinalArray'
+    newlist = new 'Array'
 
     elems = elements self
     le count, elems, sufficient_elements
@@ -1005,7 +1005,7 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     .return(newlist)
 .end
 
-.sub first :method :multi(CardinalArray)
+.sub first :method :multi(Array)
     .local pmc item
     $I0 = elements self
     eq $I0, 0, empty
@@ -1020,14 +1020,14 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
 
 =cut
 
-.sub last :method :multi(CardinalArray,_)
+.sub last :method :multi(Array,_)
     .param int count
     .local pmc newlist
     .local pmc item
     .local int elems
     .local int i
 
-    newlist = new 'CardinalArray'
+    newlist = new 'Array'
 
     elems = elements self
     count = elems - count
@@ -1050,7 +1050,7 @@ Checks to see if the specified index or indices have been assigned to.  Returns 
     .return(newlist)
 .end
 
-.sub last :method :multi(CardinalArray)
+.sub last :method :multi(Array)
     .local pmc item
     $I0 = elements self
     eq $I0, 0, empty
@@ -1132,7 +1132,7 @@ Creates a new Array containing the results and returns it.
 .sub 'collect' :method
     .param pmc block :named('!BLOCK')
     .local pmc result
-    result = new 'CardinalArray'
+    result = new 'Array'
     $P0 = iter self
   each_loop:
     unless $P0 goto each_loop_end
@@ -1182,13 +1182,13 @@ Creates a new Array containing the results and returns it.
 .sub 'flatten' :method
     .local pmc returnMe
     .local pmc iterator
-    returnMe = new 'CardinalArray'
+    returnMe = new 'Array'
     iterator = iter self
   each_loop:
     unless iterator goto each_loop_end
     $P1 = shift iterator
     #if $P1 is an array call flatten
-    $I0 = isa $P1, 'CardinalArray'
+    $I0 = isa $P1, 'Array'
     if $I0 goto inner_flatten
     push returnMe, $P1
     goto each_loop
@@ -1281,7 +1281,7 @@ Retrieve the number of elements in C<self>
     .local pmc val
     .local int end
 
-    values = new 'CardinalArray'
+    values = new 'Array'
 
     if count < 0 goto nil
 
@@ -1373,7 +1373,7 @@ Retrieve the number of elements in C<self>
     .param pmc range
     .local pmc values
 
-    values = new 'CardinalArray'
+    values = new 'Array'
 
     '!range_push_into'(a, range, values, 0)
 
@@ -1386,18 +1386,18 @@ Retrieve the number of elements in C<self>
     .return ($P0)
 .end
 
-.sub '[]' :method :multi('CardinalArray', 'CardinalInteger')
+.sub '[]' :method :multi('Array', 'Integer')
     .param pmc i
     .tailcall self.'at'(i)
 .end
 
-.sub '[]' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger')
+.sub '[]' :method :multi('Array', 'Integer', 'Integer')
     .param pmc offset
     .param pmc count
     .tailcall '!do_slice_offset_count'(self, offset, count)
 .end
 
-.sub '[]' :method :multi('CardinalArray', 'CardinalRange')
+.sub '[]' :method :multi('Array', 'Range')
     .param pmc range
     .tailcall '!do_slice_range'(self, range)
 .end
@@ -1408,18 +1408,18 @@ Retrieve the number of elements in C<self>
 
 =cut
 
-.sub 'slice' :method :multi('CardinalArray', 'CardinalInteger')
+.sub 'slice' :method :multi('Array', 'Integer')
     .param pmc i
     .tailcall self.'at'(i)
 .end
 
-.sub 'slice' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger')
+.sub 'slice' :method :multi('Array', 'Integer', 'Integer')
     .param pmc offset
     .param pmc count
     .tailcall '!do_slice_offset_count'(self, offset, count)
 .end
 
-.sub 'slice' :method :multi('CardinalArray', 'CardinalRange')
+.sub 'slice' :method :multi('Array', 'Range')
     .param pmc range
     .tailcall '!do_slice_range'(self, range)
 .end
@@ -1440,7 +1440,7 @@ Retrieve the number of elements in C<self>
     if c < to goto loop
 .end
 
-.sub '[]=' :method :multi('CardinalArray', 'CardinalInteger', _)
+.sub '[]=' :method :multi('Array', 'Integer', _)
     .param int i
     .param pmc v
     .local int length
@@ -1461,7 +1461,7 @@ Retrieve the number of elements in C<self>
     .return(v)
 .end
 
-.sub '[]=' :method :multi('CardinalArray', 'CardinalInteger', 'CardinalInteger', _)
+.sub '[]=' :method :multi('Array', 'Integer', 'Integer', _)
     .param int i
     .param int c
     .param pmc v
@@ -1481,10 +1481,10 @@ Retrieve the number of elements in C<self>
     '!extend_array'(self, length, i)
 
   skip_fill:
-    $I0 = isa v, 'CardinalArray'
+    $I0 = isa v, 'Array'
     if $I0 goto skip_make_array
 
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
 
     $I0 = isa v, 'NilClass'
     if $I0 goto do_splice
@@ -1505,7 +1505,7 @@ Retrieve the number of elements in C<self>
     .return(v)
 .end
 
-.sub '[]=' :method :multi('CardinalArray', 'CardinalRange', _)
+.sub '[]=' :method :multi('Array', 'Range', _)
     .param pmc r
     .param pmc v
     .local pmc beg
@@ -1536,7 +1536,7 @@ The zip operator.
     .local pmc zipped
     num_args = elements args
 
-    zipped = new 'CardinalArray'
+    zipped = new 'Array'
 
     # Get minimum element count - what we'll zip to.
     .local pmc iterator, args_iter, arg, item
@@ -1547,7 +1547,7 @@ The zip operator.
   setup_loop:
     unless iterator, setup_loop_done
     args_iter = iter args
-    item = new 'CardinalArray'
+    item = new 'Array'
     $P0 = shift iterator
     item.'push'($P0)
   inner_loop:
@@ -1583,14 +1583,14 @@ The zip operator.
 
     length = elements self
 
-    values = new 'CardinalArray'
+    values = new 'Array'
 
   loop_check:
     unless args goto done
 
     item = shift args
 
-    $I0 = isa item, 'CardinalRange'
+    $I0 = isa item, 'Range'
     if $I0 goto do_range
 
     val = self.'at'(item)
@@ -1706,7 +1706,7 @@ The zip operator.
 
 =item C<list(...)>
 
-Build a CardinalArray from its arguments.
+Build a Array from its arguments.
 
 =cut
 
@@ -1715,13 +1715,13 @@ Build a CardinalArray from its arguments.
 .sub 'list'
     .param pmc args            :slurpy
     .local pmc list, item
-    list = new 'CardinalArray'
+    list = new 'Array'
   args_loop:
     unless args goto args_end
     item = shift args
     $I0 = defined item
     unless $I0 goto add_item
-    $I0 = isa item, 'CardinalArray'
+    $I0 = isa item, 'Array'
     if $I0 goto add_item
     $I0 = does item, 'array'
     unless $I0 goto add_item
@@ -1740,7 +1740,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
 
 =cut
 
-.sub 'infix:*' :multi('CardinalArray','CardinalInteger')
+.sub 'infix:*' :multi('Array','Integer')
     .param pmc this
     .param pmc count
     .local pmc array
@@ -1753,7 +1753,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($P0)
 
   sane:
-    array = new 'CardinalArray'
+    array = new 'Array'
 
   loop:
     array.'concat'(this)
@@ -1765,7 +1765,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return (array)
 .end
 
-.sub 'infix:*' :multi('CardinalArray','CardinalString')
+.sub 'infix:*' :multi('Array','String')
     .param pmc this
     .param pmc s
     
@@ -1775,7 +1775,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($S0)
 .end
 
-.sub 'infix:+' :multi('CardinalArray','CardinalArray')
+.sub 'infix:+' :multi('Array','Array')
     .param pmc this
     .param pmc that
     .local pmc array
@@ -1786,12 +1786,12 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return ($P0)
 .end
 
-.sub 'infix:&' :multi('CardinalArray','CardinalArray')
+.sub 'infix:&' :multi('Array','Array')
     .param pmc this
     .param pmc that
     .local pmc inter, it, incl, item
     
-    inter = new 'CardinalArray'
+    inter = new 'Array'
     
     it = iter this
 
@@ -1824,13 +1824,13 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return (inter)
 .end
 
-.sub 'infix:-' :multi('CardinalArray','CardinalArray')
+.sub 'infix:-' :multi('Array','Array')
     .param pmc this
     .param pmc that
     .local pmc array, includes, elem
     .local int i, len
 
-    array = new 'CardinalArray'
+    array = new 'Array'
 
     len = elements this
     i = 0
@@ -1852,7 +1852,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
     .return (array)
 .end
 
-.sub 'infix:<<' :multi('CardinalArray',_)
+.sub 'infix:<<' :multi('Array',_)
     .param pmc this
     .param pmc that
     this.'push'(that)
@@ -1862,7 +1862,7 @@ Operator form for either repetition (when argument is an Integer), or as a short
 .sub 'infix:<<' :multi(_,_)
     .param pmc this
     .param pmc that
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     $P0.'push'(this)
     $P0.'push'(that)
     .return ($P0)
@@ -1893,7 +1893,7 @@ The zip operator.
 
     # Empty list of no arguments.
     if num_args > 0 goto has_args
-    $P0 = new 'CardinalArray'
+    $P0 = new 'Array'
     .return($P0)
 has_args:
 
@@ -1916,12 +1916,12 @@ min_elems_loop_end:
 
     # Now build result list of lists.
     .local pmc res
-    res = new 'CardinalArray'
+    res = new 'Array'
     i = 0
 zip_loop:
     if i >= min_elem goto zip_loop_end
     .local pmc cur_list
-    cur_list = new 'CardinalArray'
+    cur_list = new 'Array'
     .local int j
     j = 0
 zip_elem_loop:
@@ -1950,7 +1950,7 @@ The non-hyper cross operator.
 .sub 'infix:X'
     .param pmc args            :slurpy
     .local pmc res
-    res = new 'CardinalArray'
+    res = new 'Array'
 
     # Algorithm: we'll maintain a list of counters for each list, incrementing
     # the counter for the right-most list and, when it we reach its final
@@ -1958,8 +1958,8 @@ The non-hyper cross operator.
     .local pmc counters
     .local pmc list_elements
     .local int num_args
-    counters = new 'FixedIntegerCardinalArray'
-    list_elements = new 'FixedIntegerCardinalArray'
+    counters = new 'FixedIntegerArray'
+    list_elements = new 'FixedIntegerArray'
     num_args = elements args
     counters = num_args
     list_elements = num_args
@@ -1984,7 +1984,7 @@ produce_next:
 
     # Start out by building list at current counters.
     .local pmc new_list
-    new_list = new 'CardinalArray'
+    new_list = new 'Array'
     i = 0
 cur_perm_loop:
     if i >= num_args goto cur_perm_loop_end
@@ -2128,23 +2128,16 @@ Returns the elements of LIST in the opposite order.
     typeof type, elem
 
     # This is a bit of a work around - some operators (ie. ~) return
-    # a String object instead of a CardinalString.
-    eq type, 'String', parrotstring
-    eq type, 'CardinalString', perl6string
+    # a String object instead of a String.
+    eq type, 'String', cardinalstring
     goto islist
 
-  parrotstring:
-    .local string tmps
-    tmps = elem
-    elem = new 'CardinalString'
-    elem = tmps
-
-  perl6string:
+  cardinalstring:
     retv = elem.'reverse'()
     goto done
 
   islist:
-    retv = new 'CardinalArray'
+    retv = new 'Array'
     i = 0
 
   loop:
@@ -2158,59 +2151,59 @@ Returns the elements of LIST in the opposite order.
     .return(retv)
 .end
 
-.sub keys :multi('CardinalArray')
+.sub keys :multi('Array')
   .param pmc list
 
   .tailcall list.'keys'()
 .end
 
-.sub values :multi('CardinalArray')
+.sub values :multi('Array')
   .param pmc list
 
   .tailcall list.'values'()
 .end
 
-.sub delete :multi('CardinalArray')
+.sub delete :multi('Array')
   .param pmc list
   .param pmc indices :slurpy
 
   .tailcall list.'delete'(indices :flat)
 .end
 
-.sub exists :multi('CardinalArray')
+.sub exists :multi('Array')
   .param pmc list
   .param pmc indices :slurpy
 
   .tailcall list.'exists'(indices :flat)
 .end
 
-.sub kv :multi('CardinalArray')
+.sub kv :multi('Array')
     .param pmc list
 
     .tailcall list.'kv'()
 .end
 
-.sub pairs :multi('CardinalArray')
+.sub pairs :multi('Array')
     .param pmc list
 
     .tailcall list.'pairs'()
 .end
 
-.sub grep :multi(_,'CardinalArray')
+.sub grep :multi(_,'Array')
     .param pmc test
     .param pmc list :slurpy
 
     .tailcall list.'grep'(test)
 .end
 
-.sub first :multi(_,'CardinalArray')
+.sub first :multi(_,'Array')
     .param pmc test
     .param pmc list :slurpy
 
     .tailcall list.'first'(test)
 .end
 
-.sub 'infix:<<' :multi('CardinalArray',_)
+.sub 'infix:<<' :multi('Array',_)
     .param pmc array
     .param pmc item
     push array, item

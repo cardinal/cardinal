@@ -23,7 +23,7 @@ Perform initializations and create the Dir class
     .local pmc cardinalmeta, dirproto, objproto
     dirproto = newclass 'Dir'
 
-    objproto = get_class 'CardinalObject'
+    objproto = get_class 'Object'
     addparent dirproto, objproto
 .end
 
@@ -66,7 +66,7 @@ Perform initializations and create the Dir class
             os.'chdir'(old_dir)
             goto done
        no_block:
-            $P0 = new 'CardinalInteger'
+            $P0 = new 'Integer'
             $P0 = 0
             os = new 'OS'
             os.'chdir'(new_dir)
@@ -79,7 +79,7 @@ Perform initializations and create the Dir class
 .sub 'pwd' :method
         .local pmc os
         .local pmc pwd
-        pwd = new 'CardinalString'
+        pwd = new 'String'
         os = new 'OS'
         pwd = os.'cwd'()
         .return (pwd)
@@ -92,7 +92,7 @@ Perform initializations and create the Dir class
 .sub 'chroot' :method
         .local pmc os
         .local pmc status
-        status = new 'CardinalInteger'
+        status = new 'Integer'
         os = new 'OS'
         status = os.'cwd'()
         .return (status)
@@ -128,7 +128,7 @@ Perform initializations and create the Dir class
         .local pmc os
         os = new 'OS'
         os.'rm'(path)
-        $P0 = new 'CardinalInteger'
+        $P0 = new 'Integer'
         $P0 = 0
         .return ($P0)
 .end
@@ -138,7 +138,7 @@ Perform initializations and create the Dir class
         .local pmc os
         .local pmc list
         os = new 'OS'
-        list = new 'CardinalArray'
+        list = new 'Array'
         $P0 =  os.'readdir'(path)
         $P1 = iter $P0
         loop:

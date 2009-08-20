@@ -21,7 +21,7 @@ Perform initializations and create the Proc class
 
 .sub 'onload' :anon :init :load
     $P0 = newclass 'Proc'
-    $P1 = get_class 'CardinalObject'
+    $P1 = get_class 'Object'
     addparent $P0, $P1
 
     addattribute $P0, "!block"
@@ -59,7 +59,7 @@ Perform initializations and create the Proc class
     $I0 = block.'arity'()
     #$P2 = block.'inspect'()
     #say $P2
-    $P0 = new 'CardinalInteger'
+    $P0 = new 'Integer'
     dec $I0
     $P0 = $I0
     .return ($P0)

@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-src/classes/CardinalHash.pir - Cardinal hash class and related functions
+src/classes/Hash.pir - Cardinal hash class and related functions
 
 =head1 Methods
 
@@ -10,13 +10,13 @@ src/classes/CardinalHash.pir - Cardinal hash class and related functions
 
 =cut
 
-.namespace ['CardinalHash']
+.namespace ['Hash']
 
 .sub 'onload' :anon :load :init
     .local pmc hashproto
-    hashproto = newclass 'CardinalHash'
+    hashproto = newclass 'Hash'
     
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent hashproto, $P0
 
     $P0 = get_root_namespace ['parrot';'Hash']
@@ -57,7 +57,7 @@ Returns a string of keys and values appended together.
     .local pmc it
     .local pmc rv
     it = iter self
-    rv   = new 'CardinalString'
+    rv   = new 'String'
   loop:
     unless it goto end
     $S1 = shift it
@@ -81,7 +81,7 @@ Returns elements of hash as array of C<Pair(key, value)>
     .local pmc it
     .local pmc rv
     it = iter self
-    rv   = new 'CardinalArray'
+    rv   = new 'Array'
   loop:
     unless it goto end
     $S1 = shift it
@@ -99,7 +99,7 @@ Returns elements of hash as array of C<Pair(key, value)>
     .local pmc it
     .local pmc rv
     it = iter self
-    rv   = new 'CardinalArray'
+    rv   = new 'Array'
   loop:
     unless it goto end
     $S1 = shift it
@@ -114,7 +114,7 @@ Returns elements of hash as array of C<Pair(key, value)>
     .local pmc it
     .local pmc rv
     it = iter self
-    rv   = new 'CardinalArray'
+    rv   = new 'Array'
   loop:
     unless it goto end
     $S1 = shift it
@@ -148,13 +148,13 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
     .local pmc newlist
     .local pmc item
     .local pmc it
-    newlist = new 'CardinalArray'
+    newlist = new 'Array'
     it = iter self
   each_loop:
     unless it goto each_loop_end
     $P1 = shift it
     $P2 = it[$P1]
-    item = new 'CardinalArray'
+    item = new 'Array'
     push item, $P1
     push item, $P2
     push newlist, item
@@ -166,7 +166,7 @@ Run C<block> once for each item in C<self>, with the key and value passed as arg
 
 ## FIXME:  Parrot currently requires us to write our own "clone" method.
 .sub 'clone' :vtable :method
-    $P0 = new 'CardinalHash'
+    $P0 = new 'Hash'
     .local pmc it
     it = iter self
   loop:
@@ -330,7 +330,7 @@ property instead.
 .sub 'infix:=>'
     .param pmc key
     .param pmc value
-    $P1 = new 'CardinalArray'
+    $P1 = new 'Array'
     $P1.'push'(key)
     $P1.'push'(value)
     .return($P1)
@@ -339,7 +339,7 @@ property instead.
 .sub 'hash'
     .param pmc pairs        :slurpy
     .local pmc ahash
-    ahash = new 'CardinalHash'
+    ahash = new 'Hash'
     .local pmc item
   pairs_loop:
     unless pairs goto pairs_loop_end
@@ -356,14 +356,14 @@ property instead.
 
 .sub 'new' :method :multi(_,P)
     .param pmc default
-    $P0 = new 'CardinalHash'
+    $P0 = new 'Hash'
     setattribute $P0, 'default', default
     .return ($P0)
 .end
 
 .sub 'new' :method :multi(_,'Sub')
     .param pmc a :optional :named('!BLOCK')
-    $P0 = new 'CardinalHash'
+    $P0 = new 'Hash'
     setattribute $P0, 'default', a
     .return($P0)
 .end

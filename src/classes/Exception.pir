@@ -1,10 +1,10 @@
-.namespace ['CardinalException']
+.namespace ['Exception']
 
 .sub 'onload' :anon :init :load
     .local pmc excproto, core_type, hll_type, interp
-    excproto = newclass 'CardinalException'
+    excproto = newclass 'Exception'
 
-    $P0 = get_class 'CardinalObject'
+    $P0 = get_class 'Object'
     addparent excproto, $P0 
 
     $P0 = get_root_namespace ['parrot';'Exception']
@@ -12,7 +12,7 @@
     addparent excproto, $P0
 
     core_type = get_class 'Exception'
-    hll_type = get_class 'CardinalException'
+    hll_type = get_class 'Exception'
 
     interp = getinterp
     interp.'hll_map'(core_type, hll_type)

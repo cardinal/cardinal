@@ -354,12 +354,6 @@ method funcall($/) {
 method constant_variable($/) {
     my @a;
     my $name := ~$/;
-    if $name eq 'Integer' { $name := "CardinalInteger"; }
-    elsif $name eq 'String' { $name := "CardinalString"; }
-    elsif $name eq 'Array' { $name := "CardinalArray"; }
-    elsif $name eq 'Hash' { $name := "CardinalHash"; }
-    elsif $name eq 'Range' { $name := "CardinalRange"; }
-    elsif $name eq 'File' { $name := "CardinalFile"; }
     my $past := PAST::Var.new( :name($name), :scope('package'), :node($/), :viviself('Undef'), :namespace( @a ) );
     make $past;
 }
@@ -521,6 +515,26 @@ method classdef($/,$key) {
         #        )
         #    )
         #);
+        $?CLASS.push(
+            PAST::Op.new(
+                :pasttype('callmethod'),
+                :name('register'),
+                PAST::Var.new(
+                    :scope('package'),
+                    :name('!CARDINALMETA'),
+                    :namespace('Object')
+                ),
+                PAST::Var.new(
+                    :scope('lexical'),
+                    :name('$def')
+                ),
+                PAST::Val.new(
+                    :value('Object'),
+                    :named( PAST::Val.new( :value('parent') ) )
+                )
+            )
+        );
+>>>>>>> iss34:src/parser/actions.pm
 
         unless defined( $?INIT ) {
             $?INIT := PAST::Block.new();
@@ -781,7 +795,7 @@ method float($/) {
 }
 
 method integer($/) {
-    make PAST::Val.new( :value( ~$/ ), :returns('CardinalInteger'), :node($/) );
+    make PAST::Val.new( :value( ~$/ ), :returns('Integer'), :node($/) );
 }
 
 method string($/) {
@@ -845,7 +859,7 @@ method quote_term($/, $key) {
     if ($key eq 'literal') {
         $past := PAST::Val.new(
             :value( ~$<quote_literal>.ast ),
-            :returns('CardinalString'), :node($/)
+            :returns('String'), :node($/)
         );
     }
     elsif ($key eq 'variable') {

@@ -17,13 +17,13 @@ Perform initializations and create the Continuation class
 
 =cut
 
-.namespace ['CardinalContinuation']
+.namespace ['Continuation']
 
 .sub 'onload' :anon :init :load
     .local pmc contproto, objproto, pcontproto
-    contproto = newclass 'CardinalContinuation'
+    contproto = newclass 'Continuation'
 
-    objproto = get_class 'CardinalObject'
+    objproto = get_class 'Object'
     addparent contproto, objproto
 
     $P0 = get_root_namespace ['parrot';'Continuation']

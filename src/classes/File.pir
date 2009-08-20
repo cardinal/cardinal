@@ -17,12 +17,12 @@ Perform initializations and create the File class
 
 =cut
 
-.namespace ['CardinalFile']
+.namespace ['File']
 
 .sub 'onload' :anon :init :load
     .local pmc fileproto
 
-    fileproto = newclass 'CardinalFile'
+    fileproto = newclass 'File'
     
     $P0 = get_class 'IO'
     addparent fileproto, $P0
@@ -42,7 +42,7 @@ Perform initializations and create the File class
 
     .local string what
     what = topic.'WHAT'()
-    if what == "CardinalFile" goto match
+    if what == "File" goto match
     goto no_match
     no_match:
         $P0 = get_hll_global 'false'
@@ -64,7 +64,7 @@ Perform initializations and create the File class
         .param string mode :optional
         .param pmc block :optional :named('!BLOCK')
         .local pmc cardinalmeta, this
-        cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
+        cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
         $P0 = cardinalmeta.'get_parrotclass'(self)
         this = $P0.'new'()
         $S0 = this.'!to_path'(path)
@@ -121,7 +121,7 @@ Perform initializations and create the File class
 .sub '!to_path' :method
         .param pmc path
         $S0 = typeof path
-        cmp_str $I0, $S0, "CardinalString"
+        cmp_str $I0, $S0, "String"
         if $I0 == 0 goto have_path
         goto get_path
         get_path:
@@ -143,7 +143,7 @@ Perform initializations and create the File class
         #getprop io, '!io', self
         getattribute io, self, '!io'
         #readline, read, peek
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         readline $S0, io
         .While( { $S0 != '' },
         {
@@ -163,7 +163,7 @@ Perform initializations and create the File class
 .end
 
 .sub 'class' :method
-        $P0 = new 'CardinalString'
+        $P0 = new 'String'
         $S0 = "File"
         $P0.'concat'($S0)
         .return ($P0)
@@ -171,7 +171,7 @@ Perform initializations and create the File class
 
 .sub 'path' :method
         .local pmc path
-        path = new 'CardinalString'
+        path = new 'String'
         #getprop path, '!path', self
         getattribute path, self, '!path'
         .return (path)
