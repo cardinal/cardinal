@@ -44,10 +44,8 @@ object.
 #no caridinal_group found on my machine
 #.loadlib 'cardinal_group'
 
-.sub 'onload' :anon :load :init
+.sub 'onload' :load
     .local pmc compilerclass, compiler
-
-    load_bytecode "PCT.pbc"
 
     $P0 = get_root_namespace ["parrot";"PCT";'HLLCompiler']
     $P0 = get_class $P0
@@ -58,8 +56,11 @@ object.
     $P2 = ""
     set_hll_global '$,', $P2
 
-    compiler = compilerclass.'new'()
+    compiler = new compilerclass
     compiler.'language'('cardinal')
+    $P0 = compreg 'cardinal'
+    say 'hi!'
+    say $P0.'command_line'()
     $P0 = get_hll_namespace ['cardinal';'Grammar']
     compiler.'parsegrammar'($P0)
     $P0 = get_hll_namespace ['cardinal';'Grammar';'Actions']
@@ -88,6 +89,9 @@ to the cardinal compiler.
 
 .sub 'main' :main
     .param pmc args_str
+
+
+    'onload'()
 
     ##  create ARGS global.
     .local pmc args, it
