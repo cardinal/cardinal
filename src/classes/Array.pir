@@ -39,7 +39,7 @@ Stolen from Rakudo
     .param pmc obj :optional
     .param int obj_flag :opt_flag
 
-    .local int i
+    .local int i, s
     i = 0
     
     unless size_flag goto done
@@ -47,8 +47,10 @@ Stolen from Rakudo
     if obj_flag goto fill_loop
     obj = get_hll_global 'nil'
 
+    s = size
+
   fill_loop:
-    if i == size goto done
+    if i == s goto done
     push self, obj
 
     inc i
@@ -68,11 +70,12 @@ Stolen from Rakudo
     .param pmc size
     .param pmc block :named('!BLOCK')
 
-    .local int i
+    .local int i, s
     i = 0
+    s = size
 
   loop:
-    if i == size goto done
+    if i == s goto done
     
     $P1 = '!new'('Integer')
     $P1 = i

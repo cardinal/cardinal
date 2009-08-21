@@ -7,6 +7,7 @@ Module
 
 =head1 DESCRIPTION
 
+=cut
 
 # Local Variables:
 #   mode: pir

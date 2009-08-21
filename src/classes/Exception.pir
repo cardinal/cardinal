@@ -1,7 +1,7 @@
 .namespace ['Exception']
 
 .sub 'onload' :anon :init :load
-    .local pmc exc, pexc
+    .local pmc exc, pexc, obj
     pexc = '!get_parrot_class'('Exception')
     obj = '!get_class'('Object')
     exc = '!make_named_class'('Exception', obj, pexc)

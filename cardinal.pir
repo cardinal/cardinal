@@ -59,8 +59,6 @@ object.
     compiler = new compilerclass
     compiler.'language'('cardinal')
     $P0 = compreg 'cardinal'
-    say 'hi!'
-    say $P0.'command_line'()
     $P0 = get_hll_namespace ['cardinal';'Grammar']
     compiler.'parsegrammar'($P0)
     $P0 = get_hll_namespace ['cardinal';'Grammar';'Actions']

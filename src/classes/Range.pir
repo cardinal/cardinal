@@ -20,7 +20,7 @@ src/classes/Range.pir - methods for the Range class
     obj = '!get_class'('Object')
     range = '!make_named_class'('Range', obj)
 
-    range_pclass = getattribute range, '!parrot_class')
+    range_pclass = getattribute range, '!parrot_class'
 
     addattribute range_pclass, "$!from"
     addattribute range_pclass, "$!to"

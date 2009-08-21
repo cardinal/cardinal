@@ -25,7 +25,7 @@ Perform initializations and create the Proc class
     obj = '!get_class'('Object')
     proc = '!make_named_class'('Proc', obj)
 
-    proc_pclass = getattribute proc, '!parrot_class')
+    proc_pclass = getattribute proc, '!parrot_class'
 
     addattribute proc_pclass, "!block"
 .end
