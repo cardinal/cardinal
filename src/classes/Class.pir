@@ -25,11 +25,11 @@ and must be assigned if the user wishes to save them.
 =cut
 
 .sub 'new' :method
-    .param pmc superclass :optional
+    .param pmc super_rclass :optional
     .param int super_flag :opt_flag
 
     if super_flag goto have_super
-    superclass = get_hll_global 'Object'
+    super_rclass = '!get_class'('Object')
   have_super:
     .local pmc new_pclass, new_meta_pclass, new_rclass, new_meta_rclass
     .local pmc super_pclass, meta_super_pclass, super_rclass, meta_super_rclass
@@ -39,7 +39,6 @@ and must be assigned if the user wishes to save them.
     nil = get_hll_global 'nil'
 
     # First get all the superclass information.
-    super_rclass = getattribute superclass, '!class'
     super_pclass = getattribute super_rclass, '!parrot_class'
     meta_super_rclass = getattribute super_rclass, '!meta'
     meta_super_pclass = getattribute meta_super_rclass, '!parrot_class'
