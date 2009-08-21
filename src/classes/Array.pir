@@ -11,21 +11,79 @@ Stolen from Rakudo
 
 =cut
 
+.sub '' :anon :load :init
+    .local pmc obj, rpa
+
+    rpa = '!get_parrot_class'('ResizablePMCArray')
+
+    obj = '!get_class'('Object')
+
+    '!make_named_class'('Array', obj, rpa)
+.end
+
+.namespace ['Array';'meta']
+
+.sub '[]' :method
+    .param pmc args :slurpy
+    
+    $P0 = get_hll_global 'Array'
+    $P1 = $P0.'new'(args)
+    .return ($P1)
+.end
+
 .namespace ['Array']
 
-.sub 'onload' :anon :load :init
-    .local pmc objproto, rpaproto, arrayproto, interp
-    arrayproto = newclass 'Array'
+.sub 'initialize' :method :multi(_,Integer,Object)
+    .param pmc size :optional
+    .param int size_flag :opt_flag
+    .param pmc obj :optional
+    .param int obj_flag :opt_flag
 
-    objproto = get_class 'Object'
-    addparent arrayproto, objproto
+    .local int i
+    i = 0
+    
+    unless size_flag goto done
 
-    $P0 = get_root_namespace ['parrot';'ResizablePMCArray']
-    rpaproto = get_class $P0
-    addparent arrayproto, rpaproto
+    if obj_flag goto fill_loop
+    obj = get_hll_global 'nil'
 
-    interp = getinterp
-    interp.'hll_map'(rpaproto, arrayproto)
+  fill_loop:
+    if i == size goto done
+    push self, obj
+
+    inc i
+    goto fill_loop
+
+  done:
+    .return (self)
+.end
+
+.sub 'initialize' :method :multi(_,Array)
+    .param pmc ary
+    self = ary.'to_ary'()
+    .return (self)
+.end
+
+.sub 'initialize' :method :multi(_,Integer,Sub)
+    .param pmc size
+    .param pmc block :named('!BLOCK')
+
+    .local int i
+    i = 0
+
+  loop:
+    if i == size goto done
+    
+    $P1 = '!new'('Integer')
+    $P1 = i
+    $P0 = block($P1)
+    push self, $P0
+    
+    inc i
+    goto loop
+
+  done:
+    .return (self)
 .end
 
 =item get_string()    (vtable method)
@@ -39,23 +97,6 @@ Return the elements of the list concatenated.
     $S0 = concat '[', $S0
     $S0 = concat $S0, ']'
     .return ($S0)
-.end
-
-.sub 'initialize' :method :multi(_)
-        noop
-.end
-
-.include "hllmacros.pir"
-.sub 'initialize' :method :multi(_,Integer)
-    .param pmc size
-    .local pmc i
-    i = new 'Integer'
-    i = 0
-    $P0 = get_hll_global 'nil'
-    .DoWhile( {
-                self[i] = $P0
-                inc i
-              }, i < size)
 .end
 
 =item to_s()    (method)

@@ -51,7 +51,8 @@ object.
 
     $P0 = get_root_namespace ["parrot";"PCT";'HLLCompiler']
     $P0 = get_class $P0
-    compilerclass = subclass $P0, 'Compiler'
+    $P1 = get_hll_namespace ['cardinal';'Compiler']
+    compilerclass = subclass $P0, $P1
 
     $P2 = new 'String'
     $P2 = ""

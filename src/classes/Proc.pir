@@ -20,11 +20,14 @@ Perform initializations and create the Proc class
 .namespace ['Proc']
 
 .sub 'onload' :anon :init :load
-    $P0 = newclass 'Proc'
-    $P1 = get_class 'Object'
-    addparent $P0, $P1
+    .local pmc proc, obj, proc_pclass
 
-    addattribute $P0, "!block"
+    obj = '!get_class'('Object')
+    proc = '!make_named_class'('Proc', obj)
+
+    proc_pclass = getattribute proc, '!parrot_class')
+
+    addattribute proc_pclass, "!block"
 .end
 
 .sub 'get_bool' :vtable

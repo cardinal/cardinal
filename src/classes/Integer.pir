@@ -18,15 +18,11 @@ Integer - Cardinal integers
 =cut
 
 .sub 'onload' :anon :init :load
-    .local pmc intproto
-    intproto = newclass 'Integer'
+    .local pmc pint, obj
 
-    $P0 = get_class 'Object'
-    addparent intproto, $P0
-
-    $P0 = get_root_namespace ['parrot';'Integer']
-    $P0 = get_class $P0
-    addparent intproto, $P0
+    obj = '!get_class'('Object')
+    pint = '!get_parrot_class'('Integer')
+    '!make_named_class'('Integer', obj, pint)
 .end
 
 =item ACCEPTS()

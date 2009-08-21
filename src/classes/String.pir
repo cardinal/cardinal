@@ -21,27 +21,18 @@ Stolen from Rakudo
 .include 'cclass.pasm'
 
 .sub 'onload' :anon :init :load
-    .local pmc strproto
-    strproto = newclass 'String'
+    .local pmc pstr, obj
 
-    $P0 = get_class 'Object'
-    addparent strproto, $P0
+    pstr = '!get_parrot_class'('String')
+    obj = '!get_class'('Object')
 
-    $P0 = get_root_namespace ['parrot';'String']
-    $P0 = get_class $P0
-    addparent strproto, $P0
+    '!make_named_class'('String', obj, pstr)
 .end
 
-.sub 'new' :method :multi(_)
-    $P0 = new 'String'
-    .return ($P0)
-.end
-
-.sub 'new' :method :multi(_,_)
+.sub 'initialize' :method :multi(_,_)
     .param pmc a
-    $P0 = new 'String'
-    $P0 = a
-    .return ($P0)
+    self = a
+    .return (self)
 .end
 
 .sub 'ACCEPTS' :method

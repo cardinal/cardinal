@@ -20,15 +20,11 @@ Perform initializations and create the Continuation class
 .namespace ['Continuation']
 
 .sub 'onload' :anon :init :load
-    .local pmc contproto, objproto, pcontproto
-    contproto = newclass 'Continuation'
+    .local pmc cont, obj, pcont
 
-    objproto = get_class 'Object'
-    addparent contproto, objproto
-
-    $P0 = get_root_namespace ['parrot';'Continuation']
-    pcontproto = get_class $P0
-    addparent contproto, pcontproto
+    pcont = '!get_parrot_class'('ResizablePMCArray')
+    obj = '!get_class'('Object')
+    '!make_named_class'('Continuation', obj, pcont)
 .end
 
 .sub 'get_string' :vtable

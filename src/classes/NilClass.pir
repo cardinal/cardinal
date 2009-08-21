@@ -3,15 +3,12 @@
 .namespace [ 'NilClass' ]
 
 .sub 'onload' :anon :load :init
-    .local pmc nilproto
-    nilproto = newclass 'NilClass'
+    .local pmc undef, obj
 
-    $P0 = get_class 'Object'
-    addparent nilproto, $P0
+    undef = '!get_parrot_class'('Undef')
+    obj = '!get_class'('Object')
 
-    $P0 = get_root_namespace ['parrot';'Undef']
-    $P0 = get_class $P0
-    addparent nilproto, $P0
+    '!make_named_class'('NilClass', obj, undef)
 .end
 
 =over 4

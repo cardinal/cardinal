@@ -19,13 +19,13 @@ Perform initializations and create the GC class
 .namespace ['GC']
 
 .sub 'onload' :anon :init :load
-    .local pmc gcproto
-    gcproto = newclass 'GC'
+    .local pmc gcpclass
 
-    $P0 = get_class 'Object'
-    addparent gcproto, $P0
-
-    addattribute gcproto, '$!disabled'
+    $P0 = '!get_class'('Object')
+    $P1 = '!make_named_class'('GC', $P0)
+    
+    gcpclass = getattribute $P1, '!parrot_class'
+    addattribute gcpclass, '$!disabled'
 .end
 
 .sub 'get_bool' :vtable

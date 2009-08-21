@@ -22,14 +22,15 @@ Perform initializations and create the Time class
 .include "tm.pasm"
 
 .sub 'onload' :anon :init :load
-    .local pmc timeproto
-    timeproto = newclass 'Time'
+    .local pmc t, obj, t_pclass
+    
+    obj = '!get_class'('Object')
+    t = '!make_named_class'('Time', obj)
 
-    $P0 = get_class 'Object'
-    addparent timeproto, $P0
+    t_pclass = getattribute t, '!parrot_class'
 
-    addattribute timeproto, "$!time_in_millis"
-    addattribute timeproto, "$!gmt"
+    addattribute t_pclass, "$!time_in_millis"
+    addattribute t_pclass, "$!gmt"
 .end
 
 

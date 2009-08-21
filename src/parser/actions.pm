@@ -515,26 +515,6 @@ method classdef($/,$key) {
         #        )
         #    )
         #);
-        $?CLASS.push(
-            PAST::Op.new(
-                :pasttype('callmethod'),
-                :name('register'),
-                PAST::Var.new(
-                    :scope('package'),
-                    :name('!CARDINALMETA'),
-                    :namespace('Object')
-                ),
-                PAST::Var.new(
-                    :scope('lexical'),
-                    :name('$def')
-                ),
-                PAST::Val.new(
-                    :value('Object'),
-                    :named( PAST::Val.new( :value('parent') ) )
-                )
-            )
-        );
->>>>>>> iss34:src/parser/actions.pm
 
         unless defined( $?INIT ) {
             $?INIT := PAST::Block.new();

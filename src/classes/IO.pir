@@ -22,13 +22,13 @@ Perform initializations and create the IO class
 .const int DEFAULT_BLOCK_SIZE = 8129
 
 .sub 'onload' :anon :init :load
-    .local pmc ioproto
-    ioproto = newclass 'IO'
+    .local pmc io, obj, io_pclass
 
-    $P0 = get_class 'Object'
-    addparent ioproto, $P0
+    obj = '!get_class'('Object')
+    io = '!make_named_class'('IO', obj)
 
-    addattribute ioproto, '!io'
+    io_pclass = getattribute io, '!parrot_class'
+    addattribute io_pclass, '!io'
 .end
 
 .sub 'ACCEPTS' :method

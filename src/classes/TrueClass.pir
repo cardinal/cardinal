@@ -11,15 +11,12 @@ TrueClass - Cardinal boolean class
 .namespace ['TrueClass']
 
 .sub 'onload' :anon :init :load
-    .local pmc trueproto
-    trueproto = newclass 'TrueClass'
+    .local pmc obj, boolean
 
-    $P0 = get_class 'Object'
-    addparent trueproto, $P0
+    obj = '!get_class'('Object')
+    boolean = '!get_parrot_class'('Boolean')
 
-    $P0 = get_root_namespace ['parrot';'Boolean']
-    $P0 = get_class $P0
-    addparent trueproto, $P0
+    '!make_named_class'('TrueClass', obj, boolean)
 
     $P0 = new 'TrueClass'
     set_hll_global 'true', $P0

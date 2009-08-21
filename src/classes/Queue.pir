@@ -20,15 +20,12 @@ Perform initializations and create the Queue class
 .namespace ['Queue']
 
 .sub 'onload' :anon :init :load
-    .local pmc qproto
-    qproto = newclass 'Queue'
+    .local pmc obj, tqueue
 
-    $P0 = get_class 'Object'
-    addparent qproto, $P0
+    obj = '!get_class'('Object')
+    tqueue = '!get_parrot_class'('TQueue')
 
-    $P0 = get_root_namespace ['parrot';'TQueue']
-    $P0 = get_class $P0
-    addparent qproto, $P0
+    '!make_named_class'('Queue', obj, tqueue)
 .end
 
 .sub 'get_bool' :vtable

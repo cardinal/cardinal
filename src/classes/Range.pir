@@ -15,16 +15,17 @@ src/classes/Range.pir - methods for the Range class
 .namespace ['Range']
 
 .sub 'onload' :anon :load :init
-    .local pmc proto
-    proto = newclass 'Range'
-    
-    $P0 = get_class 'Object'
-    addparent proto, $P0
+    .local pmc obj, range, range_pclass
 
-    addattribute proto, "$!from"
-    addattribute proto, "$!to"
-    addattribute proto, "$!from_exclusive"
-    addattribute proto, "$!to_exclusive"
+    obj = '!get_class'('Object')
+    range = '!make_named_class'('Range', obj)
+
+    range_pclass = getattribute range, '!parrot_class')
+
+    addattribute range_pclass, "$!from"
+    addattribute range_pclass, "$!to"
+    addattribute range_pclass, "$!from_exclusive"
+    addattribute range_pclass, "$!to_exclusive"
 .end
 
 =item VTABLE_get integer (vtable method)

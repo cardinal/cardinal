@@ -19,13 +19,13 @@ Perform initializations and create the kernel class
 .namespace ['Kernel']
 
 .sub 'onload' :anon :init :load
-    .local pmc kernelproto
-    kernelproto = newclass 'Kernel'
+    .local pmc kernel, obj, kernel_pclass
 
-    $P0 = get_class 'Object'
-    addparent kernelproto, $P0
+    obj = '!get_class'('Object')
+    kernel = '!make_named_class'('Kernel', obj)
 
-    addattribute kernelproto, '%!properties'
+    kernel_pclass = getattribute kernel, '!parrot_class'
+    addattribute kernel_pclass, '%!properties'
 .end
 
 

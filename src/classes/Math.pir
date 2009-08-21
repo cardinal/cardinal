@@ -22,11 +22,9 @@ Perform initializations and create the Math class
 .const num PI = 3.14159265358979
 
 .sub 'onload' :anon :init :load
-    .local pmc mathproto
-    mathproto = newclass 'Math'
-
-    $P0 = get_class 'Object'
-    addparent mathproto, $P0
+    .local pmc obj
+    obj = '!get_class'('Object')
+    '!make_named_class'('Math', obj)
 .end
 
 #=item WHENCE()

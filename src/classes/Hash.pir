@@ -13,17 +13,14 @@ src/classes/Hash.pir - Cardinal hash class and related functions
 .namespace ['Hash']
 
 .sub 'onload' :anon :load :init
-    .local pmc hashproto
-    hashproto = newclass 'Hash'
-    
-    $P0 = get_class 'Object'
-    addparent hashproto, $P0
+    .local pmc hash, obj, phash, hash_pclass
 
-    $P0 = get_root_namespace ['parrot';'Hash']
-    $P0 = get_class $P0
-    addparent hashproto, $P0
+    obj = '!get_class'('Object')
+    phash = '!get_parrot_class'('Hash')
+    hash = '!make_named_class'('Hash', obj, phash)
 
-    addattribute hashproto, 'default'
+    hash_pclass = getattribute hash, '!parrot_class'
+    addattribute hash_pclass, 'default'
 .end
 
 

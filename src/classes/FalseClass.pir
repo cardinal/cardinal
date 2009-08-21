@@ -11,15 +11,11 @@ FalseClass - Cardinal boolean class
 .namespace ['FalseClass']
 
 .sub 'onload' :anon :init :load
-    .local pmc falseproto
-    falseproto = newclass 'FalseClass'
-
-    $P0 = get_class 'Object'
-    addparent falseproto, $P0
-
-    $P0 = get_root_namespace ['parrot';'Boolean']
-    $P0 = get_class $P0
-    addparent falseproto, $P0
+    .local pmc bool, obj 
+    
+    bool = '!get_parrot_class'('Boolean')
+    obj = '!get_class'('Object')
+    '!make_named_class'('TrueClass', obj, bool)
 
     $P0 = new 'FalseClass'
     set_hll_global 'false', $P0

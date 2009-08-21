@@ -20,16 +20,11 @@ Perform initializations and create the File class
 .namespace ['File']
 
 .sub 'onload' :anon :init :load
-    .local pmc fileproto
+    .local pmc io, pfile
 
-    fileproto = newclass 'File'
-    
-    $P0 = get_class 'IO'
-    addparent fileproto, $P0
-
-    $P0 = get_root_namespace ['parrot';'File']
-    $P0 = get_class $P0
-    addparent fileproto, $P0
+    io = '!get_class'('IO')
+    pfile = '!get_parrot_class'('File')
+    '!make_named_class'('File', io, pfile)
 .end
 
 .sub 'get_bool' :vtable

@@ -1,4 +1,5 @@
-## $Id$
+# The usual class setup stuff is combined with that of Class and Module.
+# See src/builtins/classes.pir
 
 =head1 TITLE
 
@@ -6,215 +7,171 @@ Object - Cardinal Object class
 
 =head1 DESCRIPTION
 
-This file sets up the base classes and methods for Cardinal's
-object system.  Differences (and conflicts) between Parrot's
-object model and the Cardinal model means we have to do a little
-name and method trickery here and there, and this file takes
-care of much of that.
+Object is the base class for all Ruby objects and classes.
 
-Still heavily based off of Perl 6's.
-
-=head2 Functions
+=head2 Class Methods
 
 =over
 
-=item onload()
+=cut 
 
-Perform initializations and create the base classes.
+.namespace ['Object';'meta']
+
+=item new()
+
+In the standard Ruby documentation, this is listed but undocumented.
+
+The actual code just returns C<nil>.
+
+=cut
+
+.sub 'new' :method
+    $P0 = get_hll_global 'nil'
+    .return ($P0)
+.end
+
+=back
+
+=head2 Instance Methods
+
+=over
 
 =cut
 
 .namespace ['Object']
 
-.sub 'onload' :anon :init :load
-    $P0 = newclass 'Object'
-    addattribute $P0, '%!properties'
-.end
+=item obj == other => true or false
 
+=item obj.equal?(other) => true or false
 
-=item !keyword_class(name)
+=item obj.eql?(other) => true or false
 
-Internal helper method to create a class.
+For C<Object>, all three of these test to see if the other is the exact same 
+object as obj.
 
-=cut
+In inherited classes, C<==> is often overridden to provide class-specific 
+meaning.
 
-.sub '!keyword_class' :method
-    .param string name
-    .local pmc class, resolve_list, methods, it
+C<equal?()> should B<never> be overridden, and should always be expected to
+test for object equality.
 
-    # Create class.
-    class = newclass name
-
-    # Set resolve list to include all methods of the class.
-    methods = inspect class, 'methods'
-    it = iter methods
-    resolve_list = new 'ResizableStringArray'
-resolve_loop:
-    unless it goto resolve_loop_end
-    $P0 = shift it
-    push resolve_list, $P0
-    goto resolve_loop
-resolve_loop_end:
-    class.'resolve_method'(resolve_list)
-
-    .return(class)
-.end
-
-=item !keyword_role(name)
-
-Internal helper method to create a role.
+C<eql?()> is used to test for equality of value, and should be overidden to
+provide that functionality.
 
 =cut
 
-.sub '!keyword_role' :method
-    .param string name
-    .local pmc info, role
+.sub '==' :method
+    .param pmc other
 
-    # Need to make sure it ends up attached to the right
-    # namespace.
-    info = new 'Hash'
-    info['name'] = name
-    $P0 = new 'ResizablePMCArray'
-    $P0[0] = name
-    info['namespace'] = $P0
-
-    # Create role.
-    role = new 'Role', info
-
-    # Stash in namespace.
-    $P0 = new 'ResizableStringArray'
-    set_hll_global $P0, name, role
-
-    .return(role)
+    .tailcall self.'equal?'(other)
 .end
 
-=item !keyword_does(class, role_name)
+.sub 'equal?' :method
+    .param pmc other
 
-Internal helper method to implement the functionality of the does keyword.
+    $I0 = self.'object_id'()
+    $I1 = other.'object_id'()
+    
+    if $I0 == $I1 goto true
+    $P0 = get_hll_global 'false'
+    .return ($P0)
+
+  true:
+    $P0 = get_hll_global 'true'
+    .return ($P0)
+.end
+
+.sub 'eql?' :method
+    .param pmc other
+
+    .tailcall self.'equal?'(other)
+.end
+
+=item obj === other => true or false
+
+C<===> is the operator for Case Equality. On C<Object>, it's the same as 
+calling C<==>, but many classes override it to provide enhanced functionality
+for case statements.
 
 =cut
 
-.sub '!keyword_does' :method
-    .param pmc class
-    .param string role_name
-    .local pmc role
-    role = get_hll_global role_name
-    addrole class, role
+.sub '===' :method
+    .param pmc other
+
+    .tailcall self.'=='(other)
 .end
 
-=item !keyword_has(class, attr_name)
+=item obj =~ other => false
 
-Adds an attribute with the given name to the class.
+C<=~> is the Pattern Match operator, which can be overridden to provide
+pattern matching functionality.
 
 =cut
 
-.sub '!keyword_has' :method
-    .param pmc class
-    .param string attr_name
-    addattribute class, attr_name
+.sub '=~' :method
+    .param pmc other
+
+    $P0 = get_hll_global 'false'
+    .return ($P0)
 .end
 
-=back
+=item obj.__id__() => fixnum
 
-=head2 Object methods
+=item obj.object_id() => fixnum
 
-=over
-
-=item new()
-
-Create a new object having the same class as the invocant.
+Returns a numeric ID for the object. No two objects will ever have the same ID.
 
 =cut
 
-.sub 'new' :method
-    .param pmc args :slurpy
-    .param pmc named_args :named :slurpy
-    # Instantiate.
-    .local pmc cardinalmeta
-    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
-    $P0 = cardinalmeta.'get_parrotclass'(self)
-    $P1 = $P0.'new'()
-#print 'constructing a new object w/ id'
-#$P98 = $P1.'object_id'()
-#say $P98
-    $P2 = $P1.'HOW'()
-    $I0 = $P2.'can'(self,'initialize')
-    unless $I0, no_initialize
-    $P2 = $P1.'initialize'(args :flat, named_args :named :flat)
-  no_initialize:
-
-    .return ($P1)
-.end
-
-=item WHENCE()
-
-Return the invocant's auto-vivification closure.
-
-=cut
-
-.sub 'WHENCE' :method
-    $P0 = self.'WHAT'()
-    $P1 = $P0.'WHENCE'()
-    .return ($P1)
-.end
-
-=item REJECTS(topic)
-
-Define REJECTS methods for objects (this would normally
-be part of the Pattern role, but we put it here for now
-until we get roles).
-
-=cut
-
-.sub 'REJECTS' :method
-    .param pmc topic
-    $P0 = self.'ACCEPTS'(topic)
-    $P1 = not $P0
-    .return ($P1)
-.end
-
-=item true()
-
-Defines the .true method on all objects via C<bool>.
-
-=cut
-
-.sub 'true' :method
-        .tailcall 'bool'(self)
+.sub '__id__' :method
+    get_addr $I0, self
+    .return ($I0)
 .end
 
 .sub 'object_id' :method
-        get_addr $I0, self
-        .return ($I0)
+    get_addr $I0, self
+    .return ($I0)
 .end
 
-=item get_bool(vtable)
+=item obj.send(symbol, [args...]) => obj
 
-Returns true if he object is defined, false otherwise
+=item obj.__send__(symbol, [args...]) => obj
+
+Invokes the method indicated by C<symbol>, passing C<args> as given.
+
+C<__send__> is available in case C<send> conflicts with another method name.
 
 =cut
 
-.sub '' :vtable('get_bool')
-   $I0 = 'defined'(self)
-   .return ($I0)
+.sub 'send' :method
+    .param pmc symbol
+    .param pmc args :slurpy
+
+    .tailcall self.'__send__'(symbol, args :flat)
 .end
 
-=item print()
+.sub '__send__' :method
+    .param pmc symbol
+    .param pmc args :slurpy
+    .local string name
 
-=item say()
+    $P0 = symbol.'to_s'()
+    name = $P0
 
-Print the object
+    $P0 = self.name(args)
+
+    .return ($P0)
+.end
+
+=item obj.class() => a_class
+
+Returns obj's class.
 
 =cut
 
-.sub 'print' :method
-    $P0 = get_hll_global 'print'
-    .tailcall $P0(self)
-.end
-
-.sub 'puts' :method
-    $P0 = get_hll_global 'puts'
-    .tailcall $P0(self)
+.sub 'class' :method
+    $P0 = getattribute self, 'class'
+    .return ($P0)
 .end
 
 =item to_s()
@@ -224,9 +181,7 @@ Return a String representation of the object.
 =cut
 
 .sub 'to_s' :method
-    $P0 = new 'String'
-    $P0 = self
-    .return ($P0)
+    .tailcall self.'inspect'()     
 .end
 
 =item inspect()
@@ -236,41 +191,13 @@ This is the same a to_s by default unless overriden
 =cut
 
 .sub 'inspect' :method
-    $P0 = self.'to_s'()
-.end
-
-=item !cloneattr(attrlist)
-
-Create a clone of self, also cloning the attributes given by attrlist.
-
-=cut
-
-.sub '!cloneattr' :method
-    .param string attrlist
-    .local pmc result
-    .local pmc cardinalmeta
-    cardinalmeta = get_hll_global ['Object'], '!CARDINALMETA'
-    $P0 = cardinalmeta.'get_parrotclass'(self)
-    result = new $P0
-
-    .local pmc attr_it
-    attr_it = split ' ', attrlist
-  attr_loop:
-    unless attr_it goto attr_end
-    $S0 = shift attr_it
-    unless $S0 goto attr_loop
-    $P1 = getattribute self, $S0
-    unless $P1 goto set_default
-    $P1 = clone $P1
-    setattribute result, $S0, $P1
-    goto attr_loop
-  set_default:
-    $P2 = new 'Integer'
-    $P2 = 0
-    setattribute result, $S0, $P2
-    goto attr_loop
-  attr_end:
-    .return (result)
+    .local pmc classname
+    .local string id
+    $P0 = getattribute self, 'class'
+    classname = $P0.'name'()
+    id = self.'__id__'()
+    $P0 = 'sprintf'('#<%s:%s>', classname, id)
+    .return ($P0)
 .end
 
 =item methods()
@@ -295,39 +222,42 @@ Get a list of all methods in the object.
     .return(method_list)
 .end
 
-.sub 'class' :method
-        $P0 = new 'String'
-        $S0 = self.'WHAT'()
-        $P0.'concat'($S0)
-        .return ($P0)
-.end
+=item obj.nil?()
 
-.sub 'defined' :method
-       $P0 = get_hll_global 'false'
-       .return ($P0)
-.end
+Returns C<false> unless obj is C<nil>.
+
+=cut
 
 .sub 'nil?' :method
-    $P0 = get_hll_global 'nil'
-    if self == $P0 goto yes
-    goto no
-    yes:
-      $P0 = get_hll_global 'true'
-      .return ($P0)
-    no:
-      $P0 = get_hll_global 'false'
-      .return ($P0)
+    $P0 = get_hll_global 'false'
+   .return ($P0)
 .end
 
+=item obj.freeze() => obj
+
+Prevents modification to obj, or it would if Cardinal paid attention to it.
+
+When this is implemented, it will cause a C<TypeError> to be thrown if any
+attempt to modify obj is made.
+
+=cut
+
 .sub 'freeze' :method
-   #Parrots freeze seems to mean the same as Javas serialize
-   #Rubys freeze means to set the object as readonly. I think Perl6 gives their objects a role of Mutable, then checks for that role in infix:=
-   #freeze $S0, self
-   #.return (self)
-   #self = $S0
-   #.return ($S0)
-   #share_ro $P0, self
+    $P0 = get_hll_global 'true'
+    setattribute self, 'frozen', $P0
    .return (self)
+.end
+
+=item obj.frozen?() => true or false
+
+Returns whether or not obj is frozen. At the moment, this doesn't actually
+mean anything.
+
+=cut
+
+.sub 'frozen?' :method
+    $P0 = getattribute self, 'frozen'
+    .return ($P0)
 .end
 
 .sub 'is_a?' :method

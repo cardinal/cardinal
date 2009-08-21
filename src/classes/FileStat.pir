@@ -22,12 +22,8 @@ Perform initializations and create the File Stat class
 .include 'stat.pasm'
 
 .sub 'onload' :anon :init :load
-    .local pmc statproto
-
-    statproto = newclass 'FileStat'
-
-    $P0 = get_class 'Object'
-    addparent statproto, $P0
+    $P0 = '!get_class'('Object')
+    '!make_named_class'('FileStat', $P0)
 .end
 
 .sub 'get_bool' :vtable

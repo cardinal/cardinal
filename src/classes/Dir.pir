@@ -20,28 +20,15 @@ Perform initializations and create the Dir class
 .namespace ['Dir']
 
 .sub 'onload' :anon :init :load
-    .local pmc cardinalmeta, dirproto, objproto
-    dirproto = newclass 'Dir'
+    .local pmc obj
 
-    objproto = get_class 'Object'
-    addparent dirproto, objproto
+    obj = '!get_class'('Object')
+    '!make_named_class'('Dir', obj)
 .end
-
-#.sub 'new' :method
-# .param string dir
-# print "Dir.new"
-# print " param="
-# say dir
- #opendir dir
-#.end
 
 .sub 'get_bool' :vtable
         .return(1)
 .end
-
-#.sub 'get_string_keyed' :vtable
-#        .return ('Dir')
-#.end
 
 .sub 'get_string' :vtable
    $S0 = 'Dir'
