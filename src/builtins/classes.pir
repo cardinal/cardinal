@@ -128,6 +128,7 @@
     new_class = class_meta.'new'(superclass)
     
     $P0 = getattribute new_class, '!meta'
+    $P0 = getattribute $P0, '!parrot_class'
     $P1 = new $P0
     setattribute $P1, '!class', new_class
     $S0 = name
