@@ -49,7 +49,7 @@ Return the elements of the list concatenated.
 
 .namespace []
 .sub 'setup' :anon :load :init
-    $P0 = new 'NilClass'
+    $P0 = '!new'('NilClass')
     set_hll_global 'nil', $P0
 .end
 

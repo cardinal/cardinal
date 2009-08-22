@@ -111,6 +111,7 @@
     .local pmc meta
     cls = '!get_class'(cls)
     meta = getattribute cls, '!meta'
+    meta = getattribute meta, '!parrot_class'
     meta = new meta
     $P0 = meta.'new'(args :flat)
     .return ($P0)
