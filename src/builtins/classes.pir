@@ -109,10 +109,8 @@
     .param pmc cls
     .param pmc args :slurpy
     .local pmc meta
-    cls = '!get_class'(cls)
-    meta = getattribute cls, '!meta'
-    meta = getattribute meta, '!parrot_class'
-    meta = new meta
+    $S0 = cls
+    meta = get_hll_global $S0
     $P0 = meta.'new'(args :flat)
     .return ($P0)
 .end
