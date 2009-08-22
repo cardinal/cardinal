@@ -29,7 +29,7 @@ rule stmts {
     <.term>?[ <stmt> [<.term>+ | <.before <end_block>> | $ | <panic: unterminated statement>] ]* {*}
 }
 
-token term { \n | ';' }
+token term { \h*\n | \h*';' }
 token end_block { <.ws> [ 'end' | '}' ] }
 
 token basic_stmt {
