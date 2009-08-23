@@ -302,6 +302,7 @@ namespace :test do |ns|
         test "array/reject.t"
         test "array/replace.t"
         test "array/reverse.t"
+        test "array/select.t"
         test "array/shift.t"
         test "array/slice.t"
         test "array/sort.t"
@@ -311,7 +312,7 @@ namespace :test do |ns|
         test "array/warray.t"
 
         desc "Run tests on Array."
-        task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :count, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :pop, :push, :reject, :replace, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
+        task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :count, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :pop, :push, :reject, :replace, :reverse, :select, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
     namespace :file do 

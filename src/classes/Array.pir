@@ -284,6 +284,27 @@ Return a sorted copy of the list
     .return ($P0)
 .end
 
+.sub 'select' :method
+    .param pmc block :named('!BLOCK')
+    .local pmc uarray, val
+
+    uarray = new 'CardinalArray'
+    $P0 = iter self
+
+  loop:
+    unless $P0 goto done
+
+    $P1 = shift $P0
+    $P2 = block($P1)
+    unless $P2 goto loop
+
+    uarray.'push'($P1)
+    goto loop
+
+  done:
+    .return (uarray)
+.end
+
 .sub reject :method
     .param pmc block :named("!BLOCK")
     .local pmc uarray, val
