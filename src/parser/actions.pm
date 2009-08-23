@@ -408,10 +408,6 @@ method else($/) {
     make $<comp_stmt>.ast();
 }
 
-method ensure($/) {
-    make $<comp_stmt>.ast();
-}
-
 method while_stmt($/) {
     my $cond := $<expr>.ast();
     my $body := $<comp_stmt>.ast();

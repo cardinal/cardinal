@@ -258,17 +258,6 @@ token else {
     {*}
 }
 
-token ensure {
-    'ensure' <.ws> <comp_stmt>
-    {*}
-}
-
-rule rescue {
-    # XXX check <args>
-    ['rescue' <args> <.then> <comp_stmt>]+
-    {*}
-}
-
 token control_command {
     | 'next'  {*}                   #= next
     | 'break' {*}                   #= break
