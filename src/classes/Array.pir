@@ -1640,22 +1640,6 @@ The zip operator.
 # TODO: pass warning
 .end
 
-.sub 'nitems' :method
-    .local int count
-    .local pmc it
-    count = 0
-    it = iter self
-  iter_loop:
-    unless it goto done
-    $P0 = shift it
-    $I0 = isa $P0, "NilClass"
-    if $I0 goto iter_loop
-    inc count
-    goto iter_loop
-  done:
-    .return ( count )
-.end
-
 .sub '_cmp' :vtable('cmp') :method
     .param pmc other
     .local int i, len, result
