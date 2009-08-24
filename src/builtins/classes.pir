@@ -137,6 +137,7 @@
     .local pmc interp
     $P0 = getattribute new_class, '!parrot_class'
 
+    $P0.'name'(name)
     addparent $P0, parrot_super
 
     interp = getinterp

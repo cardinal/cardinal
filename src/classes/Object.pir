@@ -16,6 +16,8 @@ Object is the base class for all Ruby objects and classes.
 =cut 
 
 .namespace ['Object';'meta']
+.namespace ['Object']
+# Ruby documentation lies and claims that the initialize method is actually the 'new' class method.
 
 =item new()
 
@@ -25,7 +27,7 @@ The actual code just returns C<nil>.
 
 =cut
 
-.sub 'new' :method
+.sub 'initialize' :method
     $P0 = get_hll_global 'nil'
     .return ($P0)
 .end

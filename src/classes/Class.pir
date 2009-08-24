@@ -62,6 +62,8 @@ and must be assigned if the user wishes to save them.
     # Then the metas
     setattribute new_rclass, '!meta', new_meta_rclass
     setattribute new_meta_rclass, '!meta', nil
+
+    setattribute new_meta_rclass, '!class', new_rclass
     
     .return (new_rclass)
 .end
@@ -85,7 +87,8 @@ Users will rarely need to call it, as it's called from C<new> automatically.
 =cut
 
 .sub 'allocate' :method
-    $P0 = getattribute self, '!parrot_class'
+    $P0 = getattribute self, '!class'
+    $P0 = getattribute $P0, '!parrot_class'
     $P1 = new $P0
     .return ($P1)
 .end

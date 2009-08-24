@@ -11,6 +11,11 @@
     '!make_named_class'('NilClass', obj, undef)
 .end
 
+.sub 'initialize' :method
+    .param pmc args :slurpy
+    noop
+.end
+
 =over 4
 
 =item get_string()    (vtable method)
