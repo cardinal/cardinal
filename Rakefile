@@ -201,6 +201,11 @@ task :report do
     $meta['file_order'] = Array.new
     Task['test:all'].invoke
     $meta['stop_time'] = Time.now.to_i
+    $meta['extra_properties'] = {
+        'Architecture' => `uname -p`.chomp,
+        'Platform' => `uname -s`.chomp,
+        'Branch' => `git status`.split('\n')[0].split(' ')[3]
+    }
     require 'yaml'
     File.open('report/meta.yml','w') do |f|
         YAML::dump($meta, f)
