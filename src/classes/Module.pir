@@ -9,6 +9,27 @@ Module
 
 =cut
 
+.namespace ['Module';'meta']
+
+.namespace ['Module']
+
+.sub 'name=' :method
+    .param pmc name
+
+    setattribute self, 'name', name
+
+    .local pmc pclass
+
+    #pclass = getattribute self, '!parrot_class'
+    #pclass.'name'(name) 
+.end
+
+.sub 'name' :method
+    .local pmc value
+    value = getattribute self, 'name'
+    .return (value)
+.end
+
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

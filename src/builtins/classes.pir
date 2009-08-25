@@ -21,6 +21,8 @@
     # This next is actually for metaclasses to refer back to their class.
     addattribute mdl_pclass, '!class'
 
+    addattribute mdl_pclass, 'name'
+
     cls_pclass = subclass mdl_pclass, 'Class'
 
     # Then we make the parrot classes for the metaclasses.
@@ -133,11 +135,12 @@
     $S0 = name
     set_hll_global $S0, $P1
 
+    new_class.'name='(name)
+
     unless psuper_flag goto done
     .local pmc interp
     $P0 = getattribute new_class, '!parrot_class'
 
-    $P0.'name'(name)
     addparent $P0, parrot_super
 
     interp = getinterp
