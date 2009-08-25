@@ -8,8 +8,10 @@ CLEAN.include('Test.pir')
 CLEAN.include('build.yaml')
 CLEAN.include('*.c')
 CLEAN.include('*.o')
+CLEAN.include('report')
 CLOBBER.include('cardinal')
 CLOBBER.include('*.pbc')
+CLOBBER.include('report.tar.gz')
 
 DEBUG = ENV['debug'] || false
 ALTERNATIVE_RUBY = ENV['test_with'] || false
@@ -33,6 +35,8 @@ $issue_lacks = 0
 $i_l_files = []
 $pl = false
 $start = Time.now
+$meta = Hash.new
+$report = false
 
 def clean?
     return false if $nok > $expected_failures
@@ -100,11 +104,25 @@ def test(file, name="")
     end
 end
 
+def get_report_file(filename)
+    dir = "report/t/" + File.dirname(filename)
+    dir.gsub!(/\/\./, '')
+    mkdir_p(dir)
+    ext = File.extname(filename)
+    fn = dir + "/" + File.basename(filename, ext)
+    fn += ".t"
+    fn.gsub!(/gen_/,'')
+    f = File.new(fn, 'w')
+    $meta['file_order'] += [fn.gsub(/report\//,'')]
+    return f
+end
+
 def run_test(file,name="")
     puts file if DEBUG
     name = file if name == ""
     $test_files += 1
     command = ALTERNATIVE_RUBY || CONFIG[:parrot]
+    report_file = get_report_file(file) if $report
     IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
             plan = t.readline
@@ -112,6 +130,7 @@ def run_test(file,name="")
             plan = "x"
         end
         puts plan if DEBUG
+        report_file.write(plan) if $report
         if plan =~ /^1\.\.([0-9]+)/
             tests = $1.to_i
             $tests += tests
@@ -123,6 +142,7 @@ def run_test(file,name="")
             t.readlines.each do |line|
                 test += 1
                 puts line if DEBUG
+                report_file.write(line)
                 if line =~ /^ok #{test}/
                     ok += 1
                     if line =~ /TODO/
@@ -169,8 +189,25 @@ def run_test(file,name="")
             result = "Complete failure... no plan given"
             $failures += 1
         end
+        report_file.close if $report
         puts "Running #{name} #{result}"
     end
+end
+
+desc "Produce a TAP archive"
+task :report do
+    $report = true
+    $meta['start_time'] = Time.now.to_i
+    $meta['file_order'] = Array.new
+    Task['test:all'].invoke
+    $meta['stop_time'] = Time.now.to_i
+    require 'yaml'
+    File.open('report/meta.yml','w') do |f|
+        YAML::dump($meta, f)
+    end
+    chdir 'report'
+    sh 'tar cfz ../report.tar.gz *'
+    chdir '..'
 end
 
 desc "Determine configuration information"
