@@ -201,10 +201,15 @@ task :report do
     $meta['file_order'] = Array.new
     Task['test:all'].invoke
     $meta['stop_time'] = Time.now.to_i
+    submitter = ENV['SMOLDER_SUBMITTER']
+    submitter = "#{`whoami`.chomp}@#{`hostname`.chomp}" if submitter = ''
+    commit = `git log -1 --format=%H`.chomp
     $meta['extra_properties'] = {
         'Architecture' => `uname -p`.chomp,
         'Platform' => `uname -s`.chomp,
-        'Branch' => `git status`.split('\n')[0].split(' ')[3]
+        'Branch' => `git status`.split('\n')[0].split(' ')[3],
+        'Submitter' => submitter,
+        'Commit' => commit
     }
     require 'yaml'
     File.open('report/meta.yml','w') do |f|
