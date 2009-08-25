@@ -143,7 +143,7 @@ def run_test(file,name="")
             t.readlines.each do |line|
                 test += 1
                 puts line if DEBUG
-                report_file.write(line)
+                report_file.write(line) if $report
                 if line =~ /^ok #{test}/
                     ok += 1
                     if line =~ /TODO/
