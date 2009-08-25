@@ -15,6 +15,7 @@ CLOBBER.include('report.tar.gz')
 
 DEBUG = ENV['debug'] || false
 ALTERNATIVE_RUBY = ENV['test_with'] || false
+PARROT_CONFIG = ENV["PARROT_CONFIG"] || 'parrot_config'
 CONFIG = {} 
 $tests = 0
 $test_files = 0
@@ -236,10 +237,11 @@ end
 file "build.yaml" do 
     require 'yaml'
     config = {}
-    IO.popen("parrot_config build_dir", "r") do |p|
+    IO.popen("#{PARROT_CONFIG} build_dir", "r") do |p|
         config[:build_dir] = p.readline.chomp
     end
-    puts "Detected parrot_config reports that build_dir is #{config[:build_dir]}."
+    print PARROT_CONFIG == 'parrot_config' ? "Detected " : "Provided "
+    puts "parrot_config reports that build_dir is #{config[:build_dir]}."
 
     config[:parrot] = config[:build_dir] + "/parrot"
     config[:perl6grammar] = config[:build_dir] + "/runtime/parrot/library/PGE/Perl6Grammar.pbc"
