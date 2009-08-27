@@ -34,6 +34,8 @@ $toomany_files = []
 $issue_counts = Hash.new(0)
 $issue_lacks = 0
 $i_l_files = []
+$comp_fails = 0
+$c_f_files = []
 $pl = false
 $start = Time.now
 $meta = Hash.new
@@ -46,6 +48,7 @@ def clean?
     return false if $missing > 0
     return false if $toomany > 0
     return false if $issue_lacks > 0
+    return false if $comp_fails > 0
     return true 
 end
 
@@ -96,7 +99,13 @@ def test(file, name="")
             unless File.exists?('cardinal.pbc')
                 Task['cardinal.pbc'].invoke
             end
-            parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+            begin
+                parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+            rescue RuntimeError
+                File.open("t/#{pir_file}",'w') do |f|
+                    f.write(".sub main :main\nsay 'FAILED TO COMPILE'\n.end")
+                end
+            end
         end
         puts "named #{name}" if DEBUG
         task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do |t|
@@ -187,7 +196,13 @@ def run_test(file,name="")
                 $toomany_files += [file]
             end
         else
-            result = "Complete failure... no plan given"
+            if plan =~ /FAILED TO COMPILE/
+                result = "Complete failure... failed to compile."
+                $comp_fails += 1
+                $c_f_files += [file]
+            else
+                result = "Complete failure... no plan given"
+            end
             $failures += 1
         end
         report_file.close if $report
@@ -499,6 +514,14 @@ namespace :test do |ns|
             puts " There #{were} #{$issue_lacks} #{pl "test"} that used todo or skip without noting an issue number, found in:"
             $i_l_files.uniq!
             $i_l_files.each do |file|
+                puts "  #{file}"
+            end
+        end
+        $pl = $comp_fails > 1
+        unless $c_f_files.empty?
+            puts " There #{were} #{$comp_fails} #{pl "file"} that completely failed to compile:"
+            $c_f_files.uniq!
+            $c_f_files.each do |file|
                 puts "  #{file}"
             end
         end
