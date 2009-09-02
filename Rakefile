@@ -16,7 +16,7 @@ CLOBBER.include('report.tar.gz')
 DEBUG = ENV['debug'] || false
 ALTERNATIVE_RUBY = ENV['test_with'] || false
 PARROT_CONFIG = ENV["PARROT_CONFIG"] || 'parrot_config'
-CONFIG = {} 
+$config = {} 
 $tests = 0
 $test_files = 0
 $ok = 0
@@ -71,12 +71,12 @@ end
 def parrot(input, output="", grammar="", target="")
     target = "--target=#{target}" if target != ""
     output = "-o #{output}" if output != ""
-    puts "Running parrot: #{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
-    sh "#{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}"
+    puts "Running parrot: #{$config[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
+    sh "#{$config[:parrot]} #{grammar} #{target} #{output} #{input}"
 end
 
 def make_exe(pbc)
-    sh "#{CONFIG[:pbc_to_exe]} cardinal.pbc"
+    sh "#{$config[:pbc_to_exe]} cardinal.pbc"
 end
 
 def test(file, name="")
@@ -131,7 +131,7 @@ def run_test(file,name="")
     puts file if DEBUG
     name = file if name == ""
     $test_files += 1
-    command = ALTERNATIVE_RUBY || CONFIG[:parrot]
+    command = ALTERNATIVE_RUBY || $config[:parrot]
     report_file = get_report_file(file) if $report
     IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
@@ -211,21 +211,18 @@ def run_test(file,name="")
 end
 
 desc "Produce a TAP archive"
-task :report do
+task "report.tar.gz" do
     $report = true
     $meta['start_time'] = Time.now.to_i
     $meta['file_order'] = Array.new
     Task['test:all'].invoke
     $meta['stop_time'] = Time.now.to_i
-    submitter = ENV['SMOLDER_SUBMITTER']
-    submitter = "#{`whoami`.chomp}@#{`hostname`.chomp}" if submitter = ''
-    commit = `git log -1 --format=%H`.chomp
     $meta['extra_properties'] = {
-        'Architecture' => `uname -p`.chomp,
-        'Platform' => `uname -s`.chomp,
-        'Branch' => `git status`.split('\n')[0].split(' ')[3],
-        'Submitter' => submitter,
-        'Commit' => commit
+        'Architecture' => get_arch,
+        'Platform' => get_platform,
+        'Branch' => get_branch,
+        'Submitter' => get_submitter,
+        'Commit' => get_commit
     }
     require 'yaml'
     File.open('report/meta.yml','w') do |f|
@@ -237,40 +234,61 @@ task :report do
 end
 
 desc "Submit a smolder report."
-task :smolder => :report do
-    props = $meta['extra_properties']
-    sh "curl -F \"architecture=#{props['Architecture']}\" -F \"platform=#{props['Platform']}\" -F \"revision=#{props['Commit']}\" -F \"report_file=@report.tar.gz\" http://smolder.plusthree.com/app/public_projects/process_add_report/16"
+task :smolder => "report.tar.gz" do
+    sh "curl -F \"architecture=#{get_arch}\" -F \"platform=#{get_platform}\" -F \"revision=#{get_commit}\" -F \"report_file=@report.tar.gz\" http://smolder.plusthree.com/app/public_projects/process_add_report/16"
 end
 
 desc "Determine configuration information"
 task :config => "build.yaml" do
     require 'yaml'
     File.open("build.yaml","r") do |f|
-        CONFIG.update(YAML.load(f))
+        $config.update(YAML.load(f))
     end
-    return false unless File.exist?(CONFIG[:parrot])
-    return false unless File.exist?(CONFIG[:perl6grammar])
-    return false unless File.exist?(CONFIG[:nqp])
-    return false unless File.exist?(CONFIG[:pct])
-    return false unless File.exist?(CONFIG[:pbc_to_exe])
+    return false unless File.exist?($config[:parrot])
+    return false unless File.exist?($config[:perl6grammar])
+    return false unless File.exist?($config[:nqp])
+    return false unless File.exist?($config[:pct])
+    return false unless File.exist?($config[:pbc_to_exe])
+end
+
+def get_arch
+    `uname -p`.chomp
+end
+
+def get_platform
+    `uname -s`.chomp
+end
+
+def get_branch
+    `git status`.split('\n')[0].split(' ')[3]
+end
+
+def get_submitter
+    submitter = ENV['SMOLDER_SUBMITTER']
+    submitter = "#{`git config --get user.name`} <#{`git config --get user.email`}>" if submitter == ''
+end
+
+def get_commit
+    `git log -1 --format=%H`.chomp
 end
 
 file "build.yaml" do 
     require 'yaml'
     config = {}
     IO.popen("#{PARROT_CONFIG} build_dir", "r") do |p|
-        config[:build_dir] = p.readline.chomp
+        $config[:build_dir] = p.readline.chomp
     end
     print PARROT_CONFIG == 'parrot_config' ? "Detected " : "Provided "
-    puts "parrot_config reports that build_dir is #{config[:build_dir]}."
+    puts "parrot_config reports that build_dir is #{$config[:build_dir]}."
 
-    config[:parrot] = config[:build_dir] + "/parrot"
-    config[:perl6grammar] = config[:build_dir] + "/runtime/parrot/library/PGE/Perl6Grammar.pbc"
-    config[:nqp] = config[:build_dir] + "/compilers/nqp/nqp.pbc"
-    config[:pct] = config[:build_dir] + "/runtime/parrot/library/PCT.pbc"
-    config[:pbc_to_exe] = config[:build_dir] + "/pbc_to_exe"
+    $config[:parrot] = $config[:build_dir] + "/parrot"
+    $config[:perl6grammar] = $config[:build_dir] + "/runtime/parrot/library/PGE/Perl6Grammar.pbc"
+    $config[:nqp] = $config[:build_dir] + "/compilers/nqp/nqp.pbc"
+    $config[:pct] = $config[:build_dir] + "/runtime/parrot/library/PCT.pbc"
+    $config[:pbc_to_exe] = $config[:build_dir] + "/pbc_to_exe"
+
     File.open("build.yaml","w") do |f|
-        YAML.dump(config, f) 
+        YAML.dump($config, f) 
     end
 end
 
@@ -290,11 +308,11 @@ file "cardinal.pbc" => sources do
 end
 
 file "src/gen_grammar.pir" => [:config, 'src/parser/grammar.pg'] do 
-    parrot("src/parser/grammar.pg", "src/gen_grammar.pir", CONFIG[:perl6grammar])
+    parrot("src/parser/grammar.pg", "src/gen_grammar.pir", $config[:perl6grammar])
 end
 
 file "src/gen_actions.pir" => [:config, "src/parser/actions.pm"] do
-    parrot("src/parser/actions.pm","src/gen_actions.pir",CONFIG[:nqp],'pir')
+    parrot("src/parser/actions.pm","src/gen_actions.pir",$config[:nqp],'pir')
 end
 
 builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/TrueClass.pir", "src/classes/FalseClass.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
