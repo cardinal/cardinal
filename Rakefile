@@ -236,6 +236,12 @@ task :report do
     chdir '..'
 end
 
+desc "Submit a smolder report."
+task :smolder => :report do
+    props = $meta['extra_properties']
+    sh "curl -F \"architecture=#{props['Architecture']}\" -F \"platform=#{props['Platform']}\" -F \"revision=#{props['Commit']}\" -F \"report_file=@report.tar.gz\" http://smolder.plusthree.com/app/public_projects/process_add_report/16"
+end
+
 desc "Determine configuration information"
 task :config => "build.yaml" do
     require 'yaml'
