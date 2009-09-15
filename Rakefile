@@ -226,7 +226,7 @@ task "report.tar.gz" do
     }
 
     IO.popen("#{PARROT_CONFIG} revision", "r") do |p|
-        $meta['Parrot Revision'] = p.readline.chomp.to_i
+        $meta['extra_properties']['Parrot Revision'] = p.readline.chomp.to_i
     end
 
     require 'yaml'
