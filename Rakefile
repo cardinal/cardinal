@@ -224,6 +224,11 @@ task "report.tar.gz" do
         'Submitter' => get_submitter,
         'Commit' => get_commit
     }
+
+    IO.popen("#{PARROT_CONFIG} revision", "r") do |p|
+        $meta['Parrot Revision'] = p.readline.chomp.to_i
+    end
+
     require 'yaml'
     File.open('report/meta.yml','w') do |f|
         YAML::dump($meta, f)
@@ -269,7 +274,7 @@ def get_submitter
 end
 
 def get_commit
-    `git log -1 --format=%H`.chomp
+    `git log -1 --pretty=format:%H`.chomp
 end
 
 file "build.yaml" do 
