@@ -271,6 +271,7 @@ end
 def get_submitter
     submitter = ENV['SMOLDER_SUBMITTER']
     submitter = "#{`git config --get user.name`} <#{`git config --get user.email`}>" if submitter == ''
+    return submitter
 end
 
 def get_commit
