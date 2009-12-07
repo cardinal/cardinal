@@ -1,4 +1,4 @@
-Makefile
+MANIFEST
 
 *.pbc
 *.c
@@ -11,6 +11,10 @@ Makefile
 cardinal
 installable_cardinal
 
+*.tar.gz
+*.zip
+*.patch
+
 Test.pir
-gen_*.pir
+src/gen_*.pir
 build.yaml
