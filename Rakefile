@@ -1,6 +1,22 @@
+require 'rake/classic_namespace'
+require 'rake/clean'
+
+CLEAN.include('gen_*.pir')
+CLEAN.include('*/gen_*.pir')
+CLEAN.include('*/*/gen_*.pir')
+CLEAN.include('Test.pir')
+CLEAN.include('build.yaml')
+CLEAN.include('*.c')
+CLEAN.include('*.o')
+CLEAN.include('report')
+CLOBBER.include('cardinal')
+CLOBBER.include('*.pbc')
+CLOBBER.include('report.tar.gz')
+
 DEBUG = ENV['debug'] || false
 ALTERNATIVE_RUBY = ENV['test_with'] || false
-CONFIG = {} 
+PARROT_CONFIG = ENV["PARROT_CONFIG"] || 'parrot_config'
+$config = {} 
 $tests = 0
 $test_files = 0
 $ok = 0
@@ -18,8 +34,12 @@ $toomany_files = []
 $issue_counts = Hash.new(0)
 $issue_lacks = 0
 $i_l_files = []
+$comp_fails = 0
+$c_f_files = []
 $pl = false
 $start = Time.now
+$meta = Hash.new
+$report = false
 
 def clean?
     return false if $nok > $expected_failures
@@ -28,6 +48,7 @@ def clean?
     return false if $missing > 0
     return false if $toomany > 0
     return false if $issue_lacks > 0
+    return false if $comp_fails > 0
     return true 
 end
 
@@ -50,12 +71,12 @@ end
 def parrot(input, output="", grammar="", target="")
     target = "--target=#{target}" if target != ""
     output = "-o #{output}" if output != ""
-    puts "Running parrot: #{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
-    sh "#{CONFIG[:parrot]} #{grammar} #{target} #{output} #{input}"
+    puts "Running parrot: #{$config[:parrot]} #{grammar} #{target} #{output} #{input}" if DEBUG
+    sh "#{$config[:parrot]} #{grammar} #{target} #{output} #{input}"
 end
 
 def make_exe(pbc)
-    sh "#{CONFIG[:pbc_to_exe]} cardinal.pbc"
+    sh "#{$config[:pbc_to_exe]} cardinal.pbc"
 end
 
 def test(file, name="")
@@ -75,20 +96,43 @@ def test(file, name="")
         end
     else
         file "t/#{pir_file}" => [:config, "t/#{file}", "src/gen_actions.pir", "src/gen_grammar.pir"] do
-            parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+            unless File.exists?('cardinal.pbc')
+                Task['cardinal.pbc'].invoke
+            end
+            begin
+                parrot("t/#{file}", "t/#{pir_file}", "cardinal.pbc", "pir")
+            rescue RuntimeError
+                File.open("t/#{pir_file}",'w') do |f|
+                    f.write(".sub main :main\nsay 'FAILED TO COMPILE'\n.end")
+                end
+            end
         end
         puts "named #{name}" if DEBUG
-        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do
-            run_test pir_file, name
+        task name => [:config, "t/#{pir_file}", "cardinal.pbc", "Test.pir"] do |t|
+            run_test pir_file, "#{t.scope.join(':')}:#{name}"
         end
     end
+end
+
+def get_report_file(filename)
+    dir = "report/t/" + File.dirname(filename)
+    dir.gsub!(/\/\./, '')
+    mkdir_p(dir)
+    ext = File.extname(filename)
+    fn = dir + "/" + File.basename(filename, ext)
+    fn += ".t"
+    fn.gsub!(/gen_/,'')
+    f = File.new(fn, 'w')
+    $meta['file_order'] += [fn.gsub(/report\//,'')]
+    return f
 end
 
 def run_test(file,name="")
     puts file if DEBUG
     name = file if name == ""
     $test_files += 1
-    command = ALTERNATIVE_RUBY || CONFIG[:parrot]
+    command = ALTERNATIVE_RUBY || $config[:parrot]
+    report_file = get_report_file(file) if $report
     IO.popen("#{command} t/#{file}", "r") do |t|
         begin 
             plan = t.readline
@@ -96,6 +140,7 @@ def run_test(file,name="")
             plan = "x"
         end
         puts plan if DEBUG
+        report_file.write(plan) if $report
         if plan =~ /^1\.\.([0-9]+)/
             tests = $1.to_i
             $tests += tests
@@ -107,6 +152,7 @@ def run_test(file,name="")
             t.readlines.each do |line|
                 test += 1
                 puts line if DEBUG
+                report_file.write(line) if $report
                 if line =~ /^ok #{test}/
                     ok += 1
                     if line =~ /TODO/
@@ -150,43 +196,109 @@ def run_test(file,name="")
                 $toomany_files += [file]
             end
         else
-            result = "Complete failure... no plan given"
+            if plan =~ /FAILED TO COMPILE/
+                result = "Complete failure... failed to compile."
+                $comp_fails += 1
+                $c_f_files += [file]
+            else
+                result = "Complete failure... no plan given"
+            end
             $failures += 1
         end
-        puts "Running test #{name} #{result}"
+        report_file.close if $report
+        puts "Running #{name} #{result}"
     end
 end
 
+desc "Produce a TAP archive"
+task "report.tar.gz" do
+    $report = true
+    $meta['start_time'] = Time.now.to_i
+    $meta['file_order'] = Array.new
+    Task['test:all'].invoke
+    $meta['stop_time'] = Time.now.to_i
+    $meta['extra_properties'] = {
+        'Architecture' => get_arch,
+        'Platform' => get_platform,
+        'Branch' => get_branch,
+        'Submitter' => get_submitter,
+        'Commit' => get_commit
+    }
+
+    IO.popen("#{PARROT_CONFIG} revision", "r") do |p|
+        $meta['extra_properties']['Parrot Revision'] = p.readline.chomp.to_i
+    end
+
+    require 'yaml'
+    File.open('report/meta.yml','w') do |f|
+        YAML::dump($meta, f)
+    end
+    chdir 'report'
+    sh 'tar cfz ../report.tar.gz *'
+    chdir '..'
+end
+
+desc "Submit a smolder report."
+task :smolder => "report.tar.gz" do
+    sh "curl -F \"architecture=#{get_arch}\" -F \"platform=#{get_platform}\" -F \"revision=#{get_commit}\" -F \"report_file=@report.tar.gz\" http://smolder.plusthree.com/app/public_projects/process_add_report/16"
+end
+
+desc "Determine configuration information"
 task :config => "build.yaml" do
     require 'yaml'
     File.open("build.yaml","r") do |f|
-        CONFIG.update(YAML.load(f))
+        $config.update(YAML.load(f))
     end
-    return false unless File.exist?(CONFIG[:parrot])
-    return false unless File.exist?(CONFIG[:perl6grammar])
-    return false unless File.exist?(CONFIG[:nqp])
-    return false unless File.exist?(CONFIG[:pct])
-    return false unless File.exist?(CONFIG[:pbc_to_exe])
+    return false unless File.exist?($config[:parrot])
+    return false unless File.exist?($config[:perl6grammar])
+    return false unless File.exist?($config[:nqp])
+    return false unless File.exist?($config[:pct])
+    return false unless File.exist?($config[:pbc_to_exe])
+end
+
+def get_arch
+    `uname -p`.chomp
+end
+
+def get_platform
+    `uname -s`.chomp
+end
+
+def get_branch
+    `git status`.split('\n')[0].split(' ')[3]
+end
+
+def get_submitter
+    submitter = ENV['SMOLDER_SUBMITTER']
+    submitter = "#{`git config --get user.name`} <#{`git config --get user.email`}>" if submitter == ''
+    return submitter
+end
+
+def get_commit
+    `git log -1 --pretty=format:%H`.chomp
 end
 
 file "build.yaml" do 
     require 'yaml'
     config = {}
-    IO.popen("parrot_config build_dir", "r") do |p|
-        config[:build_dir] = p.readline.chomp
+    IO.popen("#{PARROT_CONFIG} build_dir", "r") do |p|
+        $config[:build_dir] = p.readline.chomp
     end
-    puts "Detected parrot_config reports that build_dir is #{config[:build_dir]}."
+    print PARROT_CONFIG == 'parrot_config' ? "Detected " : "Provided "
+    puts "parrot_config reports that build_dir is #{$config[:build_dir]}."
 
-    config[:parrot] = config[:build_dir] + "/parrot"
-    config[:perl6grammar] = config[:build_dir] + "/runtime/parrot/library/PGE/Perl6Grammar.pbc"
-    config[:nqp] = config[:build_dir] + "/compilers/nqp/nqp.pbc"
-    config[:pct] = config[:build_dir] + "/runtime/parrot/library/PCT.pbc"
-    config[:pbc_to_exe] = config[:build_dir] + "/pbc_to_exe"
+    $config[:parrot] = $config[:build_dir] + "/parrot"
+    $config[:perl6grammar] = $config[:build_dir] + "/runtime/parrot/library/PGE/Perl6Grammar.pbc"
+    $config[:nqp] = $config[:build_dir] + "/compilers/nqp/nqp.pbc"
+    $config[:pct] = $config[:build_dir] + "/runtime/parrot/library/PCT.pbc"
+    $config[:pbc_to_exe] = $config[:build_dir] + "/pbc_to_exe"
+
     File.open("build.yaml","w") do |f|
-        YAML.dump(config, f) 
+        YAML.dump($config, f) 
     end
 end
 
+desc "Make the cardinal binary."
 file "cardinal" => [:config, "cardinal.pbc"] do
     make_exe("cardinal.pbc")
 end
@@ -202,11 +314,11 @@ file "cardinal.pbc" => sources do
 end
 
 file "src/gen_grammar.pir" => [:config, 'src/parser/grammar.pg'] do 
-    parrot("src/parser/grammar.pg", "src/gen_grammar.pir", CONFIG[:perl6grammar])
+    parrot("src/parser/grammar.pg", "src/gen_grammar.pir", $config[:perl6grammar])
 end
 
 file "src/gen_actions.pir" => [:config, "src/parser/actions.pm"] do
-    parrot("src/parser/actions.pm","src/gen_actions.pir",CONFIG[:nqp],'pir')
+    parrot("src/parser/actions.pm","src/gen_actions.pir",$config[:nqp],'pir')
 end
 
 builtins = FileList.new("src/builtins/guts.pir", "src/builtins/control.pir", "src/builtins/say.pir", "src/builtins/cmp.pir", "src/builtins/op.pir", "src/classes/Object.pir", "src/classes/Exception.pir", "src/classes/NilClass.pir", "src/classes/String.pir", "src/classes/Integer.pir", "src/classes/Array.pir", "src/classes/Hash.pir", "src/classes/Range.pir", "src/classes/TrueClass.pir", "src/classes/FalseClass.pir", "src/classes/Kernel.pir", "src/classes/Time.pir", "src/classes/Math.pir", "src/classes/GC.pir", "src/classes/IO.pir", "src/classes/Proc.pir", "src/classes/File.pir", "src/classes/FileStat.pir", "src/classes/Dir.pir", "src/builtins/globals.pir", "src/builtins/eval.pir", "src/classes/Continuation.pir") 
@@ -264,6 +376,7 @@ namespace :test do |ns|
         test "array/collect.t"
         test "array/compact.t"
         test "array/concat.t"
+        test "array/count.t"
         test "array/delete.t"
         test "array/empty.t"
         test "array/equals.t"
@@ -278,12 +391,12 @@ namespace :test do |ns|
         test "array/intersection.t"
         test "array/join.t"
         test "array/mathop.t"
-        test "array/nitems.t"
         test "array/pop.t"
         test "array/push.t"
         test "array/reject.t"
         test "array/replace.t"
         test "array/reverse.t"
+        test "array/select.t"
         test "array/shift.t"
         test "array/slice.t"
         test "array/sort.t"
@@ -292,7 +405,8 @@ namespace :test do |ns|
         test "array/values_at.t"
         test "array/warray.t"
 
-        task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :nitems, :pop, :push, :reject, :replace, :reverse, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
+        desc "Run tests on Array."
+        task :all => [:array, :assign, :at, :clear, :collect, :compact, :concat, :count, :delete, :empty, :equals, :fetch, :fill, :first, :flatten, :grep, :include, :index, :insert, :intersection, :join, :mathop, :pop, :push, :reject, :replace, :reverse, :select, :shift, :slice, :sort, :to_s, :uniq, :values_at, :warray]
     end
     
     namespace :file do 
@@ -300,6 +414,7 @@ namespace :test do |ns|
         test "file/file.t"
         test "file/stat.t" 
         
+        desc "Run tests on File."
         task :all => [:dir, :file, :stat]
     end
 
@@ -307,6 +422,7 @@ namespace :test do |ns|
         test "hash/hash.t"
         test "hash/exists.t"
         
+        desc "Run tests on Hash."
         task :all => [:hash, :exists]
     end
     
@@ -315,6 +431,7 @@ namespace :test do |ns|
         test "integer/times.t"
         test "integer/cmp.t"
 
+        desc "Run tests on Integer."
         task :all => [:integer, :times, :cmp]
     end
 
@@ -323,12 +440,14 @@ namespace :test do |ns|
         test "kernel/open.t"
         test "kernel/sprintf.t"
 
+        desc "Run tests on Kernel."
         task :all => [:exit, :open, :sprintf]
     end
 
     namespace :math do
         test "math/functions.t"
         
+        desc "Run tests on Math."
         task :all => [:functions]
     end
     
@@ -342,6 +461,7 @@ namespace :test do |ns|
         test "range/to_s.t"
         test "range/tofrom-variants.t"
 
+        desc "Run tests on Range."
         task :all => [:each, :infixexclusive, :infixinclusive, :membershipvariants, :new, :to_a, :to_s, :tofromvariants]
     end 
 
@@ -362,10 +482,14 @@ namespace :test do |ns|
         test "string/reverse.t"
         test "string/upcase.t"
 
+        desc "Run tests on String."
         task :all => [:add, :block, :capitalize, :chops, :cmp, :concat, :downcase, :empty, :eq, :mult, :new, :quote, :random_access, :reverse, :upcase]
     end
 
+    desc "Run basic tests."
     task :basic => [:sanity, :stmts, :functions, :return, :indexed, :opcmp, :loops, :class, :test, :regex, :slurpy, :gather, :other, :alias, :assignment, :bool, :blocks, :constants, :continuation, :freeze, :gc, :nil, :proc, :range, :splat, :time, :yield, :zip]
+
+    desc "Run the entire test suite."
     task :all => [:basic, "array:all", "file:all", "hash:all", "integer:all", "kernel:all", "math:all", "range:all", "string:all"] do
         dur_seconds = Time.now.to_i - $start.to_i
         dur_minutes = 0
@@ -423,9 +547,18 @@ namespace :test do |ns|
                 puts "  #{file}"
             end
         end
+        $pl = $comp_fails > 1
+        unless $c_f_files.empty?
+            puts " There #{were} #{$comp_fails} #{pl "file"} that completely failed to compile:"
+            $c_f_files.uniq!
+            $c_f_files.each do |file|
+                puts "  #{file}"
+            end
+        end
         puts " -- CLEAN FOR COMMIT --" if clean?
     end
 
+    desc "Run test:all *and* produce stats about known issues."
     task :stats => [:all] do
         $pl = $issue_counts.size > 1
         unless $issue_counts.empty?

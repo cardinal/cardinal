@@ -29,7 +29,7 @@ rule stmts {
     <.term>?[ <stmt> [<.term>+ | <.before <end_block>> | $ | <panic: unterminated statement>] ]* {*}
 }
 
-token term { \n | ';' }
+token term { \h*\n | \h*';' }
 token end_block { <.ws> [ 'end' | '}' ] }
 
 token basic_stmt {
@@ -190,8 +190,6 @@ rule args {
 
 rule 'arg' is optable { ... }
 
-proto 'infix:=' is precedence('1') is pasttype('copy') is lvalue(1)     { ... }
-
 token basic_primary {
     | <literal> {*}                         #= literal
     | <funcall> {*}                         #= funcall
@@ -260,17 +258,6 @@ token else {
     {*}
 }
 
-token ensure {
-    'ensure' <.ws> <comp_stmt>
-    {*}
-}
-
-rule rescue {
-    # XXX check <args>
-    ['rescue' <args> <.then> <comp_stmt>]+
-    {*}
-}
-
 token control_command {
     | 'next'  {*}                   #= next
     | 'break' {*}                   #= break
@@ -299,13 +286,6 @@ rule functiondef {
     <comp_stmt>
     'end'
     {*}
-}
-
-rule bodystmt {
-    <comp_stmt>
-    <rescue>?
-    <else>?
-    <ensure>?
 }
 
 rule argdecl {
@@ -423,7 +403,7 @@ token literal {
 }
 
 token float {
-    '-'? \d* '.' \d+
+    '-'? \d+ '.' \d+
     {*}
 }
 
@@ -488,10 +468,10 @@ proto 'infix:&=' is equiv('infix:=')    { ... }
 
 proto 'infix:~=' is equiv('infix:=')    { ... }
 
-proto infix:«>>=» is equiv('infix:=')
+proto 'infix:>>=' is equiv('infix:=')
                   is pirop('shr')       { ... }
 
-proto infix:«<<=» is equiv('infix:=')
+proto 'infix:<<=' is equiv('infix:=')
                   is pirop('shl')       { ... }
 
 proto 'infix:&&=' is equiv('infix:=')
@@ -521,23 +501,23 @@ proto 'infix:!='      is equiv('infix:==') { ... }
 proto 'infix:=~'      is equiv('infix:==') { ... }
 proto 'infix:!~'      is equiv('infix:==') { ... }
 proto 'infix:==='     is equiv('infix:==') { ... }
-proto infix:«<=>» is equiv('infix:==') { ... }
+proto 'infix:<=>'     is equiv('infix:==') { ... }
 
 
-proto infix:«>»  is tighter('infix:===') { ... }
-proto infix:«<»  is tighter('infix:===') { ... }
-proto infix:«<=»  is tighter('infix:===') { ... }
-proto infix:«>=» is tighter('infix:===') { ... }
+proto 'infix:>'  is tighter('infix:===') { ... }
+proto 'infix:<'  is equiv('infix:>') { ... }
+proto 'infix:<=' is equiv('infix:>') { ... }
+proto 'infix:>=' is equiv('infix:>') { ... }
 
 proto 'infix:|' is tighter('infix:<=')  { ... }
 proto 'infix:^' is equiv('infix:|')  { ... }
 
 proto 'infix:&' is tighter('infix:|')  { ... }
 
-proto infix:«<<»  is tighter('infix:&') { ... }
-proto infix:«>>»  is equiv(infix:«<<») { ... }
+proto 'infix:<<'  is tighter('infix:&') { ... }
+proto 'infix:>>'  is equiv('infix:<<') { ... }
 
-proto 'infix:+' is tighter(infix:«<<»)  { ... }
+proto 'infix:+' is tighter('infix:<<')  { ... }
 
 proto 'infix:-' is equiv('infix:+') { ... }
                 #is pirop('sub')       { ... }
@@ -551,12 +531,6 @@ proto 'infix:/' is equiv('infix:*')  { ... }
 proto 'infix:%' is equiv('infix:*')
                 is pirop('mod')       { ... }
 
-proto 'postfix:++' is tighter('infix:*')
-		is pirop('n_add')  { ... }
-
-proto 'postfix:--' is tighter('infix:*')
-		is pirop('n_sub')  { ... }
-#
 #proto 'prefix:+' is tighter('infix:*')  { ... }
 #proto 'prefix:-' is equiv('prefix:+')  { ... }
 #proto 'prefix:!' is equiv('prefix:+')  { ... }
@@ -564,3 +538,5 @@ proto 'postfix:--' is tighter('infix:*')
 
 proto 'term:'   is tighter('infix:*')
                 is parsed(&primary)     { ... }
+
+proto 'circumfix:( )' is equiv('term:') { ... }

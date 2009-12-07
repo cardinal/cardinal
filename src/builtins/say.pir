@@ -18,19 +18,20 @@ builtin functions for Ruby.
     print $P0
     goto iter_loop
   iter_end:
-    .return ()
+    $P0 = get_hll_global 'nil'
+    .return($P0)
 .end
 
 .sub 'puts'
     .param pmc args            :slurpy
     $S0 = join "\n", args
-    'print'($S0, "\n")
+    .tailcall 'print'($S0, "\n")
 .end
 
 .sub 'p'
     .param pmc args            :slurpy
     $S0 = join "\n", args
-    'print'($S0, "\n")
+    .tailcall 'print'($S0, "\n")
 .end
 
 .sub 'readline'
@@ -44,7 +45,7 @@ builtin functions for Ruby.
     .param pmc fmt
     .param pmc args             :slurpy
     $P0 = get_hll_global ['Kernel'], '!CARDINALMETA'
-    $P0.'printf'(fmt, args :flat)
+    .tailcall $P0.'printf'(fmt, args :flat)
 .end
 
 .sub 'sprintf'

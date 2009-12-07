@@ -284,6 +284,27 @@ Return a sorted copy of the list
     .return ($P0)
 .end
 
+.sub 'select' :method
+    .param pmc block :named('!BLOCK')
+    .local pmc uarray, val
+
+    uarray = new 'CardinalArray'
+    $P0 = iter self
+
+  loop:
+    unless $P0 goto done
+
+    $P1 = shift $P0
+    $P2 = block($P1)
+    unless $P2 goto loop
+
+    uarray.'push'($P1)
+    goto loop
+
+  done:
+    .return (uarray)
+.end
+
 .sub reject :method
     .param pmc block :named("!BLOCK")
     .local pmc uarray, val
@@ -1640,20 +1661,48 @@ The zip operator.
 # TODO: pass warning
 .end
 
-.sub 'nitems' :method
-    .local int count
+.sub 'count' :method
+    .param pmc obj :optional
+    .param int obj_flag :opt_flag
+    .param pmc block :optional :named("!BLOCK")
+    .param int block_flag :opt_flag
     .local pmc it
+    .local pmc val
+    .local int count
+
+    if obj_flag goto has_object
+    if block_flag goto has_block
+
+    count=elements self
+    .return(count)
+
+  has_block:
     count = 0
     it = iter self
   iter_loop:
-    unless it goto done
-    $P0 = shift it
-    $I0 = isa $P0, "NilClass"
-    if $I0 goto iter_loop
+    unless it goto block_done
+    val = shift it
+    $P0=block(val)
+    unless $P0 goto iter_loop
     inc count
     goto iter_loop
-  done:
-    .return ( count )
+  block_done:
+    .return(count)
+
+  has_object:
+    # TODO: raise warning if block given
+    count = 0
+    it = iter self
+  iter_loop2:
+    unless it goto block_done2
+    val = shift it
+    eq val, obj, iter_match
+    goto iter_loop2
+  iter_match:
+    inc count
+    goto iter_loop2
+  block_done2:
+    .return(count)
 .end
 
 .sub '_cmp' :vtable('cmp') :method
