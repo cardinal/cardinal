@@ -9,6 +9,8 @@ setup.pir - Python distutils style
 
 No Configure step, no Makefile generated.
 
+See <runtime/parrot/library/distutils.pir>.
+
 =head1 USAGE
 
     $ parrot setup.pir build
@@ -76,7 +78,6 @@ SOURCES
 
     $P6 = new 'Hash'
     $P6['parrot-cardinal'] = 'cardinal.pbc'
-    $P0['exe_pbc'] = $P6
     $P0['installable_pbc'] = $P6
 
     # test
@@ -99,12 +100,13 @@ SOURCES
     $S0 = get_tags()
     $P0['smolder_tags'] = $S0
     $P0['prove_archive'] = 'report.tar.gz'
-    $P0['smolder_url'] = 'http://smolder.plusthree.com/app/public_projects/process_add_report/16'
+    $P0['smolder_url'] = 'http://smolder.plusthree.com/app/projects/process_add_report/16'
 
     # dist
-    $P8 = glob('src/builtins/*.pir src/classes/*.pir Test.rb')
+    $P8 = glob('src/builtins/*.pir src/classes/*.pir Test.rb Rakefile')
     $P0['manifest_includes'] = $P8
     $P0['manifest_excludes'] = 'src/gen_builtins.pir'
+    $P0['doc_files'] = 'README'
 
     .tailcall setup(args :flat, $P0 :flat :named)
 .end
@@ -147,8 +149,7 @@ BUILTINS_PIR
     $S1 = join "'\n.include '", $P1
     $S0 .= $S1
     $S0 .= "'\n\n"
-    spew('src/gen_builtins.pir', $S0)
-    say "creating src/gen_builtins.pir"
+    spew('src/gen_builtins.pir', $S0, 1 :named('verbose'))
   L1:
 .end
 
