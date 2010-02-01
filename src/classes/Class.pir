@@ -35,7 +35,7 @@ and must be assigned if the user wishes to save them.
     .local pmc super_pclass, meta_super_pclass, super_rclass, meta_super_rclass
     
     # We'll need this later:
-    .local pmc nil
+    .local pmc nil              # Doesn't exist when making NilClass. crap
     nil = get_hll_global 'nil'
 
     # First get all the superclass information.

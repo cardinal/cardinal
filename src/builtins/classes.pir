@@ -36,8 +36,11 @@
     .local pmc obj_meta_rclass, cls_meta_rclass, mdl_meta_rclass
 
     obj_rclass = new 'Class'
+    obj_rclass.'name='('Object')
     cls_rclass = new 'Class'
+    cls_rclass.'name='('Class')
     mdl_rclass = new 'Class'
+    mdl_rclass.'name='('Module')
 
     obj_meta_rclass = new 'Class'
     cls_meta_rclass = new 'Class'
@@ -55,7 +58,6 @@
 
     # And then the super classes
 
-    setattribute obj_rclass, '!super', nil
     setattribute mdl_rclass, '!super', obj_rclass
     setattribute cls_rclass, '!super', mdl_rclass
 
@@ -68,10 +70,6 @@
     setattribute obj_rclass, '!meta', obj_meta_rclass
     setattribute mdl_rclass, '!meta', mdl_meta_rclass
     setattribute cls_rclass, '!meta', cls_meta_rclass
-
-    setattribute obj_meta_rclass, '!meta', nil
-    setattribute mdl_meta_rclass, '!meta', nil
-    setattribute cls_meta_rclass, '!meta', nil
 
     # Now we populate the globals
     .local pmc glbl
@@ -87,6 +85,42 @@
     glbl = new cls_meta_pclass
     setattribute glbl, '!class', cls_rclass
     set_hll_global 'Class', glbl
+
+    # Now that these are all ready, let's make nil, which is required for !make_named_class
+    .local pmc nil_rclass, nil_pclass, nil_meta_rclass, nil_meta_pclass, nil
+
+    nil_rclass = new 'Class'
+    nil_rclass.'name='('NilClass')
+    nil_meta_rclass = new 'Class'
+
+    nil_pclass = subclass cls_pclass, 'NilClass'
+    nil_meta_pclass = subclass cls_meta_pclass, ['NilClass';'meta']
+
+    setattribute nil_rclass, '!parrot_class', nil_pclass
+    setattribute nil_meta_rclass, '!parrot_class', nil_meta_pclass
+
+    setattribute nil_rclass, '!super', obj_rclass
+    setattribute nil_meta_rclass, '!super', obj_meta_rclass
+
+    setattribute nil_rclass, '!meta', nil_meta_rclass
+
+    .local pmc interp, undef
+    undef = '!get_parrot_class'('Undef')
+    addparent nil_pclass, undef
+
+    interp = getinterp
+    interp.'hll_map'(undef, nil_pclass)
+
+    nil = new nil_pclass
+    set_hll_global 'nil', nil
+
+    # Now let's go back and use nil wherever it should have been
+
+    setattribute obj_rclass, '!super', nil
+    setattribute obj_meta_rclass, '!meta', nil
+    setattribute mdl_meta_rclass, '!meta', nil
+    setattribute cls_meta_rclass, '!meta', nil
+    setattribute nil_meta_rclass, '!meta', nil
 
     # Now things should be good to go.
 .end
@@ -133,6 +167,7 @@
     $P1 = new $P0
     setattribute $P1, '!class', new_class
     $S0 = name
+    say $S0
     set_hll_global $S0, $P1
 
     new_class.'name='(name)

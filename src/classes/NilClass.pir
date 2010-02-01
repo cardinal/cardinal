@@ -2,15 +2,6 @@
 
 .namespace [ 'NilClass' ]
 
-.sub 'onload' :anon :load :init
-    .local pmc undef, obj
-
-    undef = '!get_parrot_class'('Undef')
-    obj = '!get_class'('Object')
-
-    '!make_named_class'('NilClass', obj, undef)
-.end
-
 .sub 'initialize' :method
     .param pmc args :slurpy
     noop
@@ -51,13 +42,6 @@ Return the elements of the list concatenated.
     $P0 = get_hll_global 'true'
     .return ($P0)
 .end
-
-.namespace []
-.sub 'setup' :anon :load :init
-    $P0 = '!new'('NilClass')
-    set_hll_global 'nil', $P0
-.end
-
 
 # Local Variables:
 #   mode: pir
