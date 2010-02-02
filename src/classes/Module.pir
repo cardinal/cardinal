@@ -15,13 +15,20 @@ Module
 
 .sub 'name=' :method
     .param pmc name
+    .param int ignore_parrot :optional
+    .param int ignore_flag   :opt_flag
 
     setattribute self, 'name', name
 
+    if ignore_flag goto done
+
     .local pmc pclass
 
-    #pclass = getattribute self, '!parrot_class'
-    #pclass.'name'(name) 
+    pclass = getattribute self, '!parrot_class'
+    pclass.'name'(name)
+
+  done:
+
 .end
 
 .sub 'name' :method

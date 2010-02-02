@@ -3,10 +3,6 @@
 #   in the appropriate places.
 
 .sub '' :load :init :anon
-    # Well need this later:
-    .local pmc nil
-    nil = get_hll_global 'nil'
-
     # First, we'll make the parrot classes.
     .local pmc obj_pclass, cls_pclass, mdl_pclass
 
@@ -36,11 +32,8 @@
     .local pmc obj_meta_rclass, cls_meta_rclass, mdl_meta_rclass
 
     obj_rclass = new 'Class'
-    obj_rclass.'name='('Object')
     cls_rclass = new 'Class'
-    cls_rclass.'name='('Class')
     mdl_rclass = new 'Class'
-    mdl_rclass.'name='('Module')
 
     obj_meta_rclass = new 'Class'
     cls_meta_rclass = new 'Class'
@@ -55,6 +48,12 @@
     setattribute obj_meta_rclass, '!parrot_class', obj_meta_pclass
     setattribute mdl_meta_rclass, '!parrot_class', mdl_meta_pclass
     setattribute cls_meta_rclass, '!parrot_class', cls_meta_pclass
+
+    # Now they can take names
+
+    obj_rclass.'name='('Object', 1)
+    cls_rclass.'name='('Class', 1)
+    mdl_rclass.'name='('Module', 1)
 
     # And then the super classes
 
@@ -90,7 +89,6 @@
     .local pmc nil_rclass, nil_pclass, nil_meta_rclass, nil_meta_pclass, nil
 
     nil_rclass = new 'Class'
-    nil_rclass.'name='('NilClass')
     nil_meta_rclass = new 'Class'
 
     nil_pclass = subclass cls_pclass, 'NilClass'
@@ -103,6 +101,8 @@
     setattribute nil_meta_rclass, '!super', obj_meta_rclass
 
     setattribute nil_rclass, '!meta', nil_meta_rclass
+
+    nil_rclass.'name='('NilClass', 1)
 
     .local pmc interp, undef
     undef = '!get_parrot_class'('Undef')
