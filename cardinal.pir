@@ -23,6 +23,10 @@ object.
 
 
 .HLL 'cardinal'
+.loadlib 'io_ops'
+.loadlib 'sys_ops'
+.loadlib 'trans_ops'
+.loadlib 'obscure_ops'
 .namespace []
 
 .include 'src/gen_builtins.pir'
