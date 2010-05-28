@@ -198,7 +198,7 @@ Returns the characters in C<self> in reverse order. Destructive update.
     .local pmc retv
 
     tmps = self
-    downcase tmps
+    tmps = downcase tmps
 
     retv = new 'CardinalString'
     retv = tmps
@@ -237,7 +237,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local pmc retv
 
     tmps = self
-    upcase tmps
+    tmps = upcase tmps
 
     retv = new 'CardinalString'
     retv = tmps
@@ -258,7 +258,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     if len == 0 goto done
 
     substr fchr, tmps, 0, 1
-    downcase fchr
+    fchr = downcase fchr
 
     concat retv, fchr
     substr tmps, tmps, 1
@@ -281,7 +281,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     if len == 0 goto done
 
     substr fchr, tmps, 0, 1
-    upcase fchr
+    fchr = upcase fchr
 
     concat retv, fchr
     substr tmps, tmps, 1
@@ -309,7 +309,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     len = length tmps
     if len == 0 goto done
 
-    downcase tmps
+    tmps = downcase tmps
 
     .local int pos, is_ws, is_lc
     pos = 0
@@ -328,8 +328,8 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     #unless is_lc goto advance
     unless is_lc goto done
     $S1 = substr tmps, pos, 1
-    upcase $S1
-    substr tmps, pos, 1, $S1
+    $S1 = upcase $S1
+    tmps = replace tmps, pos, 1, $S1
     ## the length may have changed after replacement, so measure it again
     len = length tmps
     #goto advance
@@ -401,7 +401,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
 
     retv = new 'CardinalString'
     tmps = self
-    chopn tmps, 1
+    tmps = chopn tmps, 1
     retv = tmps
     .return(retv)
 .end
@@ -411,7 +411,7 @@ Returns a copy of C<self> with all lower case letters converted to upper case
     .local int len
 
     tmps = self
-    chopn tmps, 1
+    tmps = chopn tmps, 1
     self = tmps
     .return(self)
 .end
@@ -485,11 +485,11 @@ Warning: Partial implementation. Look for TODO
     if start < 0 goto neg_access
     goto oob
     neg_access:
-        substr $S0, tmp, start, stop, replace_with
+        $S0 = replace tmp, start, stop, replace_with
         self = tmp
         .return()
     pos_access:
-        substr $S0, tmp, start, stop, replace_with
+        $S0 = replace tmp, start, stop, replace_with
         self = tmp
         .return()
     oob:
