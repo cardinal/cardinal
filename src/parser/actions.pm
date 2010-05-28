@@ -153,9 +153,11 @@ method end($/) {
     my $past := PAST::Block.new( $<comp_stmt>.ast(), :node($/) );
     $past.blocktype('declaration');
     my $sub := PAST::Compiler.compile( $past );
-    PIR q<  $P0 = get_hll_global ['cardinal'], '@?END_BLOCKS' >;
-    PIR q<  $P1 = find_lex '$sub' >;
-    PIR q<  push $P0, $P1 >;
+    Q:PIR {
+      $P0 = get_hll_global ['cardinal'], '@?END_BLOCKS'
+      $P1 = find_lex '$sub'
+      push $P0, $P1
+    };
     make $past;
 }
 
@@ -164,15 +166,15 @@ method indexed_assignment($/) {
     my $rhs := $<rhs>.ast();
     my $primary := $<basic_primary>.ast();
 
-	 	$keys := $<keys>.ast();
+    $keys := $<keys>.ast();
 
     my $past := PAST::Op.new( :name('[]='), :pasttype('callmethod'), :node($/) );
 
     $past.push( $primary );
 
-		while $keys[0] {
-			$past.push( $keys.shift() );
-		}
+    while $keys[0] {
+        $past.push( $keys.shift() );
+    }
 
     $past.push( $rhs );
 
