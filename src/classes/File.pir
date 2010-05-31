@@ -95,10 +95,10 @@ Perform initializations and create the File class
         goto done
         parse_mode:
                 unless mode goto default_mode
-                eq_str mode, "r", default_mode
-                eq_str mode, "w", write_mode
-                #eq_str mode, "r+", read_write_mode
-                #eq_str mode, "a", append_mode
+                eq mode, "r", default_mode
+                eq mode, "w", write_mode
+                #eq mode, "r+", read_write_mode
+                #eq mode, "a", append_mode
                 goto done
         default_mode:
                 parrot_io_mode = "<"
@@ -116,7 +116,7 @@ Perform initializations and create the File class
 .sub '!to_path' :method
         .param pmc path
         $S0 = typeof path
-        cmp_str $I0, $S0, "CardinalString"
+        cmp $I0, $S0, "CardinalString"
         if $I0 == 0 goto have_path
         goto get_path
         get_path:
