@@ -20,6 +20,7 @@ Perform initializations and create the File class
 .namespace ['CardinalFile']
 
 .sub 'onload' :anon :init :load
+    $P0 = loadlib 'file'
     .local pmc cardinalmeta
     $P0 = get_hll_global ['CardinalObject'], '!CARDINALMETA'
     cardinalmeta = $P0.'new_class'('CardinalFile', 'parent'=>'parrot;File IO CardinalObject', 'attr'=>'!path')
@@ -82,7 +83,7 @@ Perform initializations and create the File class
         .local string parrot_io_mode
         .local pmc jmpstack
         jmpstack = new 'ResizableIntegerArray'
-        
+
         $S0 = self.'!to_path'(path)
         local_branch jmpstack, parse_mode
         open $P1, $S0, parrot_io_mode
