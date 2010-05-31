@@ -162,24 +162,22 @@ SOURCES
     .param pmc kv :slurpy :named
     run_step('build', kv :flat :named)
 
-    .local string cmd
-    cmd = "prove --exec=\""
+    $P0 = glob('t/array/*.t')
+    $P0 = sort_strings($P0)
     $S0 = get_parrot()
-    cmd .= $S0
-    cmd .= " cardinal.pbc\" t/array/*.t"
-    system(cmd, 1 :named('verbose'))
+    $S0 .= ' cardinal.pbc'
+    runtests($P0 :flat, $S0 :named('exec'))
 .end
 
 .sub 'hashtest' :anon
     .param pmc kv :slurpy :named
     run_step('build', kv :flat :named)
 
-    .local string cmd
-    cmd = "prove --exec=\""
+    $P0 = glob('t/hash/*.t')
+    $P0 = sort_strings($P0)
     $S0 = get_parrot()
-    cmd .= $S0
-    cmd .= " cardinal.pbc\" t/hash/*.t"
-    system(cmd, 1 :named('verbose'))
+    $S0 .= ' cardinal.pbc'
+    runtests($P0 :flat, $S0 :named('exec'))
 .end
 
 .sub 'get_tags' :anon
