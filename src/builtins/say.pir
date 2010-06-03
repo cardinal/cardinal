@@ -34,9 +34,12 @@ builtin functions for Ruby.
     .tailcall 'print'($S0, "\n")
 .end
 
+.include 'stdio.pasm'
+
 .sub 'readline'
     #.param pmc sep              :optional #record sep
-    $P0 = getstdin
+    $P0 = getinterp
+    $P0 = $P0.'stdhandle'(.PIO_STDIN_FILENO)
     $S0 = $P0.'readline'('')
     .return($S0)
 .end

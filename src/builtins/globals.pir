@@ -8,6 +8,8 @@ src/builtins/globals.pir - initialize miscellaneous global variables
 
 .namespace []
 
+.include 'stdio.pasm'
+
 .sub 'onload' :anon :load :init
     .local pmc cardinalmeta
     cardinalmeta = get_hll_global ['CardinalObject'], '!CARDINALMETA'
@@ -39,14 +41,17 @@ src/builtins/globals.pir - initialize miscellaneous global variables
     $P4 = get_hll_global ['NilClass'], '!CARDINALMETA'
     set_hll_global '$\', $P4
 
-    #getstdin $P5
+    .local pmc interp
+    interp = getinterp
+
+    #$P5 = interp.'stdhandle'(.PIO_STDIN_FILENO)
     #set_hll_global '$stdin', $P5
     #set_hll_global '$>', $P5
 
-    getstdout $P6
+    $P6 = interp.'stdhandle'(.PIO_STDOUT_FILENO)
     set_hll_global '$stdout', $P6
 
-    #getstderr $P7
+    #$P7 = interp.'stdhandle'(.PIO_STDERR_FILENO)
     #set_hll_global 'stderr', $P7
 
     $P2 = new 'CardinalString'
