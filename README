@@ -1,3 +1,6 @@
+Cardinal is a top level project of Parrot.  You can find active development here:
+https://github.com/parrot/cardinal/
+
 Cardinal is a Ruby compiler for Parrot.
 
 The parser is fairly complete.  The standard library exists, but still needs filling out.
